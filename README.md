@@ -27,6 +27,8 @@ This implementation is built on easily accessible consumer based hardware and wi
 
 ## Prerequisites
 
+- Proxmox (In my homelab, internal DNS, identity manangement, and ipxe are hosted here.)
+- Matchbox
 - DNS
 - Domain Registration
 
@@ -66,7 +68,7 @@ Find additional details in the ./02-rhacm-config folder.
 
 #### Creating a Cluster
 
-With everything in its right place, you can now start to declaratively create clusters - so choose your own adventure:
+With everything in its right place, you can now start to declaratively create clusters
 
 ./05-clusters/hcp-bmh - HCP to Bare Metal Hosts
 
@@ -79,5 +81,7 @@ This makes it to where you just need 3 bare metal nodes. You could run one HCP B
 ### External Cluster
 
 You'll also either need you just need at least 2 bare metal nodes.
+
+---
 
 Credit to Ken Moini as I used his [repo](https://github.com/kenmoini/ztp-for-you-and-me) as the baseline for this project.
