@@ -40,6 +40,23 @@ For the sake of this documentation we'll assume the following:
 
 ## Getting Started
 
+### Create your vault file for secrets
+
+### Store your vault password somewhere save
+
+```bash
+vi ~/.vault_pass.txt
+chmod 644 ~/.vault_pass.txt
+```
+
+### Add envireonment variable with location of vault password
+
+Add "export ANSIBLE_VAULT_PASSWORD_FILE=~/.vault_pass.txt" to your shell profile.
+
+```bash
+ansible-playbook -i inventory.yaml 10-sno-hub-cluster/install.yml
+```
+
 ### Hub Cluster
 
 You'll need an OpenShift "Hub Cluster" with access to persistant storage.
