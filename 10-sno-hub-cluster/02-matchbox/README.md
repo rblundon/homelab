@@ -8,6 +8,10 @@
 
 ### Create/Modify config files
 
+```bash
+cd 10-sno-hub-cluster/02-matchbox
+```
+
 - agent-config.yaml
 - install-config.yaml
 
