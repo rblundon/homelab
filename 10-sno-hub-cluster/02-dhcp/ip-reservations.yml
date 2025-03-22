@@ -2,10 +2,7 @@
 - name: Set dnsmasq host reservation
   hosts: all
   become: true
-  vars:
-    mac_address: "98:b7:85:1e:c6:f1"
-    ip_address: "10.1.71.10"
-    hostname: "ocp-hub"
+
   tasks:
     - name: Ensure dnsmasq is installed
       ansible.builtin.apt:

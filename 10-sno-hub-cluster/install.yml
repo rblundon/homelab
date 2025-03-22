@@ -3,9 +3,7 @@
   hosts: 127.0.0.1
   connection: local
   gather_facts: true
-  vars_prompt:
-    - name: freeipa_password
-      prompt: FreeIPA password for admin user
+  include_vars: vars.yml
 
   tasks:
     - name: Deploy DNS entries for cluster via Terraform
@@ -16,4 +14,6 @@
         state: present
         force_init: true
 
-    - include: 02-dhcp/ip-reservations.yml
+    - ansible.builtin.include_tasks:
+        file: 02-dhcp/ip-reservations.yml
+        include_vars: vars.yml

@@ -1,0 +1,8 @@
+vars_prompt:
+  - name: freeipa_password
+    prompt: FreeIPA password for admin user
+
+vars:
+  mac_address: "98:b7:85:1e:c6:f1"
+  ip_address: "10.1.71.10"
+  hostname: "ocp-hub"
