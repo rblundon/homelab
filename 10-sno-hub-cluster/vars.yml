@@ -1,6 +1,3 @@
-vars_prompt:
-  - name: freeipa_password
-    prompt: FreeIPA password for admin user
 
 vars:
   mac_address: "98:b7:85:1e:c6:f1"
