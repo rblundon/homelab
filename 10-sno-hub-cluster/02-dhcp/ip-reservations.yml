@@ -3,12 +3,14 @@
   ansible.builtin.apt:
     name: dnsmasq
     state: present
+  become: true
   when: ansible_os_family == "Debian"
 
 - name: Ensure dnsmasq is installed
   ansible.builtin.dnf:
     name: dnsmasq
     state: present
+  become: true
   when: ansible_os_family == "RedHat"
 
 - name: Add host reservation to dnsmasq
@@ -16,8 +18,9 @@
     path: /etc/dnsmasq.d/hosts.conf
     line: "dhcp-host={{ mac_address }},{{ ip_address }},{{ hostname }}"
     state: present
-
+  become: true
 - name: Restart dnsmasq service
   ansible.builtin.service:
     name: dnsmasq
     state: restarted
+  become: true
