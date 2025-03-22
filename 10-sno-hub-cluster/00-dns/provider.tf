@@ -2,8 +2,14 @@
 provider "freeipa" {
   host        = "infra01.int.mk-labs.cloud"
   username    = "admin"
-  password    = "Gen1:1NASB"
+  password    = var.freeipa_password
   insecure    = true
+}
+
+variable "freeipa_password" {
+  description = "The password for the FreeIPA provider"
+  type        = string
+  sensitive   = true
 }
 
 terraform {
