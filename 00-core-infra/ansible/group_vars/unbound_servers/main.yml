@@ -1,0 +1,5 @@
+---
+unbound_do_ip6: "no"
+#unbound_forward_zones:
+unbound_chroot: "/etc/unbound"
+#unbound_pidfile: "/etc/unbound/unbound.pid"

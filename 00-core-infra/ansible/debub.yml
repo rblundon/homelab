@@ -1,0 +1,23 @@
+- name: "Playbook to test the inventory_hostname and ansible_hostname"
+  hosts: ipaserver
+  # gather_facts: true
+  tasks:
+    - name: "What is my inventory_hostname"
+      ansible.builtin.debug:
+        var: inventory_hostname
+
+    - name: "What is my hostname"
+      ansible.builtin.debug:
+        var: hostname
+
+    - name: "What is my ansible_hostname"
+      ansible.builtin.debug:
+        var: ansible_hostname
+
+    - name: "What is my ansible_host"
+      ansible.builtin.debug:
+        var: ansible_host
+
+#    - name: "Ansible | List all known variables and facts"
+#      ansible.builtin.debug:
+#        var: hostvars[inventory_hostname]

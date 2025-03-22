@@ -1,0 +1,13 @@
+- name: "Add SSH key to servers for Ansible"
+  hosts: ipaserver
+  
+  vars_files:
+  - ansible-vault.yml
+
+  roles:
+  - role: rywillia.ssh-copy-id 
+    vars:
+      hostname: "{{ ansible_hostname }}"
+      username: "{{ vault_ansible_user }}"
+      password: "{{ vault_ansible_password }}"
+      ssh_public_key: "/Users/rblundon/git/MK-Labs/ansible/files/ansible"

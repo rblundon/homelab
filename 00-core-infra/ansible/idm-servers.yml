@@ -1,0 +1,10 @@
+---
+- name: Playbook to configure IPA server
+  hosts: ipaserver
+  become: true
+  vars_files:
+  - idm-vault.yml
+
+  roles:
+  - role: freeipa.ansible_freeipa.ipaserver
+    state: present
