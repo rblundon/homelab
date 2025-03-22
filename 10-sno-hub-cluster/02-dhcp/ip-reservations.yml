@@ -16,9 +16,11 @@
 - name: Add host reservation to dnsmasq
   ansible.builtin.lineinfile:
     path: /etc/dnsmasq.d/hosts.conf
-    line: "dhcp-host={{ mac_address }},{{ ip_address }},{{ hostname }}"
+    regexp: "^dhcp-host={{ mac_address }}"
+    line: "dhcp-host={{ mac_address }},{{ ip_address }} #{{ hostname }}"
     state: present
   become: true
+
 - name: Restart dnsmasq service
   ansible.builtin.service:
     name: dnsmasq
