@@ -1,0 +1,4 @@
+# requirements.yml
+collections:
+  - name: ommunity.general
+    version: 10.4.0

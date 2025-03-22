@@ -1,0 +1,27 @@
+---
+- name: Run all tasks necessary to configure matchbox to install the cluster
+  hosts: all
+  gather_facts: true
+  vars_prompt:
+    - name: freeipa_password
+      prompt: FreeIPA password for admin user
+
+  pre_tasks:
+    - name: Install requirements
+      delegate_to: localhost
+      ansible.builtin.command: ansible-galaxy install -r requirements.yml
+    # Other tasks that you run BEFORE the roles
+
+  tasks:
+    - name: Set FreeIPA password
+      ansible.builtin.command:
+        cmd: export TF_VAR_freeipa_password="{{ freeipa_password }}"
+
+    - name: Deploy DNS entries for cluster via Terraform
+      community.general.terraform:
+        project_path: 01-dns
+        state: present
+# - name: Basic deploy of a service
+#   community.general.terraform:
+#     project_path: '{{ project_dir }}'
+#     state: present
