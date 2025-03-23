@@ -1,7 +1,7 @@
 ---
 - name: Create a directory if it does not exist
   ansible.builtin.file:
-    path: "{{ matchbox_assets }}/{{ hub_cluster_name }}"
+    path: "{{ matchbox_assets }}/{{ hostvars['ocp-hub'].cluster_name }}"
     state: directory
     mode: '0755'
   become: true
@@ -9,7 +9,7 @@
 - name: Copy file with owner and permissions
   ansible.builtin.copy:
     src: 03-openshift-image/boot-artifacts/
-    dest: "{{ matchbox_assets }}/{{ hub_cluster_name }}/"
+    dest: "{{ matchbox_assets }}/{{ hostvars['ocp-hub'].cluster_name }}/"
     owner: matchbox
     group: matchbox
   become: true
