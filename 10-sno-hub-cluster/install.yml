@@ -1,6 +1,6 @@
 ---
 - name: Run all tasks necessary to configure matchbox to install the cluster
-  hosts: 127.0.0.1
+  hosts: matchbox
   connection: local
   gather_facts: true
 

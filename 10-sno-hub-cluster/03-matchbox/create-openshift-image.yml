@@ -1,7 +1,5 @@
 ---
 - name: OpenShift image creation
-  ansible.builtin.command:
-  cmd: /usr/local/bin/openshift-install agent create pxe-files
-  chdir: 03-matchbox
-  register: command_result
-  ignore_errors: yes
+  ansible.builtin.command: /usr/local/bin/openshift-install agent create pxe-files
+  args:
+    chdir: 03-matchbox
