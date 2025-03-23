@@ -16,11 +16,15 @@
     - ansible.builtin.include_tasks:
         file: 02-dhcp/ip-reservations.yml
 
-    - name: Terraform matchbox groups file
+    - name: OpenShift Installer install-config.yaml
       ansible.builtin.template:
         src: templates/openshift-installer/install-config.yaml.j2
         dest: 03-openshift-image/install-config.yaml
-#      include_vars: group_vars/hub
+
+    - name: OpenShift Installer agent-config.yaml
+      ansible.builtin.template:
+        src: templates/openshift-installer/agent-config.yaml.j2
+        dest: 03-openshift-image/agent-config.yaml
 
     - ansible.builtin.include_tasks:
         file: 03-openshift-image/create-openshift-image.yml

@@ -12,8 +12,8 @@ matchbox_rpc_endpoint: "matchbox.int.mk-labs.cloud:8081"
 openshift_installer_pull_secret: "{{ vault_pull_secret }}"
 openshift_installer_ssh_key: "{{ vault_ssh_key }}"
 
-# Variables for 10-sno-hub-cluster
-hub_cluster_mac_address: "98:b7:85:1e:c6:f1"
-hub_cluster_ip_address: "10.1.71.10"
-hub_cluster_hostname: "ocp-hub"
-hub_cluster_name: "hub"
+# # Variables for 10-sno-hub-cluster
+# hub_cluster_mac_address: "98:b7:85:1e:c6:f1"
+# hub_cluster_ip_address: "10.1.71.10"
+# hub_cluster_hostname: "ocp-hub"
+# hub_cluster_name: "hub"

@@ -1,22 +1,22 @@
 apiVersion: v1alpha1
 kind: AgentConfig
 metadata:
-  name: hub
-rendezvousIP: 10.1.71.10
+  name: {{ group_vars['hub-cluster'].cluster_name }}
+rendezvousIP: {{ hostvars['ocp-hub'].ip_address }}
 bootArtifactsBaseURL: https://matchbox.int.mk-labs.cloud:8080/assets/hub/
 hosts:
-  - hostname: hub
+  - hostname: {{ hostvars['ocp-hub'].hostname }}
     role: master
     interfaces:
-      - name: enp1s0f0
-        macAddress: 98:B7:85:1E:C6:F1
+      - name: {{ hostvars['ocp-hub'].primary_interface }}
+        macAddress: {{ hostvars['ocp-hub'].mac_address }}
     networkConfig:
       interfaces:
-        - name: enp1s0f0
+        - name: {{ hostvars['ocp-hub'].primary_interface }}
           type: ethernet
           state: up
           identifier: mac-address
-          mac-address: 98:B7:85:1E:C6:F1
+          mac-address: {{ hostvars['ocp-hub'].mac_address }}
           ipv4:
             enabled: true
             dhcp: true
@@ -29,5 +29,5 @@ hosts:
         config:
           - destination: 0.0.0.0/0
             next-hop-address: 10.1.71.1
-            next-hop-interface: enp1s0f0
+            next-hop-interface: {{ hostvars['ocp-hub'].primary_interface }}
             table-id: 254

@@ -16,8 +16,8 @@
 - name: Add host reservation to dnsmasq
   ansible.builtin.lineinfile:
     path: /etc/dnsmasq.d/hosts.conf
-    regexp: "^dhcp-host={{ mac_address }}"
-    line: "dhcp-host={{ mac_address }},{{ ip_address }} #{{ hostname }}"
+    regexp: "^dhcp-host={{ hostvars['ocp-hub'].mac_address }}"
+    line: "dhcp-host={{ hostvars['ocp-hub'].mac_address }},{{ hostvars['ocp-hub'].ip_address }} #{{ hostvars['ocp-hub'].hostname }}"
     state: present
   become: true
 

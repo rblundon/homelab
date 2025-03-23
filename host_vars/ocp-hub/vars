@@ -1,0 +1,5 @@
+---
+mac_address: "98:b7:85:1e:c6:f1"
+ip_address: "10.1.71.10"
+hostname: "ocp-hub"
+primary_interface: "enp1s0f0"
