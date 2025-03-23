@@ -40,22 +40,7 @@ For the sake of this documentation we'll assume the following:
 
 ## Getting Started
 
-### Create your vault file for secrets
-
-### Store your vault password somewhere save
-
-```bash
-vi ~/.vault_pass.txt
-chmod 644 ~/.vault_pass.txt
-```
-
-### Add envireonment variable with location of vault password
-
-Add "export ANSIBLE_VAULT_PASSWORD_FILE=~/.vault_pass.txt" to your shell profile.
-
-```bash
-ansible-playbook -i inventory.yaml 10-sno-hub-cluster/install.yml
-```
+[Step-by-Step Walkthrough](step-by-step.md)
 
 ### Hub Cluster
 
@@ -92,7 +77,7 @@ With everything in its right place, you can now start to declaratively create cl
 
 ### Internal Cluster
 
-Two additional bare metal nodes, to be added to Advanced Cluster Management (ACM) running on the SNO Hub. These will be used to create another two HCP clusters.
+Two additional bare metal nodes, to be added to Advanced Cluster Management (ACM) running on the SNO Hub. These will be used to create another HCP cluster.
 These servers have a BMC interface with Redfish - if not, then you'll need to manually manage the boot and installation of those servers.
 This makes it to where you just need 3 bare metal nodes. You could run one HCP Bare Metal cluster with both of the other nodes, but then you have a shared storage requirement that can't be satisfied by ODF since that needs at least 3 nodes.
 
@@ -101,5 +86,8 @@ This makes it to where you just need 3 bare metal nodes. You could run one HCP B
 You'll also either need you just need at least 2 bare metal nodes.
 
 ---
+## Credits
 
-Credit to Ken Moini as I used his [repo](https://github.com/kenmoini/ztp-for-you-and-me) as the baseline for this project.
+- Ken Moini - As I used his [repo](https://github.com/kenmoini/ztp-for-you-and-me) as the baseline for this project.
+- Ryan Etten
+- Andrew Potozniak

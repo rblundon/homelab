@@ -4,10 +4,6 @@
   connection: local
   gather_facts: true
 
-  vars_prompt:
-  - name: freeipa_password
-    prompt: FreeIPA password for admin user
-
   tasks:
     - name: Deploy DNS entries for cluster via Terraform
       community.general.terraform:
@@ -19,3 +15,15 @@
 
     - ansible.builtin.include_tasks:
         file: 02-dhcp/ip-reservations.yml
+
+    - ansible.builtin.include_tasks:
+        file: 03-matchbox/create-openshift-image.yml
+
+    - ansible.builtin.include_tasks:
+        file: 03-matchbox/move-pxe-assets.yml
+
+    - name: Configure Matchbox via Terraform
+      community.general.terraform:
+        project_path: 03-matchbox/
+        state: present
+        force_init: true
