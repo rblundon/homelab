@@ -1,25 +1,25 @@
 apiVersion: v1
-baseDomain: {{ group_vars['hub-cluster'].base_domain }}
+baseDomain: {{ hostvars['ocp-hub'].base_domain }}
 compute:
 - name: worker
-  replicas: {{ group_vars['hub-cluster'].worker_node_count }}
+  replicas: {{ hostvars['ocp-hub'].worker_node_count }}
 controlPlane:
   hyperthreading: Enabled
   name: master
-  replicas: {{ master_node_count }}
+  replicas: {{ hostvars['ocp-hub'].master_node_count }}
 metadata:
-  name: {{ group_vars['hub-cluster'].cluster_name }}
+  name: {{ hostvars['ocp-hub'].cluster_name }}
 networking:
   clusterNetwork:
-  - cidr: {{ group_vars['hub-cluster'].cluster_network }}
-    hostPrefix: {{ group_vars['hub-cluster'].cluster_network_host_prefix }}
+  - cidr: {{ hostvars['ocp-hub'].cluster_network }}
+    hostPrefix: {{ hostvars['ocp-hub'].cluster_network_host_prefix }}
   machineNetwork:
-  - cidr: {{ group_vars['hub-cluster'].machine_network }}
+  - cidr: {{ hostvars['ocp-hub'].machine_network }}
   networkType: OVNKubernetes
   serviceNetwork:
-  - {{ group_vars['hub-cluster'].service_network }}
+  - {{ hostvars['ocp-hub'].service_network }}
 platform:
-  {{ group_vars['hub-cluster'].platform_type }}: {}
+  {{ hostvars['ocp-hub'].platform_type }}: {}
 fips: false
 pullSecret: {{ vault_pull_secret }}
 sshKey: {{ vault_ssh_key }}

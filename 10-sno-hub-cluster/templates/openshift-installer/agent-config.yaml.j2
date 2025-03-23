@@ -1,7 +1,7 @@
 apiVersion: v1alpha1
 kind: AgentConfig
 metadata:
-  name: {{ group_vars['hub-cluster'].cluster_name }}
+  name: {{ hostvars['ocp-hub'].cluster_name }}
 rendezvousIP: {{ hostvars['ocp-hub'].ip_address }}
 bootArtifactsBaseURL: https://matchbox.int.mk-labs.cloud:8080/assets/hub/
 hosts:
