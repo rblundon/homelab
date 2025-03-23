@@ -61,6 +61,11 @@ This ~~is~~ *will be* the complete walkthrough of the deployment of my homelab.
 
   - 03-matchbox/install-config
   - 03-matchbox/agent-config
+  - 03-matchbox/variables.tf
+  - 03-matchbox/provider.tf
+  - 03-matchbox/terraform.tfvars
+  - 03-matchbox/groups.tf
+  - 03-matchbox/profiles.tf
 
   ```bash
   cd homelab

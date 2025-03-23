@@ -3,7 +3,7 @@ kind: AgentConfig
 metadata:
   name: hub
 rendezvousIP: 10.1.71.10
-bootArtifactsBaseURL: https://matchbox.int.mk-labs.cloud:8080/assets/sno-hub/
+bootArtifactsBaseURL: https://matchbox.int.mk-labs.cloud:8080/assets/hub/
 hosts:
   - hostname: hub
     role: master

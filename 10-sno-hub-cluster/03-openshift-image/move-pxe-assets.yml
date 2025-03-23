@@ -8,7 +8,7 @@
 
 - name: Copy file with owner and permissions
   ansible.builtin.copy:
-    src: 03-matchbox/boot-artifacts/
+    src: 03-openshift-image/boot-artifacts/
     dest: "{{ matchbox_assets }}/{{ hub_cluster_name }}/"
     owner: matchbox
     group: matchbox

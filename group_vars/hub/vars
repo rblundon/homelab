@@ -1,0 +1,9 @@
+cluster_name: "hub"
+base_domain: "int.mk-labs.cloud"
+worker_node_count: 0
+master_node_count: 1
+cluster_network: "10.128.0.0/14"
+cluster_network_host_prefix: 23
+machine_network: "10.1.71.0/24"
+service_network: "172.30.0.0/16"
+platform_type: "none"

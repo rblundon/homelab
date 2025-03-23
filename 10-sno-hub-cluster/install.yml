@@ -16,14 +16,35 @@
     - ansible.builtin.include_tasks:
         file: 02-dhcp/ip-reservations.yml
 
-    - ansible.builtin.include_tasks:
-        file: 03-matchbox/create-openshift-image.yml
+    - name: Terraform matchbox groups file
+      ansible.builtin.template:
+        src: templates/openshift-installer/install-config.yaml.j2
+        dest: 03-openshift-image/install-config.yaml
+      include_vars: group_vars/hub
 
     - ansible.builtin.include_tasks:
-        file: 03-matchbox/move-pxe-assets.yml
+        file: 03-openshift-image/create-openshift-image.yml
+
+    - ansible.builtin.include_tasks:
+        file: 03-openshift-image/move-pxe-assets.yml
+
+    - name: Terraform matchbox groups file
+      ansible.builtin.template:
+        src: templates/matchbox/groups.tf.j2
+        dest: 04-matchbox/groups.tf
+
+    - name: Terraform matchbox profiles file
+      ansible.builtin.template:
+        src: templates/matchbox/profiles.tf.j2
+        dest: 04-matchbox/profiles.tf
+
+    - name: Terraform matchbox provider file
+      ansible.builtin.template:
+        src: templates/matchbox/provider.tf.j2
+        dest: 04-matchbox/provider.tf
 
     - name: Configure Matchbox via Terraform
       community.general.terraform:
-        project_path: 03-matchbox/
+        project_path: 04-matchbox/
         state: present
         force_init: true

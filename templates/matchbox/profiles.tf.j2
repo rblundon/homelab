@@ -1,0 +1,16 @@
+// Fedora CoreOS profile
+resource "matchbox_profile" "openshift-agent-install" {
+  name   = "{{ hub_cluster_name }}"
+  kernel = "/assets/{{ hub_cluster_name }}/agent.x86_64-vmlinuz"
+  initrd = [
+    "--name initrd /assets/{{ hub_cluster_name }}/agent.x86_64-initrd.img"
+  ]
+
+  args = [
+    "initrd=initrd",
+    "coreos.live.rootfs_url={{ matchbox_http_endpoint }}/assets/{{ hub_cluster_name }}/agent.x86_64-rootfs.img",
+    "rw",
+    "ignition.firstboot",
+    "ignition.platform.id=metal",
+  ]
+}
