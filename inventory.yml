@@ -11,3 +11,7 @@ freeipa:
 matchbox:
   hosts:
     infra01:
+
+hub-cluster:
+  hosts:
+    ocp-hub:

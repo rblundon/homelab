@@ -20,7 +20,7 @@
       ansible.builtin.template:
         src: templates/openshift-installer/install-config.yaml.j2
         dest: 03-openshift-image/install-config.yaml
-      include_vars: group_vars/hub
+#      include_vars: group_vars/hub
 
     - ansible.builtin.include_tasks:
         file: 03-openshift-image/create-openshift-image.yml
