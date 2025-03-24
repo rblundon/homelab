@@ -55,22 +55,14 @@ This ~~is~~ *will be* the complete walkthrough of the deployment of my homelab.
 
 ### Prepare matchbox to install hub cluster
 
-- Modify config file for OpenShift Automated Installer
-
-  (In the future these will be template files and all the customization will be done through Ansible)
-
-  - 03-matchbox/install-config
-  - 03-matchbox/agent-config
-  - 03-matchbox/variables.tf
-  - 03-matchbox/provider.tf
-  - 03-matchbox/terraform.tfvars
-  - 03-matchbox/groups.tf
-  - 03-matchbox/profiles.tf
+Running this playbook will configure Matchbox to wait for the sno-cluster to boot via iPXE and will install Single Node OpenShift.  All configuration files are built from templates driven from Ansible variables.
 
   ```bash
   cd homelab
   ansible-playbook -i inventory.yml 10-sno-hub-cluster/install.yml
   ```
+
+- PXE boot the SNO host
 
 ## Internal Cluster *TBD*
 
