@@ -39,19 +39,19 @@
 
     - name: Terraform matchbox groups file
       ansible.builtin.template:
-        src: matchbox/templates/groups.tf.j2
+        src: 04-matchbox/templates/groups.tf.j2
         dest: 04-matchbox/groups.tf
         mode: '0644'
 
     - name: Terraform matchbox profiles file
       ansible.builtin.template:
-        src: matchbox/templates/profiles.tf.j2
+        src: 04-matchbox/templates/profiles.tf.j2
         dest: 04-matchbox/profiles.tf
         mode: '0644'
 
     - name: Terraform matchbox provider file
       ansible.builtin.template:
-        src: matchbox/templates/provider.tf.j2
+        src: 04-matchbox/templates/provider.tf.j2
         dest: 04-matchbox/provider.tf
         mode: '0644'
 
