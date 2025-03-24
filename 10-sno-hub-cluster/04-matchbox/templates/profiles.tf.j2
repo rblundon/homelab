@@ -8,7 +8,7 @@ resource "matchbox_profile" "openshift-agent-install" {
 
   args = [
     "initrd=initrd",
-    "coreos.live.rootfs_url={{ hostvars['matchbox'].http_endpoint }}/assets/{{ hostvars[groups['hub-cluster'][0]].cluster_name }}/agent.x86_64-rootfs.img",
+    "coreos.live.rootfs_url={{ hostvars[groups['matchbox'][0]].http_endpoint }}/assets/{{ hostvars[groups['hub-cluster'][0]].cluster_name }}/agent.x86_64-rootfs.img",
     "rw",
     "ignition.firstboot",
     "ignition.platform.id=metal",
