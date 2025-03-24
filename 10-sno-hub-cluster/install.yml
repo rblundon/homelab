@@ -9,43 +9,51 @@
       community.general.terraform:
         project_path: 01-dns/
         variables:
-          freeipa_password: "{{ freeipa_password }}"
+          freeipa_password: "{{ vault_freeipa_password }}"
         state: present
         force_init: true
 
-    - ansible.builtin.include_tasks:
+    - name: Deploy DHCP entries for cluster via Terraform
+      ansible.builtin.include_tasks:
         file: 02-dhcp/ip-reservations.yml
 
     - name: OpenShift Installer install-config.yaml
       ansible.builtin.template:
-        src: templates/openshift-installer/install-config.yaml.j2
+        src: 03-openshift-image/templates/install-config.yaml.j2
         dest: 03-openshift-image/install-config.yaml
+        mode: '0644'
 
     - name: OpenShift Installer agent-config.yaml
       ansible.builtin.template:
-        src: templates/openshift-installer/agent-config.yaml.j2
+        src: 03-openshift-image/templates/agent-config.yaml.j2
         dest: 03-openshift-image/agent-config.yaml
+        mode: '0644'
 
-    - ansible.builtin.include_tasks:
+    - name: Create OpenShift image
+      ansible.builtin.include_tasks:
         file: 03-openshift-image/create-openshift-image.yml
 
-    - ansible.builtin.include_tasks:
+    - name: Move PXE assets to matchbox
+      ansible.builtin.include_tasks:
         file: 03-openshift-image/move-pxe-assets.yml
 
     - name: Terraform matchbox groups file
       ansible.builtin.template:
-        src: templates/matchbox/groups.tf.j2
+        src: matchbox/templates/groups.tf.j2
         dest: 04-matchbox/groups.tf
+        mode: '0644'
 
     - name: Terraform matchbox profiles file
       ansible.builtin.template:
-        src: templates/matchbox/profiles.tf.j2
+        src: matchbox/templates/profiles.tf.j2
         dest: 04-matchbox/profiles.tf
+        mode: '0644'
 
     - name: Terraform matchbox provider file
       ansible.builtin.template:
-        src: templates/matchbox/provider.tf.j2
+        src: matchbox/templates/provider.tf.j2
         dest: 04-matchbox/provider.tf
+        mode: '0644'
 
     - name: Configure Matchbox via Terraform
       community.general.terraform:

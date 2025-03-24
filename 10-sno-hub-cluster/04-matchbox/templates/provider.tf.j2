@@ -1,6 +1,6 @@
 // Configure the matchbox provider
 provider "matchbox" {
-  endpoint    = "{{ matchbox_rpc_endpoint }}"
+  endpoint    = "{{ hostvars['matchbox'].rpc_endpoint }}"
   client_cert = file("/etc/matchbox/client.crt")
   client_key  = file("/etc/matchbox/client.key")
   ca          = file("/etc/matchbox/ca.crt")
