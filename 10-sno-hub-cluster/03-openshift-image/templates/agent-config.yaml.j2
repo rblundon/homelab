@@ -3,7 +3,7 @@ kind: AgentConfig
 metadata:
   name: {{ hostvars[groups['hub-cluster'][0]].cluster_name }}
 rendezvousIP: {{ hostvars['ocp-hub'].ip_address }}
-bootArtifactsBaseURL: {{ hostvars['matchbox'].http_endpoint }}/assets/hub/
+bootArtifactsBaseURL: {{ hostvars[groups['matchbox'][0]].http_endpoint }}/assets/hub/
 hosts:
   - hostname: {{ hostvars['ocp-hub'].hostname }}
     role: master
