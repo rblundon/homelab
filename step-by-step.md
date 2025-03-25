@@ -6,7 +6,7 @@ This ~~is~~ *will be* the complete walkthrough of the deployment of my homelab.
 - Create your vault file for secrets (and store somewhere safe)
 
   ```bash
-  vi ~/.vault_pass.txt
+  echo 'master-ansible-password' > ~/.vault_pass.txt
   chmod 644 ~/.vault_pass.txt
   ```
 
@@ -37,6 +37,9 @@ This ~~is~~ *will be* the complete walkthrough of the deployment of my homelab.
 - Install ansible required packages
 
   ```bash
+  scp ~/.vault_pass.txt infra01:.
+  ssh infra01
+
   cd homelab
   ansible-galaxy collection install -r
   ```
@@ -53,16 +56,30 @@ This ~~is~~ *will be* the complete walkthrough of the deployment of my homelab.
 
 ## [Hub Cluster](10-sno-hub-cluster/README.md) *In Progress*
 
-### Prepare matchbox to install hub cluster
+- Prepare matchbox to install hub cluster
 
-Running this playbook will configure Matchbox to wait for the sno-cluster to boot via iPXE and will install Single Node OpenShift.  All configuration files are built from templates driven from Ansible variables.
+  Running this playbook will configure Matchbox to wait for the sno-cluster to boot via iPXE and will install Single Node OpenShift.  All configuration files are built from templates driven from Ansible variables.
 
-  ```bash
-  cd homelab
-  ansible-playbook -i inventory.yml 10-sno-hub-cluster/install.yml
-  ```
+    ```bash
+    cd homelab
+    ansible-playbook -i inventory.yml 10-sno-hub-cluster/install.yml
+    ```
 
 - PXE boot the SNO host
+
+  Boot host to boot options menu:
+
+  - \<F12\> for Dell 7050
+
+  Select NIC with matching MAC to boot from
+
+- Monitor installation process
+
+  ```bash
+  openshift-install --dir homelab/10-sno-hub-cluster/03-openshift-image agent wait-for bootstrap-complete --log-level=debug
+  ```
+
+- Admin password and kubeconfig are in the homelab/10-sno-hub-cluster/03-openshift-image/auth directory
 
 ## Internal Cluster *TBD*
 
