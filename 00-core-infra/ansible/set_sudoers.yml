@@ -1,0 +1,14 @@
+---
+- name: Update sudoers for passwordless
+  hosts: unbound_servers
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Update sudoers for passwordless
+      ansible.builtin.lineinfile:
+        path: /etc/sudoers
+        state: present
+        regexp: '^%wheel'
+        line: '%wheel ALL=(ALL) NOPASSWD:ALL'
+        validate: 'visudo -cf %s'

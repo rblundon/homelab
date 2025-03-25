@@ -1,0 +1,30 @@
+---
+- name: Install all software on infra01
+  hosts: infra01
+  gather_facts: true
+
+  collections:
+    - somaz94.ansible_k8s_iac_tool
+
+  tasks:
+  # - Update all packages
+  # - Install ansible-core
+  # - Copy .vault_pass.txt from laptop and set env variable
+  # - Clone git repo
+  # - Install ansible required packages
+
+    - name: Install ansible-core
+      ansible.builtin.package:
+        name: ansible-core
+        state: present
+      become: true
+
+    # - name: Clone Git repository
+    #   ansible.builtin.git:
+    #     repo: "https://github.com/rblundon/homelab.git"
+    #     dest: ~
+    #     version: deploy-hub-cluster #main
+    #   become: true
+
+  roles:
+    - install_kustomize

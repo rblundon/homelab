@@ -1,0 +1,20 @@
+// Configure the matchbox provider
+provider "matchbox" {
+  endpoint    = "{{ hostvars[groups['matchbox'][0]].rpc_endpoint }}"
+  client_cert = file("/etc/matchbox/client.crt")
+  client_key  = file("/etc/matchbox/client.key")
+  ca          = file("/etc/matchbox/ca.crt")
+}
+
+terraform {
+  required_providers {
+    ct = {
+      source  = "poseidon/ct"
+      version = "0.13.0"
+    }
+    matchbox = {
+      source  = "poseidon/matchbox"
+      version = "0.5.4"
+    }
+  }
+}

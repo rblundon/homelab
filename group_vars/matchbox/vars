@@ -1,0 +1,9 @@
+---
+# Variables for Matchbox
+assets: "/var/lib/matchbox/assets"
+http_endpoint: "http://matchbox.int.mk-labs.cloud:8080"
+rpc_endpoint: "matchbox.int.mk-labs.cloud:8081"
+
+# Variables for OpenShift Installer
+#openshift_installer_pull_secret: "{{ vault_pull_secret }}"
+#openshift_installer_ssh_key: "{{ vault_ssh_key }}"

@@ -1,0 +1,14 @@
+---
+ipaadmin_password: "{{ vault_ipaadmin_password }}"
+ipadm_password: "{{ vault_ipadm_password }}"
+ipaserver_domain: int.mk-labs.cloud
+ipaserver_realm: INT.MK-LABS.CLOUD
+ipaserver_setup_firewalld: true
+ipaserver_setup_dns: true
+ipaserver_forwarders: 1.1.1.1,1.0.0.1
+ipaserver_random_serial_numbers: true
+#dns_ip_addresses: "{{ ansible_hostname }}"
+#dns_reverse_zones:
+#domain: int.mk-labs.cloud
+forwarders: 1.1.1.1,1.0.0.1
+#hostname: "{{ hostname }}"

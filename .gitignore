@@ -29,4 +29,20 @@ Temporary Items
 .vscode/
 
 # macOS metadata
-*.icloud 
+*.icloud
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+
+# Crash log files
+crash.log
+
+# Ignore override files as they are usually used to override resources locally
+*.override.tf
+*.override.tf.json
+
+# Ignore CLI configuration files
+.terraformrc
+.terraformrc.json

@@ -1,0 +1,33 @@
+apiVersion: v1alpha1
+kind: AgentConfig
+metadata:
+  name: {{ hostvars[groups['hub-cluster'][0]].cluster_name }}
+rendezvousIP: {{ hostvars['ocp-hub'].ip_address }}
+bootArtifactsBaseURL: {{ hostvars[groups['matchbox'][0]].http_endpoint }}/assets/hub/
+hosts:
+  - hostname: {{ hostvars['ocp-hub'].hostname }}
+    role: master
+    interfaces:
+      - name: {{ hostvars['ocp-hub'].primary_interface }}
+        macAddress: {{ hostvars['ocp-hub'].mac_address }}
+    networkConfig:
+      interfaces:
+        - name: {{ hostvars['ocp-hub'].primary_interface }}
+          type: ethernet
+          state: up
+          identifier: mac-address
+          mac-address: {{ hostvars['ocp-hub'].mac_address }}
+          ipv4:
+            enabled: true
+            dhcp: true
+      dns-resolver:
+        config:
+          server:
+            - 10.1.71.254
+            - 10.1.71.253
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 10.1.71.1
+            next-hop-interface: {{ hostvars['ocp-hub'].primary_interface }}
+            table-id: 254

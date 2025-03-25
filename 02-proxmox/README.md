@@ -6,11 +6,11 @@ The proxmox cluster will be installed via ISO Image and manually configured. (Fu
 
 ## Primary Networking
 
-| Hostname    | VLAN | IP Address       | NIC             | Notes                    |
-|-------------|------|------------------|-----------------|--------------------------|
-| pve01       |   71 | 10.1.71.51       | On-board 1 GbE  | VLAN set on switch port  |
-| pve02       |   71 | 10.1.71.52       | On-board 1 GbE  | VLAN set on switch port  |
-| pve03       |   71 | 10.1.71.53       | On-board 1 GbE  | VLAN set on switch port  |
+| Hostname    | VLAN | IP Address       | NIC             | Notes                      |
+|-------------|------|------------------|-----------------|----------------------------|
+| pve01       |      | 10.1.71.51       | On-board 1 GbE  | VLAN 71 set on switch port |
+| pve02       |      | 10.1.71.52       | On-board 1 GbE  | VLAN 71 set on switch port |
+| pve03       |      | 10.1.71.53       | On-board 1 GbE  | VLAN 71 set on switch port |
 
 ## Additional Networking
 

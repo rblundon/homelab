@@ -1,0 +1,17 @@
+proxmox:
+  hosts:
+    pve01:
+    pve02:
+    pve03:
+
+freeipa:
+  hosts:
+    infra01:
+
+matchbox:
+  hosts:
+    infra01:
+
+hub-cluster:
+  hosts:
+    ocp-hub:
