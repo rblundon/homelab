@@ -1,0 +1,15 @@
+---
+- name: Install all software on infra01
+  hosts: infra01
+  connection: local
+  gather_facts: true
+  become: yes
+
+  collections:
+    - somaz94.ansible_k8s_iac_tool
+
+  roles:
+    - install_kustomize
+
+  tasks:
+

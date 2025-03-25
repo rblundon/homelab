@@ -42,7 +42,15 @@ This ~~is~~ *will be* the complete walkthrough of the deployment of my homelab.
 
   cd homelab
   ansible-galaxy collection install -r
+  ansible-playbook -i inventory.yml 10-sno-hub-cluster/install.yml
+
   ```
+
+Other needed software:
+- kustomize
+- oc
+- ansible
+- terraform
 
 ## [FreeIPA](04-free-ipa/README.md) *Manual*
 
@@ -80,6 +88,15 @@ This ~~is~~ *will be* the complete walkthrough of the deployment of my homelab.
   ```
 
 - Admin password and kubeconfig are in the homelab/10-sno-hub-cluster/03-openshift-image/auth directory
+- Bootstrap ACM
+
+  Running this playbook will configure Matchbox to wait for the sno-cluster to boot via iPXE and will install Single Node OpenShift.  All configuration files are built from templates driven from Ansible variables.
+
+  ```bash
+  ansible-playbook -i inventory.yml 10-sno-hub-cluster/install2.yml
+  ```
+
+10-sno-hub-cluster/05-bootstrap-acm/bootstrap.sh
 
 ## Internal Cluster *TBD*
 
