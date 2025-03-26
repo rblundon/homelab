@@ -26,24 +26,17 @@
         state: present
       become: true
 
-    - name: Install hashicorp repo
-      ansible.builtin.package:
-        name: https://rpm.releases.hashicorp.com/fedora/hashicorp.repo
-        https://rpm.releases.hashicorp.com/fedora/hashicorp.repo
-        state: present
+    - name: Download terraform
+      ansible.builtin.get_url:
+        url: https://releases.hashicorp.com/terraform/terraform_{{ terraform_version }}/terraform_{{ terraform_version }}_{{ ansible_facts.ansible_os_family }}_{{ ansible_facts.ansible_architecture }}.zip
+        dest: /tmp/terraform.zip
+        mode: 0755
 
     - name: Install terraform
       ansible.builtin.package:
         name: terraform
         state: present
       become: true
-
-    # - name: Clone Git repository
-    #   ansible.builtin.git:
-    #     repo: "https://github.com/rblundon/homelab.git"
-    #     dest: ~
-    #     version: deploy-hub-cluster #main
-    #   become: true
 
   roles:
     - install_kustomize
