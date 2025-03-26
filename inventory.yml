@@ -1,8 +1,7 @@
+# file: inventory.yml
 proxmox:
   hosts:
-    pve01:
-    pve02:
-    pve03:
+    pve0[1:3]:
 
 freeipa:
   hosts:
@@ -12,6 +11,6 @@ matchbox:
   hosts:
     infra01:
 
-hub-cluster:
+hub_cluster:
   hosts:
     ocp-hub:

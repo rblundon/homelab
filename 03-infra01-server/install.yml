@@ -2,6 +2,7 @@
 - name: Install all software on infra01
   hosts: infra01
   gather_facts: true
+  become: true
 
   collections:
     - somaz94.ansible_k8s_iac_tool
@@ -19,6 +20,24 @@
         state: present
       become: true
 
+    - name: Install dnf-plugins-core
+      ansible.builtin.package:
+        name: dnf-plugins-core
+        state: present
+      become: true
+
+    - name: Install hashicorp repo
+      ansible.builtin.package:
+        name: https://rpm.releases.hashicorp.com/fedora/hashicorp.repo
+        https://rpm.releases.hashicorp.com/fedora/hashicorp.repo
+        state: present
+
+    - name: Install terraform
+      ansible.builtin.package:
+        name: terraform
+        state: present
+      become: true
+
     # - name: Clone Git repository
     #   ansible.builtin.git:
     #     repo: "https://github.com/rblundon/homelab.git"
@@ -28,3 +47,4 @@
 
   roles:
     - install_kustomize
+      

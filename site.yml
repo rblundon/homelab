@@ -1,0 +1,14 @@
+---
+# file: site.yml
+
+- name: Master playbook for home lab
+  hosts: all
+  gather_facts: true
+  connection: local
+  # roles:
+  #   - dns-entry
+
+#  tasks:
+
+- name: Process DNS entries
+  ansible.builtin.import_playbook: dns-entry.yml

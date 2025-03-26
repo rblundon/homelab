@@ -1,0 +1,40 @@
+---
+# file: dns-entry.yml
+
+- name: Master playbook for home lab
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Create DNS entry for {{ inventory_hostname }}
+      when: ip_address is defined
+      delegate_to: "{{ dns_server }}"
+      block:
+        - name: Check if terraform directory exists
+          ansible.builtin.stat:
+            path: ~/homelab/terraform/dns
+          register: terraform_dir
+
+        - name: Create Terraform directory for DNS entries
+          ansible.builtin.file:
+            path: ~/homelab/terraform/dns
+            state: directory
+            mode: '0755'
+          when: not terraform_dir.stat.exists
+
+        - name: Create Terraform file for host
+          ansible.builtin.template:
+            src: templates/dns.tf.j2
+            dest: ~/homelab/terraform/dns/{{ inventory_hostname }}.tf
+            mode: '0644'
+
+  handlers:
+    - name: Update DNS entries via Terraform
+      delegate_to: "{{ dns_server }}"
+      community.general.terraform:
+        project_path: ~/homelab/terraform/dns/
+        variables:
+          freeipa_server: "{{ dns_server }}"
+          freeipa_admin: "{{ dns_admin }}"
+          freeipa_password: "{{ vault_freeipa_password }}"
+        state: present
+        force_init: true

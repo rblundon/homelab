@@ -1,0 +1,11 @@
+// Terraform DNS entry template
+
+resource "freeipa_dns_record" "{{ inventory_hostname }}" {
+  zone_name = "{{ base_domain }}."
+  name = "{{ inventory_hostname }}"
+  type = "A"
+  records = [
+    "{{ hostvars[inventory_hostname].ip_address }}",
+  ]
+  ttl = 60
+}
