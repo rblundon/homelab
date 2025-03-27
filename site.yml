@@ -3,12 +3,13 @@
 
 - name: Master playbook for home lab
   hosts: all
-  gather_facts: true
-  connection: local
-  # roles:
-  #   - dns-entry
+  gather_facts: false
 
-#  tasks:
-
-- name: Process DNS entries
-  ansible.builtin.import_playbook: dns-entry.yml
+  tasks:
+    - name: Process DNS entries
+      when: inventory_hostname == "infra01"
+      ansible.builtin.import_tasks:
+        file: dns-entry.yml
+      tags:
+        - update-dns
+        - never

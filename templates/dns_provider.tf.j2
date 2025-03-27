@@ -1,7 +1,7 @@
 # Configure the DNS Provider
 provider "freeipa" {
-  host        = "infra01.int.mk-labs.cloud"
-  username    = "admin"
+  host        = var.freeipa_server
+  username    = var.freeipa_admin
   password    = var.freeipa_password
   insecure    = true
 }
