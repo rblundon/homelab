@@ -1,8 +1,8 @@
 ---
 - name: Run all tasks necessary to configure matchbox to install the cluster
-  hosts: infra01
+  hosts: all
   #connection: local
-  gather_facts: true
+  gather_facts: false
 
   tasks:
     # - name: Print vars for debugging
@@ -21,6 +21,12 @@
     #   ansible.builtin.debug:
     #     msg: System {{ hostvars[groups['hub-cluster'][0]].cluster_name }}
 
-    - name: Print all available facts
-      ansible.builtin.debug:
-        var: ansible_facts
+    # - name: Print all available facts
+    #   ansible.builtin.debug:
+    #     var: ansible_facts
+
+
+    - name: Print host IP address if defined
+      debug:
+        msg: "Host {{ inventory_hostname }} has IP address: {{ hostvars[inventory_hostname].ip_address | default('Not defined') }}"
+      when: hostvars[inventory_hostname].ip_address is defined 

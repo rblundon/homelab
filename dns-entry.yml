@@ -19,11 +19,19 @@
     dest: homelab/terraform/dns/provider.tf
     mode: '0644'
 
-- name: Show all the hosts in the inventory
-  when: "{{ hostvars[groups['all'][ {{ item }} ]['ip_address'] }}" is defined
-  ansible.builtin.debug:
-    msg: "{{ hostvars[item].ip_address }}"
-  loop: "{{ query('inventory_hostnames', 'all') }}"
+- name: Loop through all hosts
+  vars:
+    my_hosts: "{{ query('inventory_hostnames', 'all') }}"
+  # ansible.builtin.debug:
+  #   msg: "Host {{ item }} has IP address: {{ hostvars[my_hosts[my_idx]].ip_address | default('No IP address defined') }}"
+  ansible.builtin.template:
+    src: templates/dns.tf.j2
+    dest: homelab/terraform/dns/{{ item }}.tf
+    mode: '0644'
+  when: hostvars[my_hosts[my_idx]].ip_address is defined
+  loop: "{{ my_hosts }}"
+  loop_control:
+    index_var: my_idx
 
 # - name: Loop through all hosts
 #   block:
