@@ -1,1 +1,7 @@
 ---
+# file: group_vars/all
+
+# DNS variables
+dns_server: "infra01.int.mk-labs.cloud"
+dns_admin: "admin"
+base_domain: "int.mk-labs.cloud"

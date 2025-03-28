@@ -1,0 +1,54 @@
+---
+# file: dns-entry.yml
+
+- name: Check if terraform directory exists
+  ansible.builtin.stat:
+    path: homelab/terraform/dns
+  register: terraform_dir
+
+- name: Create Terraform directory for DNS entries
+  ansible.builtin.file:
+    path: homelab/terraform/dns
+    state: directory
+    mode: '0755'
+  when: not terraform_dir.stat.exists
+
+- name: "Create/Update Terraform DNS provider"
+  ansible.builtin.template:
+    src: templates/dns_provider.tf.j2
+    dest: homelab/terraform/dns/provider.tf
+    mode: '0644'
+
+- name: Loop through all hosts
+  vars:
+    my_hosts: "{{ query('inventory_hostnames', 'all') }}"
+  # ansible.builtin.debug:
+  #   msg: "Host {{ item }} has IP address: {{ hostvars[my_hosts[my_idx]].ip_address | default('No IP address defined') }}"
+  ansible.builtin.template:
+    src: templates/dns.tf.j2
+    dest: homelab/terraform/dns/{{ item }}.tf
+    mode: '0644'
+  when: hostvars[my_hosts[my_idx]].ip_address is defined
+  loop: "{{ my_hosts }}"
+  loop_control:
+    index_var: my_idx
+
+# - name: Loop through all hosts
+#   block:
+#     - name: Create Terraform files for all eligible hosts
+#       when: "{{hostvars["{{ item }}"].ip_address}}" is defined
+#       ansible.builtin.template:
+#         src: templates/dns.tf.j2
+#         dest: homelab/terraform/dns/{{ item }}.tf
+#         mode: '0644'
+#   loop: "{{ query('inventory_hostnames', 'all') }}"
+
+# - name: Update DNS entries via Terraform
+#   community.general.terraform:
+#     project_path: homelab/terraform/dns/
+#     variables:
+#       freeipa_server: "{{ dns_server }}"
+#       freeipa_admin: "{{ dns_admin }}"
+#       freeipa_password: "{{ vault_freeipa_password }}"
+#     state: present
+#     force_init: true

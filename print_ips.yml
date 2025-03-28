@@ -1,0 +1,14 @@
+---
+- name: Print host IP addresses
+  hosts: infra01
+  gather_facts: false
+  vars:
+    my_hosts: "{{ query('inventory_hostnames', 'all') }}"
+  tasks:
+    - name: Loop through all hosts
+      ansible.builtin.debug:
+        msg: "Host {{ item }} has IP address: {{ hostvars[my_hosts[my_idx]].ip_address | default('No IP address defined') }}"
+      when: hostvars[my_hosts[my_idx]].ip_address is defined
+      loop: "{{ my_hosts }}"
+      loop_control:
+        index_var: my_idx

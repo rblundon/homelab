@@ -2,9 +2,7 @@
 - name: Install all software on infra01
   hosts: infra01
   gather_facts: true
-
-  collections:
-    - somaz94.ansible_k8s_iac_tool
+  become: true
 
   tasks:
   # - Update all packages
@@ -19,12 +17,27 @@
         state: present
       become: true
 
-    # - name: Clone Git repository
-    #   ansible.builtin.git:
-    #     repo: "https://github.com/rblundon/homelab.git"
-    #     dest: ~
-    #     version: deploy-hub-cluster #main
-    #   become: true
+    - name: Install dnf-plugins-core
+      ansible.builtin.package:
+        name: dnf-plugins-core
+        state: present
+      become: true
+
+    - name: Register status of /usr/local/bin/terraform
+      ansible.builtin.stat:
+        path: /usr/local/bin/terraform
+      register: terraform_path
+
+    - name: Download and installt erraform version
+      when: not terraform_path.stat.exists
+      block:
+        - name: Download  and install terraform
+          ansible.builtin.unarchive:
+            src: "https://releases.hashicorp.com/terraform/{{ terraform_version }}/terraform_{{ terraform_version }}_linux_amd64.zip"
+            dest: "/usr/local/bin/"
+            remote_src: true
+            mode: '0755'
+            exclude: "LICENSE.txt"
 
   roles:
-    - install_kustomize
+    - somaz94.ansible_k8s_iac_tool.install_kustomize

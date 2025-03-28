@@ -1,22 +1,32 @@
 ---
 - name: Run all tasks necessary to configure matchbox to install the cluster
-  hosts: matchbox
-  connection: local
-  gather_facts: true
+  hosts: all
+  #connection: local
+  gather_facts: false
 
   tasks:
-    - name: Print vars for debugging
-      ansible.builtin.debug:
-        msg: System {{ hostvars['infra01'].matchbox_assets }} / {{ hostvars['ocp-hub'].cluster_name }}
+    # - name: Print vars for debugging
+    #   ansible.builtin.debug:
+    #     msg: System {{ hostvars['infra01'].matchbox_assets }} / {{ hostvars['ocp-hub'].cluster_name }}
 
-    - name: Print vars for debugging 2
-      ansible.builtin.debug:
-        msg: System {{ groups }}
+    # - name: Print vars for debugging 2
+    #   ansible.builtin.debug:
+    #     msg: System {{ groups }}
 
-    - name: Print vars for debugging 3
-      ansible.builtin.debug:
-        msg: System {{ groups['hub-cluster'][0] }}
+    # - name: Print vars for debugging 3
+    #   ansible.builtin.debug:
+    #     msg: System {{ groups['hub-cluster'][0] }}
 
-    - name: Print vars for debugging 4
-      ansible.builtin.debug:
-        msg: System {{ hostvars[groups['hub-cluster'][0]].cluster_name }}
+    # - name: Print vars for debugging 4
+    #   ansible.builtin.debug:
+    #     msg: System {{ hostvars[groups['hub-cluster'][0]].cluster_name }}
+
+    # - name: Print all available facts
+    #   ansible.builtin.debug:
+    #     var: ansible_facts
+
+
+    - name: Print host IP address if defined
+      debug:
+        msg: "Host {{ inventory_hostname }} has IP address: {{ hostvars[inventory_hostname].ip_address | default('Not defined') }}"
+      when: hostvars[inventory_hostname].ip_address is defined 

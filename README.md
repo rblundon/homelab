@@ -27,6 +27,8 @@ This implementation is built on easily accessible consumer based hardware and wi
 
 ## Prerequisites
 
+- Ansible user created
+- Ansible configured 
 - [Networking](docs/networks.md)
 - [Proxmox](docs/proxmox.md) (In my homelab, internal DNS, identity manangement, and ipxe are hosted here.)
 - Matchbox
