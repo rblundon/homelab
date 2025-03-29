@@ -7,9 +7,22 @@
 
   tasks:
     - name: Process DNS entries
-      when: inventory_hostname == "infra01"
+      when: ip_address is defined
       ansible.builtin.import_tasks:
         file: dns-entry.yml
       tags:
         - update-dns
         - never
+
+  handlers:
+    - name: Update DNS
+      run_once: true
+      delegate_to: "{{ terraform_server }}"
+      community.general.terraform:
+        project_path: homelab/terraform/dns/
+        variables:
+          freeipa_server: "{{ dns_server }}"
+          freeipa_admin: "{{ dns_admin }}"
+          freeipa_password: "{{ vault_freeipa_password }}"
+        state: present
+        force_init: true

@@ -5,7 +5,7 @@ resource "freeipa_dns_record" "{{ inventory_hostname }}" {
   name = "{{ inventory_hostname }}"
   type = "A"
   records = [
-    "{{ hostvars[inventory_hostname].ip_address }}",
+    "{{ ip_address }}",
   ]
   ttl = 60
 }

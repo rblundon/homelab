@@ -5,3 +5,6 @@
 dns_server: "infra01.int.mk-labs.cloud"
 dns_admin: "admin"
 base_domain: "int.mk-labs.cloud"
+
+# Terraform variables
+terraform_server: "infra01"

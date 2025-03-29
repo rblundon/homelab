@@ -1,54 +1,44 @@
 ---
 # file: dns-entry.yml
 
-- name: Check if terraform directory exists
-  ansible.builtin.stat:
-    path: homelab/terraform/dns
-  register: terraform_dir
+# This playbook is used to create a DNS entry for a given server if it's IP address is a host variable.
+# It will create a Terraform file in the homelab/terraform/dns directory.
+# It will then run the Terraform apply command to create the DNS entry.
+# It will then notify the update-dns handler to update the DNS entry.
 
-- name: Create Terraform directory for DNS entries
-  ansible.builtin.file:
-    path: homelab/terraform/dns
-    state: directory
-    mode: '0755'
-  when: not terraform_dir.stat.exists
+# Future work:
+# - Add a check to see if the DNS entry already exists.
+# - Add a check to see if the Terraform provider is already configured.
+# - Add a check to see if the Terraform DNS entry is already created.
 
-- name: "Create/Update Terraform DNS provider"
-  ansible.builtin.template:
-    src: templates/dns_provider.tf.j2
-    dest: homelab/terraform/dns/provider.tf
-    mode: '0644'
+- name: Validate Terraform DNS provider
+  delegate_to: "{{ terraform_server }}"
+  run_once: true
+  block:
+    - name: Check if terraform directory exists
+      ansible.builtin.stat:
+        path: homelab/terraform/dns
+      register: terraform_dir
 
-- name: Loop through all hosts
-  vars:
-    my_hosts: "{{ query('inventory_hostnames', 'all') }}"
-  # ansible.builtin.debug:
-  #   msg: "Host {{ item }} has IP address: {{ hostvars[my_hosts[my_idx]].ip_address | default('No IP address defined') }}"
+    - name: Create Terraform directory for DNS entries
+      ansible.builtin.file:
+        path: homelab/terraform/dns
+        state: directory
+        mode: '0755'
+      when: not terraform_dir.stat.exists
+
+    - name: "Create/Update Terraform DNS provider"
+      ansible.builtin.template:
+        src: templates/dns_provider.tf.j2
+        dest: homelab/terraform/dns/provider.tf
+        mode: '0644'
+
+- name: Create Terraform files for DNS
+  delegate_to: "{{ terraform_server }}"
   ansible.builtin.template:
     src: templates/dns.tf.j2
-    dest: homelab/terraform/dns/{{ item }}.tf
+    dest: homelab/terraform/dns/{{ inventory_hostname }}.tf
     mode: '0644'
-  when: hostvars[my_hosts[my_idx]].ip_address is defined
-  loop: "{{ my_hosts }}"
-  loop_control:
-    index_var: my_idx
-
-# - name: Loop through all hosts
-#   block:
-#     - name: Create Terraform files for all eligible hosts
-#       when: "{{hostvars["{{ item }}"].ip_address}}" is defined
-#       ansible.builtin.template:
-#         src: templates/dns.tf.j2
-#         dest: homelab/terraform/dns/{{ item }}.tf
-#         mode: '0644'
-#   loop: "{{ query('inventory_hostnames', 'all') }}"
-
-# - name: Update DNS entries via Terraform
-#   community.general.terraform:
-#     project_path: homelab/terraform/dns/
-#     variables:
-#       freeipa_server: "{{ dns_server }}"
-#       freeipa_admin: "{{ dns_admin }}"
-#       freeipa_password: "{{ vault_freeipa_password }}"
-#     state: present
-#     force_init: true
+  changed_when: true
+  notify:
+    - Update DNS
