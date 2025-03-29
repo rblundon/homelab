@@ -4,6 +4,12 @@ This repository is the configuration of my homelab. In addition to providing ser
 
 This implementation is built on easily accessible consumer based hardware and will focus heavily on GitOps practices and automation will be used wherever possible.
 
+This repo is a mono-repo that is broken up into three sections:
+
+- infra-config
+- apps
+- cluster-config
+
 ## Hardware
 
 - Dell 7050 SFF (7)
