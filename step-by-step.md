@@ -2,7 +2,18 @@
 
 This ~~is~~ *will be* the complete walkthrough of the deployment of my homelab.
 
+This repo is a mono-repo that is broken up into three sections:
+
+- infra-config
+- apps
+- cluster-config
+
+## Getting Started
+
 - On a PC/laptop, clone this git repo
+
+  *(Ansibilze this process (below) )*
+
 - Create your vault file for secrets (and store somewhere safe)
 
   ```bash
