@@ -1,0 +1,83 @@
+default:
+  app:
+    enabled: true
+    enableAutoSync: true
+    autoSyncPrune: false
+    project: cluster-config
+    labels:
+      app-source: local.hub
+      repo: cluster-config
+    destination:
+      namespace: openshift-gitops
+      server: https://kubernetes.default.svc
+    source:
+      repoURL: https://github.com/gnunn-gitops/cluster-config.git
+      targetRevision: HEAD
+
+applications:
+
+  authentication:
+    annotations:
+      argocd.argoproj.io/sync-wave: '4'
+    destination:
+      namespace: openshift-config
+    source:
+      path: components/oauth/overlays/homelab
+      extraSourceFields: |
+        plugin:
+          name: setenv-cmp-plugin
+
+  cert-manager-operator:
+    annotations:
+      argocd.argoproj.io/sync-wave: "2"
+    destination:
+      namespace: cert-manager-operator
+    source:
+      path: components/cert-manager-operator/aggregate/overlays/letsencrypt
+
+  certificates:
+    annotations:
+      argocd.argoproj.io/sync-wave: "3"
+    destination:
+      namespace: cert-manager-operator
+    source:
+      path: components/certificates/base
+      extraSourceFields: |
+        plugin:
+          name: setenv-cmp-plugin
+
+  alertmanager:
+    annotations:
+      argocd.argoproj.io/sync-wave: '11'
+    destination:
+      namespace: openshift-monitoring
+    source:
+      path: components/alertmanager/base
+
+  openshift-monitoring:
+    annotations:
+      argocd.argoproj.io/sync-wave: '11'
+    destination:
+      namespace: openshift-monitoring
+    source:
+      path: components/openshift-monitoring/base
+      extraSourceFields: |
+        plugin:
+          name: setenv-cmp-plugin
+    # syncOptions:
+    #   - RespectIgnoreDifferences=true
+    # extraFields: |
+    #   ignoreDifferences:
+    #   - group: ""
+    #     kind: ConfigMap
+    #     jsonPointers:
+    #     - /data/config.yaml/prometheusK8s/externalLabels/managed-cluster
+    #     name: cluster-monitoring-config
+    #     namespace: openshift-monitoring
+
+  rbac:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-wave: '11'
+    source:
+      path: components/rbac/base
