@@ -1,6 +1,0 @@
-[submodule "acm-hub-bootstrap"]
-	path = acm-hub-bootstrap
-	url = https://github.com/gnunn-gitops/acm-hub-bootstrap.git
-[submodule "cluster-config"]
-	path = cluster-config
-	url = https://github.com/gnunn-gitops/cluster-config.git
