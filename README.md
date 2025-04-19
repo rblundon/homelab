@@ -34,7 +34,7 @@ This repo is a mono-repo that is broken up into three sections:
 ## Prerequisites
 
 - Ansible user created
-- Ansible configured 
+- Ansible configured
 - [Networking](docs/networks.md)
 - [Proxmox](docs/proxmox.md) (In my homelab, internal DNS, identity manangement, and ipxe are hosted here.)
 - Matchbox
@@ -94,6 +94,7 @@ This makes it to where you just need 3 bare metal nodes. You could run one HCP B
 You'll also either need you just need at least 2 bare metal nodes.
 
 ---
+
 ## Credits
 
 - Ken Moini - As I used his [repo](https://github.com/kenmoini/ztp-for-you-and-me) as the baseline for this project.
