@@ -76,11 +76,11 @@ Other needed software:
 - ansible
 - terraform
 
-## [FreeIPA](04-free-ipa/README.md) *Manual*
+### [FreeIPA](04-free-ipa/README.md) *Manual*
 
-## [Templates](05-templates/README.md) *Manual*
+### [Templates](05-templates/README.md) *Manual*
 
-## [Matchbox](06-matchbox/README.md) *Manual*
+### [Matchbox](06-matchbox/README.md) *Manual*
 
 - Downloading the Agent-based Installer
 
