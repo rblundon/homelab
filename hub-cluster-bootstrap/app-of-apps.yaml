@@ -10,7 +10,7 @@ spec:
     namespace: openshift-gitops
   project: default
   source:
-    path: cluster
+    path: /cluster
     repoURL: git@github.com:rblundon/homelab.git
     targetRevision: HEAD
   syncPolicy:
