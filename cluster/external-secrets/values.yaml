@@ -1,4 +1,0 @@
-# https://github.com/external-secrets/external-secrets/blob/main/deploy/charts/external-secrets/values.yaml
-
-external-secrets:
-  enabled: false # Default: true
