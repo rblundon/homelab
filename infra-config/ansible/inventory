@@ -2,11 +2,16 @@
 proxmox:
   hosts:
     pve01:
-      ansible_host: 10.10.21.51
+      ansible_host: 10.1.71.51
     pve02:
-      ansible_host: 10.10.21.52
+      ansible_host: 10.1.71.52
     pve03:
-      ansible_host: 10.10.21.53
+      ansible_host: 10.1.71.53
+
+backup:
+  hosts:
+    backup:
+      ansible_host: 10.1.71.9
 
 unbound_servers:
   hosts:

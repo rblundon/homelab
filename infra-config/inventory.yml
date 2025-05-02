@@ -3,6 +3,10 @@ proxmox:
   hosts:
     pve0[1:3]:
 
+backup:
+  hosts:
+    backup:
+
 freeipa:
   hosts:
     infra01:
