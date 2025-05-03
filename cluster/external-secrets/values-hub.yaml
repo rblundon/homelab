@@ -3,28 +3,29 @@
 external-secrets:
   enabled: true # Default: true
 
-resources:
-   requests:
-     cpu: 10m
-     memory: 32Mi
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
 
-# -- if true, the operator will process cluster external secret. Else, it will ignore them.
-processClusterExternalSecret: true
+  createOperator: true
+  # -- if true, the operator will process cluster external secret. Else, it will ignore them.
+  processClusterExternalSecret: true
 
-# -- if true, the operator will process cluster push secret. Else, it will ignore them.
-processClusterPushSecret: false #true
+  # -- if true, the operator will process cluster push secret. Else, it will ignore them.
+  processClusterPushSecret: false #true
 
-# -- if true, the operator will process cluster store. Else, it will ignore them.
-processClusterStore: false #true
+  # -- if true, the operator will process cluster store. Else, it will ignore them.
+  processClusterStore: false #true
 
-# -- if true, the operator will process push secret. Else, it will ignore them.
-processPushSecret: false #true
+  # -- if true, the operator will process push secret. Else, it will ignore them.
+  processPushSecret: false #true
 
-webhook:
-  # -- Specifies whether a webhook deployment be created. If set to false, crds.conversion.enabled should also be set to false otherwise the kubeapi will be hammered because the conversion is looking for a webhook endpoint.
-  create: false #true
+  webhook:
+    # -- Specifies whether a webhook deployment be created. If set to false, crds.conversion.enabled should also be set to false otherwise the kubeapi will be hammered because the conversion is looking for a webhook endpoint.
+    create: false #true
 
-certController:
-  # -- Specifies whether a certificate controller deployment be created.
-  create: false #true
+  certController:
+    # -- Specifies whether a certificate controller deployment be created.
+    create: false #true
 
