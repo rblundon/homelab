@@ -1,7 +1,7 @@
 apiVersion: v1alpha1
 kind: AgentConfig
 metadata:
-  name: {{ hostvars[groups['hub-cluster'][0]].cluster_name }}
+  name: {{ hostvars[groups['hub_cluster'][0]].cluster_name }}
 rendezvousIP: {{ hostvars['ocp-hub'].ip_address }}
 bootArtifactsBaseURL: {{ hostvars[groups['matchbox'][0]].http_endpoint }}/assets/hub/
 hosts:
