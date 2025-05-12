@@ -2,13 +2,11 @@
 - name: Install all software on infra01
   hosts: infra01
   gather_facts: true
-  become: true
+  #become: true
 
   tasks:
   # - Update all packages
-  # - Install ansible-core
   # - Copy .vault_pass.txt from laptop and set env variable
-  # - Clone git repo
   # - Install ansible required packages
 
     - name: Install ansible-core
@@ -23,12 +21,31 @@
         state: present
       become: true
 
+    - name: Install git
+      ansible.builtin.package:
+        name: git
+        state: present
+      become: true
+
+    - name: Register status of git repo
+      ansible.builtin.stat:
+        path: homelab/.git
+      register: git_status
+
+    - name: Clone GitHub repository
+      when: not git_status.stat.exists
+      block:
+        - name: First run, cloning the repo
+          ansible.builtin.git:
+            repo: https://github.com/rblundon/homelab.git
+            dest: homelab
+
     - name: Register status of /usr/local/bin/terraform
       ansible.builtin.stat:
         path: /usr/local/bin/terraform
       register: terraform_path
 
-    - name: Download and installt erraform version
+    - name: Download and install terraform version
       when: not terraform_path.stat.exists
       block:
         - name: Download  and install terraform
@@ -38,6 +55,7 @@
             remote_src: true
             mode: '0755'
             exclude: "LICENSE.txt"
+          become: true
 
   roles:
     - somaz94.ansible_k8s_iac_tool.install_kustomize

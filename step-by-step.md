@@ -50,7 +50,7 @@ This repo is a mono-repo that is broken up into three sections:
 - From laptop run ansible playbook to:
 
   ```bash
-  cd homelab
+  cd homelab/infra-config
   ansible-playbook -i inventory.yml 03-infra01-server/install.yml
   ```
 
@@ -71,10 +71,10 @@ This repo is a mono-repo that is broken up into three sections:
 Other needed software:
 
 - ~~kustomize~~
-- git
+- ~~git~~
 - oc
-- ansible
-- terraform
+- ~~ansible~~
+- ~~terraform~~
 
 ### [FreeIPA](04-free-ipa/README.md) *Manual*
 
