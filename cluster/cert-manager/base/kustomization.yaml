@@ -12,7 +12,7 @@ resources:
 - subscription.yaml
 - monitoring.yaml
 # Deploy cluster resources
-- cloudflare-secret-eso.yaml
-- clusterissuers.yaml
-- split-horizon-patch.yaml
+# - cloudflare-secret-eso.yaml
+# - clusterissuers.yaml
+# - split-horizon-patch.yaml
 #- api-ingress.yaml
