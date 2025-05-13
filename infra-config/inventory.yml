@@ -15,6 +15,7 @@ matchbox:
   hosts:
     infra01:
 
+
 hub_cluster:
   hosts:
     ocp-hub:
