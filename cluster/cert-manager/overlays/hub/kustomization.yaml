@@ -7,5 +7,5 @@ commonAnnotations:
 resources:
 - ../../base
 - api-ingress.yaml
-- apiserver-cert-config.yaml
-- ingress-controller-cert-config.yaml
+#- apiserver-cert-config.yaml
+#- ingress-controller-cert-config.yaml
