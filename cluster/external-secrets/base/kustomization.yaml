@@ -11,4 +11,4 @@ resources:
 - subscription.yaml
 - operatorconfig.yaml
 # Deploy cluster resources
-#- cluster-secret-store.yaml
+- cluster-secret-store.yaml
