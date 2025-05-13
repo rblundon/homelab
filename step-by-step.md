@@ -113,19 +113,15 @@ Other needed software:
 
 - Admin password and kubeconfig are in the homelab/10-sno-hub-cluster/03-openshift-image/auth directory
 
+- Bootstrap ACM
+
   From laptop/infra server:
 
   ```bash
   cd homelab
   oc apply -k hub-cluster-bootstrap
-  ```
-
-- Bootstrap ACM
-
-  Running this playbook will configure Matchbox to wait for the sno-cluster to boot via iPXE and will install Single Node OpenShift.  All configuration files are built from templates driven from Ansible variables.
-
-  ```bash
-  ansible-playbook -i inventory.yml 10-sno-hub-cluster/install2.yml
+  oc apply -f ~/ocp/doppler-token.yaml
+  oc apply -k hub-cluster-bootstrap
   ```
 
 ## Internal Cluster *TBD*
