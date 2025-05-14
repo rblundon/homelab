@@ -1,0 +1,13 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: test-hub-mklabs-cloud
+  namespace: default
+spec:
+  secretName: test-hub-mklabs-cloud-tls
+  issuerRef:
+    name: letsencrypt-staging
+    kind: ClusterIssuer
+  dnsNames:
+    - "test.mklabs.cloud"

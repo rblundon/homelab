@@ -50,10 +50,10 @@ le:
     dnsZones:
     - mk-labs.cloud
 
-  secrets:
-  - name: le-route53-creds
-    stringData:
-      secret-access-key: <actual secret access key>
+  # secrets:
+  # - name: le-route53-creds
+  #   stringData:
+  #     secret-access-key: <actual secret access key>
 
-cluster_name: okd
-base_domain: jharmison.com
+cluster_name: hub
+base_domain: mklabs.cloud
