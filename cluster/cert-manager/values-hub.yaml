@@ -2,7 +2,7 @@
 # https://github.com/cert-manager/cert-manager/blob/master/deploy/charts/cert-manager/values.yaml
 
 cert-manager:
-  enabled: false
+  enabled: true
   installCRDs: true
   dns01RecursiveNameservers: 1.1.1.1:53
   dns01RecursiveNameserversOnly: true
@@ -12,3 +12,5 @@ cert-manager:
     enabled: true
     servicemonitor:
       enabled: true
+
+  
