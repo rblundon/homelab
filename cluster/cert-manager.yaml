@@ -13,9 +13,13 @@ spec:
     namespace: cert-manager
   project: default
   source:
-    path: cluster/cert-manager/overlays/hub
+    #path: cluster/cert-manager/overlays/hub
+    path: cluster/cert-manager
     repoURL: https://github.com/rblundon/homelab.git
     targetRevision: HEAD
+    helm:
+      valueFiles:
+        - values-hub.yaml
   syncPolicy:
     automated:
       prune: true
