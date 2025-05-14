@@ -13,4 +13,35 @@ cert-manager:
     servicemonitor:
       enabled: true
 
-  
+le:
+  prod:
+    enabled: true
+    server: https://acme-v02.api.letsencrypt.org/directory
+  staging:
+    enabled: true
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+  apiCert:
+    enabled: false
+  routerCert:
+    enabled: false
+  preferredChain: ""
+  email: ryan.blundon@protonmail.com
+  solvers:
+  - type: dns
+    dnsConfig:
+        cloudflare:
+          apiTokenSecretRef:
+            name: cloudflare-api-token
+            key: api-token
+          email: ryan.blundon@protonmail.com
+        cnameStrategy: Follow
+    dnsZones:
+    - mk-labs.cloud
+
+  secrets:
+  - name: le-route53-creds
+    stringData:
+      secret-access-key: <actual secret access key>
+
+cluster_name: okd
+base_domain: jharmison.com
