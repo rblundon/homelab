@@ -13,6 +13,18 @@ cert-manager:
     servicemonitor:
       enabled: true
 
+ca:
+  enabled: false
+  tlsCrt: |-
+    -----BEGIN CERTIFICATE-----
+    <actual certificate>
+    -----END CERTIFICATE-----
+  tlsKey: |-
+    -----BEGIN PRIVATE KEY-----
+    <actual key>
+    -----END PRIVATE KEY-----
+
+
 le:
   prod:
     enabled: true
