@@ -1,0 +1,29 @@
+{{- if and .Values.le.prod.enabled .Values.le.routerCert.enabled -}}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: router-cert
+  namespace: openshift-ingress
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  commonName: apps.{{ .Values.cluster_name }}.{{ .Values.base_domain }}
+  dnsNames:
+  - apps.{{ .Values.cluster_name }}.{{ .Values.base_domain }}
+  - "*.apps.{{ .Values.cluster_name }}.{{ .Values.base_domain }}"
+  issuerRef:
+    group: cert-manager.io
+    kind: ClusterIssuer
+    name: le-prod
+  secretName: router-cert
+---
+apiVersion: operator.openshift.io/v1
+kind: IngressController
+metadata:
+  name: default
+  namespace: openshift-ingress-operator
+spec:
+  defaultCertificate:
+    name: router-cert
+{{- end }}

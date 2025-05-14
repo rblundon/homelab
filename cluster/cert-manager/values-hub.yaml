@@ -24,7 +24,6 @@ ca:
     <actual key>
     -----END PRIVATE KEY-----
 
-
 le:
   prod:
     enabled: true
@@ -35,7 +34,7 @@ le:
   apiCert:
     enabled: false
   routerCert:
-    enabled: false
+    enabled: true
   preferredChain: ""
   email: ryan.blundon@protonmail.com
   solvers:
@@ -56,4 +55,4 @@ le:
   #     secret-access-key: <actual secret access key>
 
 cluster_name: hub
-base_domain: mklabs.cloud
+base_domain: int.mk-labs.cloud
