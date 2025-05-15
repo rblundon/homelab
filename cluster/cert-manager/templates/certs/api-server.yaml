@@ -3,7 +3,7 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: okd-api
+  name: ocp-api
   namespace: openshift-config
   annotations:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
@@ -14,7 +14,7 @@ spec:
     group: cert-manager.io
     kind: ClusterIssuer
     name: letsencrypt-prod
-  secretName: okd-api
+  secretName: ocp-api
 ---
 apiVersion: config.openshift.io/v1
 kind: APIServer
@@ -26,5 +26,5 @@ spec:
     - names:
       - api.{{ .Values.cluster_name }}.{{ .Values.base_domain }}
       servingCertificate:
-        name: okd-api
+        name: ocp-api
 {{- end }}
