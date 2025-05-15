@@ -32,7 +32,7 @@ le:
     enabled: true
     server: https://acme-staging-v02.api.letsencrypt.org/directory
   apiCert:
-    enabled: false
+    enabled: true
   routerCert:
     enabled: true
   preferredChain: ""
@@ -48,11 +48,6 @@ le:
         cnameStrategy: Follow
     dnsZones:
     - mk-labs.cloud
-
-  # secrets:
-  # - name: le-route53-creds
-  #   stringData:
-  #     secret-access-key: <actual secret access key>
 
 cluster_name: hub
 base_domain: int.mk-labs.cloud
