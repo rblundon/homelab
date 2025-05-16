@@ -6,4 +6,4 @@ commonAnnotations:
 
 resources:
 - ../../base
-#- ocp-storage-vlan.yaml
+- ocp-storage-vlan.yaml
