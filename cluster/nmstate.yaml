@@ -2,8 +2,8 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: external-secrets
-  namespace: openshift-gitops
+  name: nmstate
+  namespace: nmstate
   finalizers:
   - resources-finalizer.argocd.argoproj.io
   annotations:
@@ -11,7 +11,7 @@ metadata:
 spec:
   destination:
     name: in-cluster
-    namespace: openshift-operators
+    namespace: onmstate
   project: default
   source:
     path: cluster/nmstate/overlays/hub
