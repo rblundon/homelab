@@ -3,7 +3,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: nmstate
-  namespace: nmstate
+  namespace: openshift-nmstate
   finalizers:
   - resources-finalizer.argocd.argoproj.io
   annotations:
@@ -11,7 +11,7 @@ metadata:
 spec:
   destination:
     name: in-cluster
-    namespace: onmstate
+    namespace: openshift-nmstate
   project: default
   source:
     path: cluster/nmstate/overlays/hub
