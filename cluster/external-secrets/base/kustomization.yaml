@@ -11,4 +11,5 @@ resources:
 - subscription.yaml
 - operatorconfig.yaml
 # Deploy cluster resources
+- doppler-token.yaml
 - cluster-secret-store.yaml

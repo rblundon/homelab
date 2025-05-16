@@ -47,3 +47,6 @@ crash.log
 # Ignore CLI configuration files
 .terraformrc
 .terraformrc.json
+
+# Ignore secrets
+doppler-token.yaml
