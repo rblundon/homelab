@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: openshift-nmstate
+    name: openshift-nmstate
+    argocd.argoproj.io/managed-by: openshift-gitops-operator
+  name: openshift-nmstate
+spec:
+  finalizers:
+  - kubernetes
