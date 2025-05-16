@@ -12,4 +12,4 @@ resources:
 - rbac.yaml
 # - argocd.yaml
 - app-of-apps.yaml
-- enable-iscsi.yaml
+#- enable-iscsi.yaml
