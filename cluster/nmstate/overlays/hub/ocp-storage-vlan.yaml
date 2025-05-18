@@ -15,16 +15,14 @@ spec:
           base-iface: enp1s0f0
           id: 121
       - bridge:
-        port:
-          - name: enp1s0f0.121
+          port:
+            - name: enp1s0f0.121
         ipv4:
           address:
             - ip: 10.10.121.10
               prefix-length: 24
           enabled: true
-        name: br-iscsi
+        name: storage-network
         state: up
         type: linux-bridge
-        description: OVS bridge with enp1s0f0 as a port on VLAN 121
-
-
+        description: Linux bridge with enp1s0 as a port on VLAN 121
