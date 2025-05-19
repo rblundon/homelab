@@ -8,7 +8,7 @@ This repo is a mono-repo that is broken up into three sections:
 
 - infra-config
 - apps
-- cluster-config
+- cluster
 
 ## Hardware
 
@@ -58,7 +58,7 @@ A Single Node OpenShift (SNO) instance, installed on bare metal, will act as a H
 - Advanced Cluster Management
 - Ansible Automation Platform
 - Vault
-- OpenShift GitOps
+- ~~OpenShift GitOps~~
 
 #### Network Prerequisites
 

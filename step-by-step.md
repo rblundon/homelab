@@ -5,8 +5,17 @@ This ~~is~~ *will be* the complete walkthrough of the deployment of my homelab.
 This repo is a mono-repo that is broken up into three sections:
 
 - infra-config
-- cluster-config
+- cluster
 - apps
+
+May refactor folder structure to:
+
+- ansible
+- argocd
+  - cluster
+  - apps
+  - bootstrap
+- terraform
 
 ## Getting Started
 

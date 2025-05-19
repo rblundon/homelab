@@ -1,0 +1,25 @@
+apiVersion: operator.external-secrets.io/v1alpha1
+kind: OperatorConfig
+metadata:
+  name: cluster
+spec:
+  prometheus:
+    enabled: true
+    service:
+      port: 8080
+  resources:
+   requests:
+     cpu: 10m
+     memory: 96Mi
+   limits:
+     cpu: 100m
+     memory: 256Mi
+
+
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: open-cluster-management
+spec:
+  targetNamespaces:
+  - open-cluster-management
