@@ -19,7 +19,7 @@ ssh_username    = "wed"
 
 # ISO Objects
 
-iso_file             = "Fedora-Server-netinst-x86_64-42-1.4.iso"
+iso_file             = "Fedora-Server-netinst-x86_64-42-1.1.iso"
 iso_checksum         = "231f3e0d1dc8f565c01a9f641b3d16c49cae44530074bc2047fe2373a721c82f"
 iso_checksum_type    = "sha256"
 
