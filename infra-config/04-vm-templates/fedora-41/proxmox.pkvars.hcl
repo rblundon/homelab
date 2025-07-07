@@ -17,4 +17,4 @@ proxmox_vm_storage_pool         = "pve-templates"
 #proxmox_insecure_connection     = false #Default: true
 proxmox_iso_storage_pool        = "local"
 
-template_name   = ""
+#template_name   = ""

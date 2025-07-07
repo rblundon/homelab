@@ -31,7 +31,7 @@ source "proxmox-iso" "fedora-kickstart" {
     iso_file = "${var.proxmox_iso_storage_pool}:iso/${var.iso_file}"
     unmount = true
       #iso_checksum = "sha512:33c08e56c83d13007e4a5511b9bf2c4926c4aa12fd5dd56d493c0653aecbab380988c5bf1671dbaea75c582827797d98c4a611f7fb2b131fbde2c677d5258ec9"
-    iso_checksum = "${iso_checksum_type}:${var.iso_checksum}"
+    iso_checksum = "${var.iso_checksum_type}:${var.iso_checksum}"
   }
 
   os   = "l26"
