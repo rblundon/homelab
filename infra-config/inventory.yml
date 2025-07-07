@@ -3,7 +3,11 @@ proxmox:
   hosts:
     pve0[1:3]:
 
-backup:
+unbound_servers:
+  hosts:
+    unbound02:
+
+backup_servers:
   hosts:
     backup:
 
@@ -19,3 +23,15 @@ matchbox:
 hub_cluster:
   hosts:
     ocp-hub:
+
+sql_servers:
+  hosts:
+    sql01:
+
+n8n_servers:
+  hosts:
+    n8n:
+
+docker_servers:
+  hosts:
+    docker01:

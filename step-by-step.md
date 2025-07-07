@@ -87,6 +87,13 @@ Other needed software:
 
 ### [FreeIPA](04-free-ipa/README.md) *Manual*
 
+### Update DNS
+
+```bash
+cd <repo>/infra-config
+ansible-playbook -i inventory.yml site.yml --tags update-dns -v
+```
+
 ### [Templates](05-templates/README.md) *Manual*
 
 ### [Matchbox](06-matchbox/README.md) *Manual*

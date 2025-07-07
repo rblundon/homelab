@@ -1,0 +1,25 @@
+---
+# file: host_vars/unbound02/vars
+
+# Host Definition
+platform: "proxmox"
+hostname: "{{ inventory_hostname }}.{{ base_domain }}" #change variable to fqdn
+
+# Networking
+ip_address: 10.1.71.252
+# primary_interface: "enp1s0f0"
+# mac_address: "BC:24:11:03:A9:7B" # convert this to a proxmox read for VMs
+
+# VM Definition
+proxmox_target_node: "pve02"
+vm_cpus: 1
+vm_memory: 2048
+vm_storage: "pve-general"
+vm_disk_size: "16" # GB
+vm_net_bridge: "vmbr1"
+vm_net_vlan: ",tag=71"
+# vm_disk_size: 20
+# vm_disk_type: "virtio"
+
+# Software
+#terraform_version: "1.11.3"
