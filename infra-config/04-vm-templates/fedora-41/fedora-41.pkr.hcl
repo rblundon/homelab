@@ -6,6 +6,19 @@ locals {
   buildtime = formatdate("YYYY-MM-DD hh:mm ZZZ", timestamp())
 }
 
+packer {
+  required_plugins {
+    ansible = {
+      version = ">= 1.1.3"
+      source  = "github.com/hashicorp/ansible"
+    }
+    name = {
+      version = "~> 1"
+      source  = "github.com/hashicorp/proxmox"
+    }
+  }
+}
+
 ##################################################################################
 # SOURCE
 ##################################################################################
@@ -38,7 +51,7 @@ source "proxmox-iso" "fedora-kickstart" {
     "e",
     "<down><down><down><left>",
     # leave a space from last arg
-    " inst.ks=http://{{.HTTPIP}}:{{.HTTPPort}}/ks1.cfg <f10>"
+    " inst.ks=http://{{.HTTPIP}}:{{.HTTPPort}}/ks.cfg <f10>"
   ]
 
   boot_wait    = "${var.vm_boot_wait}"
