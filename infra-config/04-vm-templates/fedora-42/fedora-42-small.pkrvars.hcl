@@ -8,7 +8,7 @@ vm_boot_wait    = "5s"
 vm_name         = "fedora-42-small"
 vm_id           = "9101"
 vm_cpu_sockets  = "1"
-vm_cpu_cores    = "2"
+vm_cpu_cores    = "4"
 vm_mem_size     = "2048"
 vm_disk_size    = "8"
 
@@ -16,6 +16,7 @@ proxmox_bridge  = "vmbr1"
 proxmox_vlan    = "71"
 
 ssh_username    = "wed"
+ssh_password    = "1mag!ne3R"
 
 # ISO Objects
 
