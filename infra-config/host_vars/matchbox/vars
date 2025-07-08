@@ -5,7 +5,7 @@
 # primary_interface: "enp1s0f0"
 # mac_address: "98:b7:85:1e:c6:f1"
 ip_address: 10.1.71.7
-hostname: "matchbox.{{ base_domain }}"
+hostname: "{{ inventory_hostname }}.{{ base_domain }}"
 
 # Software
 #terraform_version: "1.11.3"

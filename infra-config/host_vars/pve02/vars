@@ -3,5 +3,5 @@
 # mac_address: "98:b7:85:1e:c6:f1"
 #ip_address: "10.1.71.52"
 ip_address: "10.10.21.52"
-hostname: "pve02.{{ base_domain }}"
+hostname: "{{ inventory_hostname }}.{{ base_domain }}"
 # primary_interface: "enp1s0f0"

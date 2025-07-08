@@ -1,0 +1,19 @@
+---
+# file: host_vars/prometheus/vars
+
+# VM Definition
+platform: "proxmox"
+proxmox_clone_node: "pve03"
+vm_clone_source: "fedora-42-large"
+vm_storage: "pve-general"
+ha_group: "pv03"
+
+# Networking
+ip_address: 10.1.71.249
+# primary_interface: "enp1s0f0"
+# mac_address: "BC:24:11:03:A9:7B" # convert this to a proxmox read for VMs
+
+# Software
+#terraform_version: "1.11.3"
+
+hostname: "{{ inventory_hostname }}.{{ base_domain }}" #change variable to fqdn

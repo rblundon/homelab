@@ -11,19 +11,24 @@ brew tap hashicorp/tap
 brew install hashicorp/tap/packer
 ```
 
-packer plugins install github.com/hashicorp/proxmox
-packer plugins install github.com/hashicorp/ansible 
-
-my-packer-project/
-├── main.pkr.hcl             # Main build definition(s)
+fedora-<version>/
+├── fedora-<version>.pkr.hcl # Main build definition(s)
 ├── variables.pkr.hcl        # Variable declarations and default values
 ├── <image_name>.pkrvars.hcl # (Optional) Specific variable values for a particular image
-├── scripts/                 # Directory for shell/PowerShell scripts used by provisioners
-│   ├── setup-apache.sh
-│   ├── install-deps.ps1
-│   └── common-config.sh
-├── httpd-template/          # (Optional) Subdirectory for a specific image's configuration
-│   ├── source.pkr.hcl       # Source block for Apache image
-│   ├── build.pkr.hcl        # Build block for Apache image
-│   └── vars.pkrvars.hcl     # Variables specific to Apache image
+├── files/                   # Files to load on VM
+│   └── ansible.pub         # public key for ansible user
+├── scripts/                 # Directory for shell scripts
+│   ├── cleanup.sh          # Clean up the template
+│   └── setup.yml           # Ansible playbook
+├── httpd/                   # Subdirectory for kickstart configiration
+│   └── ks.cfg              # Source block for Apache image
 └── README.md
+
+# Create templates
+
+```bash
+packer build -var-file ./fedora-42-small.pkrvars.hcl -var-file ./proxmox.pkvars.hcl -var 'ssh_password=<wed ssh password>' -var 'proxmox_password=<proxmox user password>' .
+packer build -var-file ./fedora-42-medium.pkrvars.hcl -var-file ./proxmox.pkvars.hcl -var 'ssh_password=<wed ssh password>' -var 'proxmox_password=<proxmox user password>' .
+packer build -var-file ./fedora-42-large.pkrvars.hcl -var-file ./proxmox.pkvars.hcl -var 'ssh_password=<wed ssh password>' -var 'proxmox_password=<proxmox user password>' .
+packer build -var-file ./fedora-42-xlarge.pkrvars.hcl -var-file ./proxmox.pkvars.hcl -var 'ssh_password=<wed ssh password>' -var 'proxmox_password=<proxmox user password>' .
+```
