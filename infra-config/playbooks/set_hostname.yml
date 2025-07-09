@@ -1,0 +1,10 @@
+---
+- name: Create VM ID from IP address for Proxmox hosts
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Set hostname of VM
+      delegate_to: "{{ inventory_hostname }}"
+      ansible.builtin.hostname:
+        name: "{{ hostname }}"

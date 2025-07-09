@@ -1,0 +1,17 @@
+---
+- name: Add entry to DNS
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Create DNS entry for {{ inventory_hostname }} #on {{ groups['ipa_servers'][0] }}
+      delegate_to: "{{ groups['ipaserver'][0] }}"
+      freeipa.ansible_freeipa.ipadnsrecord:
+        ipaapi_context: "server"
+        ipaadmin_password: "{{ vault_freeipa_password }}"
+        name: "{{ inventory_hostname }}"
+        zone_name: "{{ base_domain }}"
+        record_type: "A"
+        record_value: "{{ ip_address }}"
+        record_ttl: 60
+        #create_reverse: yes

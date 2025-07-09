@@ -1,0 +1,16 @@
+---
+- name: Remove entry from DNS
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Delete DNS entry for {{ inventory_hostname }} #on {{ groups['ipa_servers'][0] }}
+      delegate_to: "{{ groups['ipaserver'][0] }}"
+      freeipa.ansible_freeipa.ipadnsrecord:
+        ipaapi_context: "server"
+        ipaadmin_password: "{{ vault_freeipa_password }}"
+        zone_name: "{{ base_domain }}"
+        records:
+          - name: "{{ inventory_hostname }}"
+            del_all: yes
+        state: absent

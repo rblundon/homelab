@@ -1,0 +1,4 @@
+---
+#freeipa_user: "admin"
+ipaadmin_password: "{{ vault_freeipa_password }}"
+ipaserver_domain: "int.mk-labs.cloud"
