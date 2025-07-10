@@ -3,6 +3,10 @@ proxmox:
   hosts:
     pve0[1:3]:
 
+dhcp_server:
+  hosts:
+    matchbox:
+
 unbound_servers:
   hosts:
     unbound02:
@@ -19,9 +23,9 @@ ipaserver:
   hosts:
     infra01.int.mk-labs.cloud:
 
-matchbox:
-  hosts:
-    infra01:
+# matchbox:
+#   hosts:
+#     infra01:
 
 hub_cluster:
   hosts:

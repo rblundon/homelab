@@ -3,12 +3,17 @@
   hosts: all
   gather_facts: false
 
+- name: Proxmox Clone VM Playbook
+  ansible.builtin.import_playbook: proxmox_clone_vm.yml
+
 - name: DNS Playbook
   ansible.builtin.import_playbook: add_dns_entry.yml
 
-  # Create DHCP Reservation
+- name: DHCP Playbook
+  ansible.builtin.import_playbook: add_dhcp_entry.yml
 
-- name: Proxmox Clone VM Playbook
-  ansible.builtin.import_playbook: proxmox_clone_vm.yml
-# - name: Set Hostname Playbook
-#   ansible.builtin.import_playbook: set_hostname.yml
+- name: Start VM Playbook
+  ansible.builtin.import_playbook: proxmox_start_vm.yml
+
+- name: Set Hostname Playbook
+  ansible.builtin.import_playbook: set_hostname.yml
