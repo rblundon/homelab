@@ -1,9 +1,9 @@
 ---
-# file: host_vars/matchbox/vars
+# file: host_vars/docker01/vars
 
 # Networking
 # primary_interface: "enp1s0f0"
-mac_address: "BC:24:11:03:A9:7B"
+#mac_address: "BC:24:11:03:A9:7B"
 ip_address: 10.1.71.211
 hostname: "{{ inventory_hostname }}.{{ base_domain }}"
 

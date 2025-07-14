@@ -30,8 +30,8 @@
               pre_enrolled_keys: false
             scsihw: virtio-scsi-single
             scsi:
-              scsi0: "{{ vm_storage }}:{{ vm_disk_size }},format=raw,aio=native" #VMs_LVM:10,format=raw
+              scsi0: "{{ vm_storage }}:{{ vm_disk_size }},format=raw,aio=native" # VMs_LVM:10,format=raw
             net:
-              net0: "virtio,bridge={{ vm_net_bridge}}{{vm_net_vlan}}"
+              net0: "virtio,bridge={{ vm_net_bridge }}{{ vm_net_vlan }}"
             onboot: "true"
-            #update: "true"
+            # update: "true"

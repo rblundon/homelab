@@ -4,7 +4,7 @@
   gather_facts: false
 
   tasks:
-    - name: Create DNS entry for {{ inventory_hostname }} #on {{ groups['ipa_servers'][0] }}
+    - name: Create DNS entry for {{ inventory_hostname }}
       delegate_to: "{{ groups['ipaserver'][0] }}"
       freeipa.ansible_freeipa.ipadnsrecord:
         ipaapi_context: "server"
@@ -14,4 +14,4 @@
         record_type: "A"
         record_value: "{{ ip_address }}"
         record_ttl: 60
-        #create_reverse: yes
+        # create_reverse: yes

@@ -39,7 +39,6 @@
               Upgrade Result: {{ upgrade_result }}
               Autoremove Result: {{ autoremove_result }}
 
-
     - name: Upgrade RHEL systems with DNF
       when: ansible_os_family == "RedHat" and not (ansible_distribution_major_version == "7")
       block:

@@ -9,4 +9,3 @@
       delegate_to: "{{ inventory_hostname }}"
       ansible.builtin.hostname:
         name: "{{ hostname }}"
-        #delay: 20

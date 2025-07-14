@@ -19,6 +19,22 @@ freeipa:
   hosts:
     infra01:
 
+prometheus:
+  hosts:
+    monitor:
+
+node_explorer:
+  hosts:
+    monitor:
+
+alertmanager:
+  hosts:
+    monitor:
+
+grafana:
+  hosts:
+    monitor:
+
 ipaserver:
   hosts:
     infra01.int.mk-labs.cloud:

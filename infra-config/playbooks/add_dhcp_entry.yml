@@ -15,11 +15,11 @@
       register: proxmox_vm_info
 
     - name: Extract net0 information
-      set_fact:
+      ansible.builtin.set_fact:
         vm_net0: "{{ proxmox_vm_info.proxmox_vms[0].config.net0 }}"
 
     - name: Extract MAC address using regex
-      set_fact:
+      ansible.builtin.set_fact:
         vm_mac_address: "{{ vm_net0 | regex_search('([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}') }}"
 
     - name: Add line to hosts file
@@ -28,7 +28,7 @@
       ansible.builtin.lineinfile:
         path: /etc/dnsmasq.d/hosts.conf
         regexp: "# {{ inventory_hostname }}$"
-        line: "dhcp-host={{ vm_mac_address|lower }},{{ ip_address  }} # {{ inventory_hostname }}"
+        line: "dhcp-host={{ vm_mac_address | lower }},{{ ip_address }} # {{ inventory_hostname }}"
         state: present
     # restart dnsmasq service
     - name: Restart service dnsmasq
