@@ -1,0 +1,34 @@
+---
+- name: Master playbook to install and configure unbound
+  hosts: unbound_servers
+
+  tasks:
+    - name: Install unbound via role
+#      delegate_to: "localhost"
+      ansible.builtin.import_role:
+        name: Anthony25.unbound
+      # vars:
+      #   server:
+      #     interface: "{{ ip_address }}"
+      #     access_control:
+      #       - '192.168.1.0/24 allow'
+      #       - '192.168.3.0/24 allow'
+      #       - '192.168.5.0/24 allow'
+      #       - '192.168.10.0/24 allow'
+      #       - '10.1.71.0/24 allow'
+      #     private_address:
+      #       - '192.168.1.0/24'
+      #       - '192.168.3.0/24'
+      #       - '192.168.5.0/24'
+      #       - '192.168.10.0/24'
+      #       - '10.1.71.0/24'
+      #     private-domain:
+      #       - 'mk-labs.cloud'
+      #   forward_zone:
+      #     - name: 'int.mk-labs.cloud'
+      #       forward-addrs:
+      #         - '10.1.71.5'
+      #     - name: "."
+      #       forward-addrs:
+      #         - '1.0.0.1@53#one.one.one.one'
+      #         - '1.1.1.1@53#one.one.one.one'

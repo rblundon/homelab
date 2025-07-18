@@ -9,7 +9,8 @@ dhcp_server:
 
 unbound_servers:
   hosts:
-    unbound02:
+    unbound01:
+#    unbound02:
 
 backup_servers:
   hosts:
@@ -19,7 +20,7 @@ freeipa:
   hosts:
     infra01:
 
-prometheus:
+prometheus_server:
   hosts:
     monitor:
 

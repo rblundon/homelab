@@ -23,6 +23,7 @@
             node: "{{ proxmox_clone_node }}"
             storage: "{{ vm_storage }}"
             format: raw
+            timeout: 600
 
         # - name: Add VM to HA group
         #   community.proxmox.proxmox_cluster_ha_resources:
