@@ -1,26 +1,8 @@
 ---
-proxmox:
-  hosts:
-    pve01:
-      ansible_host: 10.1.71.51
-    pve02:
-      ansible_host: 10.1.71.52
-    pve03:
-      ansible_host: 10.1.71.53
-
 backup:
   hosts:
     backup:
       ansible_host: 10.1.71.9
-
-unbound_servers:
-  hosts:
-    unbound:
-      ansible_host: 10.1.71.254
-    unbound01:
-      ansible_host: 10.1.71.254
-    unbound02:
-      ansible_host: 10.1.71.253
 
 ipaserver:
   hosts:
@@ -29,8 +11,6 @@ ipaserver:
 
 ipareplicas:
   hosts:
-#    infra02.int.mk-labs.cloud:
-#      ansible_host: 10.1.71.6
       
 #infra:
 #  hosts:

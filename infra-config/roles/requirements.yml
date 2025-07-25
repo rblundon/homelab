@@ -9,5 +9,5 @@ collections:
   - name: somaz94.ansible_k8s_iac_tool
     version: 1.1.6
 
-  - name: bodsch.dns
-    version: 1.2.0
+  - name: prometheus.prometheus
+    version: 0.27.0

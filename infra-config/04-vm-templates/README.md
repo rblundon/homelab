@@ -24,6 +24,12 @@ fedora-<version>/
 │   └── ks.cfg              # Source block for Apache image
 └── README.md
 
+# Disable the firewall before starting
+
+```bash
+sudo systemctl stop firewalld
+```
+
 # Create templates
 
 ```bash

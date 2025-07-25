@@ -1,34 +1,37 @@
 ---
 - name: Master playbook to install and configure unbound
   hosts: unbound_servers
+  become: true
 
   tasks:
+    - name: Permit traffic in default zone for dns service
+      ansible.posix.firewalld:
+        service: dns
+        permanent: true
+        immediate: true
+        state: enabled
+
+    - name: Create the directory
+      ansible.builtin.file:
+        path: /etc/systemd/resolved.conf.d
+        state: directory
+        mode: '0755'
+        owner: root
+        group: root
+
+    - name: Put `unbound.conf` in the correct place
+      ansible.builtin.copy:
+        src: ../roles/common/files/unbound.conf
+        dest: /etc/systemd/resolved.conf.d/unbound.conf
+        mode: '0644'
+        owner: root
+        group: root
+
+    - name: Restart service systemd-resolved
+      ansible.builtin.service:
+        name: systemd-resolved
+        state: restarted
+
     - name: Install unbound via role
-#      delegate_to: "localhost"
       ansible.builtin.import_role:
         name: Anthony25.unbound
-      # vars:
-      #   server:
-      #     interface: "{{ ip_address }}"
-      #     access_control:
-      #       - '192.168.1.0/24 allow'
-      #       - '192.168.3.0/24 allow'
-      #       - '192.168.5.0/24 allow'
-      #       - '192.168.10.0/24 allow'
-      #       - '10.1.71.0/24 allow'
-      #     private_address:
-      #       - '192.168.1.0/24'
-      #       - '192.168.3.0/24'
-      #       - '192.168.5.0/24'
-      #       - '192.168.10.0/24'
-      #       - '10.1.71.0/24'
-      #     private-domain:
-      #       - 'mk-labs.cloud'
-      #   forward_zone:
-      #     - name: 'int.mk-labs.cloud'
-      #       forward-addrs:
-      #         - '10.1.71.5'
-      #     - name: "."
-      #       forward-addrs:
-      #         - '1.0.0.1@53#one.one.one.one'
-      #         - '1.1.1.1@53#one.one.one.one'

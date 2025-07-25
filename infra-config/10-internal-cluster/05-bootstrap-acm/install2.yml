@@ -1,0 +1,13 @@
+---
+- name: Run all tasks necessary to configure matchbox to install the cluster
+  hosts: matchbox
+  connection: local
+  gather_facts: true
+
+  tasks:
+    - name: Clone Git repository
+      ansible.builtin.git:
+        repo: "https://github.com/redhatryan/acm-hub-bootstrap.git"
+        dest: 05-bootstrap-acm
+        version: main
+      become: true

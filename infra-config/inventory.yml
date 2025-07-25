@@ -10,7 +10,7 @@ dhcp_server:
 unbound_servers:
   hosts:
     unbound01:
-#    unbound02:
+    unbound02:
 
 backup_servers:
   hosts:
@@ -47,6 +47,13 @@ ipaserver:
 hub_cluster:
   hosts:
     ocp-hub:
+
+internal_cluster:
+  hosts:
+    int-master01:
+    int-master02:
+    int-master03:
+    int-worker01:
 
 sql_servers:
   hosts:

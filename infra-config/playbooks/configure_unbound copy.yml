@@ -1,0 +1,10 @@
+---
+- name: Master playbook to configure openshift cluster (internal)
+  hosts: internal_cluster
+  become: true
+
+  tasks:
+
+    - name: Install unbound via role
+      ansible.builtin.import_role:
+        name: Anthony25.unbound

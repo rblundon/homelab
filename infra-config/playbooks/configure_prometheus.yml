@@ -1,0 +1,16 @@
+---
+- name: Master playbook to install and configure prometheus
+  hosts: prometheus_server
+  become: true
+
+  tasks:
+    - name: Permit traffic in default zone for dns service
+      firewalld:
+        port: 9090/tcp
+        permanent: true
+        immediate: true
+        state: enabled
+
+    - name: Install unbound via role
+      ansible.builtin.import_role:
+        name: prometheus.prometheus.prometheus

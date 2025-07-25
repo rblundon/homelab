@@ -1,0 +1,8 @@
+// Matcher group for OCP Internal machines
+resource "matchbox_group" "{{ hostvars[groups['hub_cluster'][0]].cluster_name }}" {
+  name = "{{ hostvars['ocp-hub'].hostname }}" # Physical Server
+  profile = matchbox_profile.openshift-agent-install.name
+  selector = {
+    mac = "{{ hostvars['ocp-hub'].mac_address }}" # PXE boots and installs to 10GbE NIC
+  }
+}

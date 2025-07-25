@@ -3,8 +3,8 @@
   hosts: ipaserver
   become: true
   vars_files:
-  - idm-vault.yml
+    - idm-vault.yml
 
   roles:
-  - role: freeipa.ansible_freeipa.ipaserver
-    state: present
+    - role: freeipa.ansible_freeipa.ipaserver
+      state: present

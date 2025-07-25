@@ -3,7 +3,8 @@
 
 ### Server ###
 
-unbound_num_threads: 1
+unbound_chroot: '""'
+unbound_num_threads: 2
 unbound_interfaces:
   - "{{ ip_address }}"
 #unbound_do_ip4: "yes"
@@ -58,10 +59,10 @@ unbound_rpz_zones: []  # list of dicts
 unbound_stub_zones: []  # list of dicts
 unbound_forward_zones:
   - name: 'int.mk-labs.cloud'
-    forward-addrs:
+    forward-addr:
       - '10.1.71.5'
-  - name: "."
-    forward-addrs:
+  - name: '.'
+    forward-addr:
       - '1.0.0.1@53#one.one.one.one'
       - '1.1.1.1@53#one.one.one.one'
 

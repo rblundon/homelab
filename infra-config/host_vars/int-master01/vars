@@ -1,0 +1,9 @@
+---
+# file: host_vars/int-master01/vars
+
+# Networking
+# primary_interface: "enp1s0f0"
+mac_address: "54:bf:64:60:52:2d"
+ip_address: 10.1.71.61
+
+hostname: "{{ inventory_hostname }}.{{ base_domain }}"
