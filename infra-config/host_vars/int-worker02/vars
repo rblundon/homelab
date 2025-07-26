@@ -1,0 +1,12 @@
+---
+# file: host_vars/int-worker02/vars
+# OpenShift node
+
+# Networking
+primary_interface: "enp2s0f0"
+boot_mac_address: "58:47:ca:76:13:49"
+install_mac_address: "58:47:ca:76:13:47"
+ip_address: 10.1.71.65
+node_role: "worker"
+
+hostname: "{{ inventory_hostname }}.{{ base_domain }}"

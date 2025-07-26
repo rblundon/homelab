@@ -1,0 +1,35 @@
+apiVersion: v1alpha1
+kind: AgentConfig
+metadata:
+  name: {{ hostvars[groups[cluster_group][0]].cluster_name }}
+rendezvousIP: {{ hostvars[groups[cluster_group][0]].ip_address }}
+bootArtifactsBaseURL: {{ hostvars[groups['matchbox_server'][0]].http_endpoint }}/assets/hub/
+hosts:
+{% for host in groups[cluster_group] %}
+  - hostname: {{ host }}
+    role: {{ hostvars[host].node_role | default('master') }}
+    interfaces:
+      - name: {{ hostvars[host].primary_interface }}
+        macAddress: {{ hostvars[host].install_mac_address }}
+    networkConfig:
+      interfaces:
+        - name: {{ hostvars[host].primary_interface }}
+          type: ethernet
+          state: up
+          identifier: mac-address
+          mac-address: {{ hostvars[host].install_mac_address }}
+          ipv4:
+            enabled: true
+            dhcp: true
+      dns-resolver:
+        config:
+          server:
+            - 10.1.71.251
+            - 10.1.71.252
+      routes:
+        config:
+          - destination: 0.0.0.0/0
+            next-hop-address: 10.1.71.1
+            next-hop-interface: {{ hostvars[host].primary_interface }}
+            table-id: 254
+{% endfor %}

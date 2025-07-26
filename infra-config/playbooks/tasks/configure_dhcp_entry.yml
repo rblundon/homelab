@@ -1,0 +1,10 @@
+---
+- name: Add DHCP entry for {{ inventory_hostname }}
+  delegate_to: "{{ dhcp_server }}"
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/dnsmasq.d/hosts.conf
+    regexp: "# {{ inventory_hostname }}$"
+    line: "dhcp-host={{ host_mac_address | lower }},{{ host_ip_address }} # {{ inventory_hostname }}"
+    state: present
+  notify: Restart dnsmasq

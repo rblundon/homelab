@@ -7,9 +7,11 @@ proxmox_password: "{{ vault_proxmox_root_password }}"
 proxmox_host: "pve01"
 
 # DNS variables
-dns_server: "infra01.int.mk-labs.cloud"
+dns_server: "infra01" # .int.mk-labs.cloud"
 dns_admin: "admin"
 base_domain: "int.mk-labs.cloud"
+# DHCP server
+dhcp_server: "matchbox"
 
 # Terraform variables
 terraform_server: "infra01"

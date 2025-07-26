@@ -1,0 +1,11 @@
+---
+- name: "Create DNS record for {{ dns_name | default(inventory_hostname) }}"
+  delegate_to: "{{ dns_server }}"
+  freeipa.ansible_freeipa.ipadnsrecord:
+    ipaapi_context: "server"
+    ipaadmin_password: "{{ vault_freeipa_password }}"
+    name: "{{ dns_name | default(inventory_hostname) }}"
+    zone_name: "{{ base_domain }}"
+    record_type: "A"
+    record_value: "{{ dns_address | default(host_ip_address) }}"
+    record_ttl: 60

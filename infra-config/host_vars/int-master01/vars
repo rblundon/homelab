@@ -1,9 +1,12 @@
 ---
 # file: host_vars/int-master01/vars
+# OpenShift node
 
 # Networking
-# primary_interface: "enp1s0f0"
-mac_address: "54:bf:64:60:52:2d"
+primary_interface: "enp1s0f0"
+boot_mac_address: "54:bf:64:60:52:2d"
+install_mac_address: "00:0a:f7:5d:f3:53"
 ip_address: 10.1.71.61
+node_role: "master"
 
 hostname: "{{ inventory_hostname }}.{{ base_domain }}"

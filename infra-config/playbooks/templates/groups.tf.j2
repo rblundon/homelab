@@ -1,0 +1,14 @@
+// Matcher group for OCP Internal machines
+{% for host in groups[cluster_group] %}
+resource "matchbox_group" "{{ host }}" {
+  name = "{{ host }}" # Physical Server
+  profile = matchbox_profile.openshift-agent-install.name
+  selector = {
+{% if hostvars[host].boot_mac_address == hostvars[host].install_mac_address %}
+    mac = "{{ hostvars[host].boot_mac_address }}" # PXE boots and installs to same NIC
+{% else %}
+    mac = "{{ hostvars[host].boot_mac_address }}" # PXE boots to 1GbE NIC, installs to 10GbE NIC
+{% endif %}
+  }
+}
+{% endfor %}
