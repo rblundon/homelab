@@ -1,8 +1,9 @@
 cluster_name: "openshift"
 cluster_version: "4.18.21"
-openshift_installer_download_url: "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/{{ cluster_version }}/openshift-install-linux.tar.gz"
-openshift_client_download_url: "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/{{ cluster_version }}/openshift-client-linux.tar.gz"
-# cluster_group: "internal_cluster"
+openshift_installer_file: "openshift-install-linux.tar.gz"
+openshift_client_file: "openshift-client-linux.tar.gz"
+openshift_installer_download_url: "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/{{ cluster_version }}/{{ openshift_installer_file }}"
+openshift_client_download_url: "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/{{ cluster_version }}/{{ openshift_client_file }}"
 worker_node_count: 1
 master_node_count: 3
 cluster_network: "10.128.0.0/14"

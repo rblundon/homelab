@@ -3,8 +3,9 @@
 # OpenShift node
 
 # Networking
-primary_interface: "enp2s0f0"
+boot_interface: "enp87s0"
 boot_mac_address: "58:47:ca:76:13:49"
+primary_interface: "enp2s0f0"
 install_mac_address: "58:47:ca:76:13:47"
 ip_address: 10.1.71.65
 node_role: "worker"

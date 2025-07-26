@@ -54,8 +54,14 @@
 
   vars:
     cluster_group: "internal_cluster"
+    download_dir: "/var/cache/openshift-install"
 
   tasks:
+    - name: Remove previous directory
+      ansible.builtin.file:
+        path: ~/homelab/terraform/{{ cluster_group }}
+        state: absent
+
     - name: Create directory
       ansible.builtin.file:
         path: ~/homelab/terraform/{{ cluster_group }}
@@ -77,59 +83,75 @@
     - name: Create directory for OpenShift Installer files
       become: true
       ansible.builtin.file:
-        path: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}
+        path: "{{ download_dir }}/{{ hostvars[groups[cluster_group][0]].cluster_version }}"
         state: directory
         mode: '0755'
         owner: root
         group: root
 
-    - name: Download OpenShift Installer file
-      become: true
-      ansible.builtin.get_url:
-        url: "{{ hostvars[groups[cluster_group][0]].openshift_installer_download_url }}"
-        dest: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}
-        mode: '0644'
+    - name: Check if OpenShift installer file exists
+      ansible.builtin.stat:
+        path: "{{ download_dir }}/{{ hostvars[groups[cluster_group][0]].cluster_version }}/{{ hostvars[groups[cluster_group][0]].openshift_installer_file }}"
+      register: openshift_installer_file
 
-    - name: Download OpenShift Client file
-      become: true
-      ansible.builtin.get_url:
-        url: "{{ hostvars[groups[cluster_group][0]].openshift_client_download_url }}"
-        dest: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}
-        mode: '0644'
+    - name: Download and install OpenShift installer package
+      when: not openshift_installer_file.stat.exists
+      block:
+        - name: Download OpenShift Installer file
+          become: true
+          ansible.builtin.get_url:
+            url: "{{ hostvars[groups[cluster_group][0]].openshift_installer_download_url }}"
+            dest: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}
+            mode: '0644'
 
-    - name: Unarchive installer file
-      become: true
-      ansible.builtin.unarchive:
-        src: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}/openshift-install-linux.tar.gz
-        dest: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}
-        remote_src: true
+        - name: Unarchive installer file
+          become: true
+          ansible.builtin.unarchive:
+            src: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}/openshift-install-linux.tar.gz
+            dest: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}
+            remote_src: true
 
-    - name: Unarchive client file
-      become: true
-      ansible.builtin.unarchive:
-        src: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}/openshift-client-linux.tar.gz
-        dest: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}
-        remote_src: true
+        - name: Copy install binary
+          become: true
+          ansible.builtin.copy:
+            src: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}/openshift-install
+            dest: /usr/local/bin
+            remote_src: true
+            owner: wed
+            group: wed
+            mode: '0755'
 
-    - name: Copy install binary
-      become: true
-      ansible.builtin.copy:
-        src: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}/openshift-install
-        dest: /usr/local/bin
-        remote_src: true
-        owner: wed
-        group: wed
-        mode: '0755'
+    - name: Check if OpenShift client file exists
+      ansible.builtin.stat:
+        path: "{{ download_dir }}/{{ hostvars[groups[cluster_group][0]].cluster_version }}/{{ hostvars[groups[cluster_group][0]].openshift_client_file }}"
+      register: openshift_client_file
 
-    - name: Copy client binary
-      become: true
-      ansible.builtin.copy:
-        src: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}/oc
-        dest: /usr/local/bin
-        remote_src: true
-        owner: wed
-        group: wed
-        mode: '0755'
+    - name: Download and install OpenShift client package
+      when: not openshift_client_file.stat.exists
+      block:
+        - name: Download OpenShift Client file
+          become: true
+          ansible.builtin.get_url:
+            url: "{{ hostvars[groups[cluster_group][0]].openshift_client_download_url }}"
+            dest: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}
+            mode: '0644'
+
+        - name: Unarchive client file
+          become: true
+          ansible.builtin.unarchive:
+            src: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}/openshift-client-linux.tar.gz
+            dest: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}
+            remote_src: true
+
+        - name: Copy client binary
+          become: true
+          ansible.builtin.copy:
+            src: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}/oc
+            dest: /usr/local/bin
+            remote_src: true
+            owner: wed
+            group: wed
+            mode: '0755'
 
     - name: Check if OpenShift image exists
       ansible.builtin.stat:
