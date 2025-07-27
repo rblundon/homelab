@@ -4,6 +4,8 @@ kind: Subscription
 metadata:
   labels:
     operators.coreos.com/external-secrets-operator.openshift-operators: ''
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
   name: external-secrets-operator
   namespace: openshift-operators
 spec:

@@ -4,6 +4,7 @@ kind: Namespace
 metadata:
   annotations:
     argocd.argoproj.io/tracking-id: 'external-secrets:/Namespace:openshift-operators/external-secrets'
+    argocd.argoproj.io/sync-wave: "1"
   name: external-secrets
   labels:
     argocd.argoproj.io/managed-by: openshift-gitops-operator
