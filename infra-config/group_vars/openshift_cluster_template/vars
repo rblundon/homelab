@@ -1,4 +1,4 @@
-# file: group_vars/internal_cluster/vars
+# file: group_vars/openshift_cluster_template/vars
 # Ansible vars template for OpenShift nodes created via Ansible (configure_openshift_cluster).
 
 # Cluster deployed via Agent Installer and Matchbox (iPXE):
@@ -32,11 +32,11 @@ worker_node_count: 1
 
 machine_network: "10.1.71.0/24"
 
-# OpenShift API IP Address
+# OpenShift API IP Address (Comment out for Single Node Cluster)
 
 api_address: "10.1.71.69"
 
-# OpenShift Apps Wildcard IP Address (These will be the same in a Single Node Cluster)
+# OpenShift Apps Wildcard IP Address (Comment out for Single Node Cluster)
 
 app_address: "10.1.71.60"
 

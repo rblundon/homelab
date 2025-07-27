@@ -20,20 +20,20 @@ This implementation is built on easily accessible consumer based hardware and wi
 3. **[Core Services Setup](./docs/03-core-services.md)** *(TBD)* - k0s cluster, DNS, monitoring
 4. **[Storage Configuration](./docs/04-storage.md)** *(TBD)* - Synology, democratic-csi
 
-### Phase 2: Container Platform
-5. **[Container Registry Setup](./docs/05-container-registry.md)** *(TBD)* - Harbor deployment
-6. **[Git Repository Setup](./docs/06-git-repository.md)** *(TBD)* - Gitea/GitLab on Synology
-7. **[Artifact Repository](./docs/07-artifact-repository.md)** *(TBD)* - Nexus/Artifactory
+### Phase 2: Proxmox Platform
+11. **[Proxmox Installation](./docs/11-vsphere-setup.md)** *(TBD)* - Dell 7050 virtualization
+12. **[Windows Infrastructure](./docs/12-windows-infrastructure.md)** *(TBD)* - AD, SQL Server
+13. **[VM Templates & Automation](./docs/13-vm-automation.md)** *(TBD)* - Template creation
 
 ### Phase 3: OpenShift Clusters
 8. **[OpenShift Compact Cluster](./docs/08-openshift-compact.md)** *(TBD)* - 3-node production-like
 9. **[OpenShift SNO + Worker](./docs/09-openshift-sno.md)** *(TBD)* - Edge computing setup
 10. **[ACM Configuration](./docs/10-acm-setup.md)** *(TBD)* - Multi-cluster management
 
-### Phase 4: vSphere Platform
-11. **[vSphere Installation](./docs/11-vsphere-setup.md)** *(TBD)* - Dell T640 virtualization
-12. **[Windows Infrastructure](./docs/12-windows-infrastructure.md)** *(TBD)* - AD, SQL Server
-13. **[VM Templates & Automation](./docs/13-vm-automation.md)** *(TBD)* - Template creation
+### Phase 4: Container Platform
+5. **[Container Registry Setup](./docs/05-container-registry.md)** *(TBD)* - Harbor deployment
+6. **[Git Repository Setup](./docs/06-git-repository.md)** *(TBD)* - Gitea/GitLab on Synology
+7. **[Artifact Repository](./docs/07-artifact-repository.md)** *(TBD)* - Nexus/Artifactory
 
 ### Phase 5: Advanced Services
 14. **[Monitoring & Observability](./docs/14-monitoring.md)** *(TBD)* - Prometheus, Grafana, Splunk
@@ -43,7 +43,7 @@ This implementation is built on easily accessible consumer based hardware and wi
 ## 🚀 Quick Start Deployment
 
 ### Prerequisites
-- Ubiquiti UDM SE configured
+- Ubiquiti UDM Pro configured
 - Hardware powered and networked
 - Initial VLAN setup (see [networking plan](./docs/02-networking.md))
 
@@ -73,17 +73,17 @@ source ~/venv-ansible/bin/activate
 ## 📁 Repository Structure
 
 ```
-homelab-plan/
+homelab/
 ├── README.md                    # This file
 ├── docs/                        # Documentation (numbered by priority)
 │   ├── 01-overview.md
 │   ├── 02-networking.md
 │   └── ...
 ├── deployment/                  # Deployment configurations
-│   ├── synology/               # Docker Compose files for Synology
-│   ├── k0s/                    # k0s cluster manifests
-│   ├── openshift/              # OpenShift installation configs
-│   └── vsphere/                # vSphere automation
+│   ├── synology/                # Docker Compose files for Synology
+│   ├── k0s/                     # k0s cluster manifests
+│   ├── openshift/               # OpenShift installation configs
+│   └── proxmox/                 # Proxmox automation
 ├── scripts/                     # Automation scripts
 └── .gitignore                   # Excludes sensitive data
 ```

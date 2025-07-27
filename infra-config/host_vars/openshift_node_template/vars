@@ -1,5 +1,5 @@
 ---
-# file: host_vars/int-worker02/vars
+# file: host_vars/openshift_node_template/vars
 # Ansible vars template for OpenShift nodes created via Ansible (configure_openshift_cluster).
 
 # Cluster deployed via Agent Installer and Matchbox (iPXE):
@@ -8,22 +8,22 @@
 # - master
 # - worker
 
-node_role: "worker"
+node_role: "master"
 
 # IP address assigned to this node on the Primary Interface
 
-ip_address: 10.1.71.65
+ip_address: 10.1.71.61
 
 # Ansible Playbook supports booting node via one interface, but installing on a 
 # different interface. (Disabling the boot interface on install)  All these fields
 # are necessary.  In the case of a single NIC node, interfaces and MAC addresses
 # should be the same.
 
-boot_interface: "enp87s0"
-boot_mac_address: "58:47:ca:76:13:49"
-primary_interface: "enp2s0f0"
-install_mac_address: "58:47:ca:76:13:47"
+boot_interface: "enp0s31f6"
+boot_mac_address: "54:bf:64:60:52:2d"
+primary_interface: "enp1s0f0"
+install_mac_address: "98:b7:85:20:47:22"
 
-# ---
+# Static Variables
 
-hostname: "{{ inventory_hostname }}.{{ base_domain }}"
+hostname: "{{ inventory_hostname }}.{{ base_domain }}" # Change variable to fqdn
