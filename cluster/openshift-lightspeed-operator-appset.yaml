@@ -13,11 +13,7 @@ spec:
   - list:
       elements:
       - cluster: internal
-        url: https://api.cluster1.chx.osecloud.com:6443
-  # - clusters:
-  #     selector:
-  #       matchLabels:
-  #         name: "internal"
+      - cluster: in-cluster
   template:
     metadata:
       name: '{{.cluster}}-openshift-lightspeed'
