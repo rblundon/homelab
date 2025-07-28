@@ -1,0 +1,53 @@
+---
+# https://github.com/cert-manager/cert-manager/blob/master/deploy/charts/cert-manager/values.yaml
+
+cert-manager:
+  enabled: true
+  installCRDs: true
+  dns01RecursiveNameservers: 1.1.1.1:53
+  dns01RecursiveNameserversOnly: true
+  livenessProbe:
+    enabled: true
+  prometheus:
+    enabled: true
+    servicemonitor:
+      enabled: true
+
+ca:
+  enabled: false
+  tlsCrt: |-
+    -----BEGIN CERTIFICATE-----
+    <actual certificate>
+    -----END CERTIFICATE-----
+  tlsKey: |-
+    -----BEGIN PRIVATE KEY-----
+    <actual key>
+    -----END PRIVATE KEY-----
+
+le:
+  prod:
+    enabled: true
+    server: https://acme-v02.api.letsencrypt.org/directory
+  staging:
+    enabled: true
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+  apiCert:
+    enabled: true
+  routerCert:
+    enabled: true
+  preferredChain: ""
+  email: ryan.blundon@protonmail.com
+  solvers:
+  - type: dns
+    dnsConfig:
+        cloudflare:
+          apiTokenSecretRef:
+            name: cloudflare-api-token
+            key: api-token
+          email: ryan.blundon@protonmail.com
+        cnameStrategy: Follow
+    dnsZones:
+    - mk-labs.cloud
+
+cluster_name: openshift
+base_domain: int.mk-labs.cloud

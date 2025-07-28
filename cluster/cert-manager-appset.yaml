@@ -15,16 +15,19 @@ spec:
     metadata:
       name: '{{.name}}-external-secrets'
       annotations:
-        argocd.argoproj.io/sync-wave: "1"
+        argocd.argoproj.io/sync-wave: "2"
     spec:
-      project: default
-      source:
-        repoURL: https://github.com/rblundon/homelab.git
-        targetRevision: HEAD
-        path: cluster/external-secrets/overlays/{{.name}}
       destination:
         name: '{{.name}}'
-        namespace: openshift-operators
+        namespace: cert-manager
+      project: default
+      source:
+        path: cluster/cert-manager
+        repoURL: https://github.com/rblundon/homelab.git
+        targetRevision: HEAD
+        helm:
+          valueFiles:
+            - values-'{{.name}}'.yaml
       syncPolicy:
         automated:
           prune: true
@@ -35,3 +38,8 @@ spec:
         managedNamespaceMetadata:
           labels:
             argocd.argoproj.io/managed-by: openshift-gitops
+      ignoreDifferences:
+      - group: apps
+        kind: Deployment
+        jsonPointers:
+        - /spec/replicas

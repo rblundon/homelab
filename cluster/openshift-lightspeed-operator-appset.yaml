@@ -10,8 +10,8 @@ spec:
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
   generators:
-  # - clusters: {}
-  - list:
+  # - clusters: {} # Variable is .name
+  - list: # Variable is .cluster
       elements:
       - cluster: internal
   template:
