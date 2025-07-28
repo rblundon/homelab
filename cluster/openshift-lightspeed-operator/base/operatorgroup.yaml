@@ -6,3 +6,4 @@ metadata:
   namespace: openshift-lightspeed
   annotations:
     argocd.argoproj.io/sync-wave: "2"
+    olm.targetNamespaces: openshift-lightspeed
