@@ -12,7 +12,7 @@ spec:
   generators:
   - list:
       elements:
-      - cluster: cluster1
+      - cluster: internal
         url: https://api.cluster1.chx.osecloud.com:6443
   # - clusters:
   #     selector:
