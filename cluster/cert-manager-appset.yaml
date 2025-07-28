@@ -27,7 +27,7 @@ spec:
         targetRevision: HEAD
         helm:
           valueFiles:
-            - values-'{{.name}}'.yaml
+            - values-{{.name}}.yaml
       syncPolicy:
         automated:
           prune: true
