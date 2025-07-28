@@ -10,13 +10,17 @@ spec:
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
   generators:
-  - clusters:
-      selector:
-        matchLabels:
-          name: "internal"
+  - list:
+      elements:
+      - cluster: cluster1
+        url: https://api.cluster1.chx.osecloud.com:6443
+  # - clusters:
+  #     selector:
+  #       matchLabels:
+  #         name: "internal"
   template:
     metadata:
-      name: '{{.name}}-openshift-lightspeed'
+      name: '{{.cluster}}-openshift-lightspeed'
       annotations:
         argocd.argoproj.io/sync-wave: "2"
     spec:
@@ -24,9 +28,9 @@ spec:
       source:
         repoURL: https://github.com/rblundon/homelab.git
         targetRevision: HEAD
-        path: cluster/openshift-lightspeed-operator/overlays/{{.name}}
+        path: cluster/openshift-lightspeed-operator/overlays/{{.cluster}}
       destination:
-        name: '{{.name}}'
+        name: '{{.cluster}}'
         namespace: openshift-lightspeed
       syncPolicy:
         automated:
