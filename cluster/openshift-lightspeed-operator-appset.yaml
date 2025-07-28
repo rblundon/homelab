@@ -10,10 +10,10 @@ spec:
   goTemplate: true
   goTemplateOptions: ["missingkey=error"]
   generators:
-  - list:
-      elements:
-      - cluster: internal
-      - cluster: in-cluster
+  - clusters: {}
+  # - list:
+  #     elements:
+  #     - cluster: internal
   template:
     metadata:
       name: '{{.cluster}}-openshift-lightspeed'
