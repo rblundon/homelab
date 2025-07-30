@@ -1,44 +1,41 @@
-# file: group_vars/internal_cluster/vars
+# file: group_vars/hub_cluster/vars
 # Ansible vars template for OpenShift nodes created via Ansible (configure_openshift_cluster).
 
 # Cluster deployed via Agent Installer and Matchbox (iPXE):
 
-# Role of this node in the cluster. 
-# - master
-# - worker
 # Name of the OpenShift Cluster
 
-cluster_name: "openshift"
+cluster_name: "hub"
 
 # Version of OpenShift to install.  All available versions can be found at: https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/
 
-cluster_version: "4.18.21"
+cluster_version: "4.17.20"
 
 # Type of cluster. 
 # - none (Single Node Cluster)
 # - baremetal (Traditional and Compact Cluster)
 
-platform_type: "baremetal"
+platform_type: "none"
 
 # Number of nodes to deploy
 # - Master: 1; Worker 0 (Single Node Cluster)
 # - Master: 3; Worker 0 (Compact Cluster)
 # - Master: 3; Worker 1-3 (Traditional Cluster)
 
-master_node_count: 3
-worker_node_count: 1
+master_node_count: 1
+worker_node_count: 0
 
 # Subnet that cluster nodes will reside on.
 
 machine_network: "10.1.71.0/24"
 
-# OpenShift API IP Address
+# OpenShift API IP Address (Comment out for Single Node Cluster)
 
-api_address: "10.1.71.69"
+# api_address: "10.1.71.10"
 
-# OpenShift Apps Wildcard IP Address (These will be the same in a Single Node Cluster)
+# OpenShift Apps Wildcard IP Address (Comment out for Single Node Cluster)
 
-app_address: "10.1.71.60"
+# app_address: "10.1.71.10"
 
 # These are internal networks to the cluster and should not need to be changed.
 
