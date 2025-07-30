@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: nmstate-oprtstor
+  name: nmstate-operator
   namespace: openshift-gitops
   finalizers:
   - resources-finalizer.argocd.argoproj.io
