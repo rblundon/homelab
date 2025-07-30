@@ -1,0 +1,30 @@
+---
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: storage-network-ocp-hub
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: ocp-hub
+  desiredState:
+    interfaces:
+      - name: enp1s0f0.121
+        state: up
+        type: vlan
+        vlan:
+          base-iface: enp1s0f0
+          id: 121
+      - bridge:
+          port:
+            - name: enp1s0f0.121
+        ipv4:
+          address:
+            - ip: 10.10.121.10
+              prefix-length: 24
+          enabled: true
+        name: storage-network
+        state: up
+        type: linux-bridge
+        description: Linux bridge with enp1s0 as a port on VLAN 121

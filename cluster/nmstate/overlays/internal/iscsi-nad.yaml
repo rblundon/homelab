@@ -1,0 +1,38 @@
+---
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  annotations:
+    description: Native VLAN connection for iSCSI
+  name: vlan121-localnet
+  namespace: default
+spec:
+  config: |-
+    {
+      "name": "iscsi-net",
+      "cniVersion": "0.3.1",
+      "type": "vlan",
+      "master": "enp1s0f0",
+      "mtu": 1500,
+      "vlanId": 121,
+      "linkInContainer": false,
+      "ipam": {
+        "type": "static",
+        "addresses": [
+          {
+            "address": "10.10.121.10/24"
+          }
+        ]
+      }
+    }
+
+    # {
+    #   "cniVersion": "0.3.1",
+    #   "name": "bridge-net",
+    #   "type": "bridge",
+    #   "isGateway": true,
+    #   "vlan": 2,
+    #   "ipam": {
+    #     "type": "dhcp"
+    #     }
+    # }
