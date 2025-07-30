@@ -13,7 +13,7 @@ spec:
   - clusters: {} # Variable is .name
   template:
     metadata:
-      name: '{{.name}}-cert-manager'
+      name: '{{.name}}-nmstate'
       annotations:
         argocd.argoproj.io/sync-wave: "1"
     spec:
