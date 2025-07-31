@@ -22,7 +22,7 @@ spec:
         namespace: openshift-nmstate
       project: default
       source:
-        path: cluster/nmstate/overlays/'{{.name}}'
+        path: cluster/nmstate/overlays/{{.name}}
         repoURL: https://github.com/rblundon/homelab.git
         targetRevision: HEAD
       syncPolicy:
