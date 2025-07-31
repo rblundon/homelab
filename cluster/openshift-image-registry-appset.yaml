@@ -22,7 +22,7 @@ spec:
         namespace: openshift-image-registry
       project: default
       source:
-        path: cluster-applications/openshift-image-registry
+        path: cluster/openshift-image-registry
         repoURL: git@github.com:rblundon/MK-Labs.git
         targetRevision: HEAD
       syncPolicy:
