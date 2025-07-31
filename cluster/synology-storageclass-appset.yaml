@@ -18,7 +18,7 @@ spec:
         argocd.argoproj.io/sync-wave: "2"
       spec:
         destination:
-          name: in-cluster
+          name: '{{.name}}'
           namespace: synology-csi
         project: default
         source:
