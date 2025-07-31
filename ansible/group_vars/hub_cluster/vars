@@ -9,7 +9,7 @@ cluster_name: "hub"
 
 # Version of OpenShift to install.  All available versions can be found at: https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/
 
-cluster_version: "4.17.20"
+cluster_version: "4.18.21"
 
 # Type of cluster. 
 # - none (Single Node Cluster)
@@ -29,13 +29,13 @@ worker_node_count: 0
 
 machine_network: "10.1.71.0/24"
 
-# OpenShift API IP Address (Comment out for Single Node Cluster)
+# OpenShift API IP Address (Reference host IP address for Single Node Cluster)
 
-# api_address: "10.1.71.10"
+api_address: "{{ ip_address }}" # "10.1.71.10"
 
-# OpenShift Apps Wildcard IP Address (Comment out for Single Node Cluster)
+# OpenShift Apps Wildcard IP Address (Reference host IP address for Single Node Cluster)
 
-# app_address: "10.1.71.10"
+app_address: "{{ ip_address }}" # "10.1.71.10"
 
 # These are internal networks to the cluster and should not need to be changed.
 

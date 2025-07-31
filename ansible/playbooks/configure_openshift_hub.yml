@@ -1,0 +1,221 @@
+---
+- name: Configure DNS entries for cluster nodes
+  hosts: hub_cluster
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Create DNS entry for each cluster node
+      ansible.builtin.include_tasks: tasks/create_dns_record.yml
+      vars:
+        host_ip_address: "{{ ip_address }}"
+
+- name: Configure DNS entries for OpenShift cluster services
+  hosts: hub_cluster[0]
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Create DNS entries for OpenShift cluster services
+      ansible.builtin.include_tasks: tasks/create_dns_record.yml
+      vars:
+        dns_name: "{{ item.name }}"
+        dns_address: "{{ item.address }}"
+      loop:
+        - name: "api.{{ cluster_name }}"
+          address: "{{ api_address }}"
+        - name: "api-int.{{ cluster_name }}"
+          address: "{{ api_address }}"
+        - name: "*.apps.{{ cluster_name }}"
+          address: "{{ app_address }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+- name: Configure DHCP entries for cluster nodes
+  hosts: hub_cluster
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Configure DHCP entry for node
+      ansible.builtin.include_tasks: tasks/configure_dhcp_entry.yml
+      vars:
+        host_mac_address: "{{ install_mac_address }}"
+        host_ip_address: "{{ ip_address }}"
+
+  handlers:
+    - name: Restart dnsmasq
+      delegate_to: "{{ dhcp_server }}"
+      become: true
+      ansible.builtin.service:
+        name: dnsmasq
+        state: restarted
+
+- name: Create OpenShift installer files
+  hosts: matchbox
+  gather_facts: true
+
+  vars:
+    cluster_group: "hub_cluster"
+    download_dir: "/var/cache/openshift-install"
+
+  tasks:
+    - name: Remove previous directory
+      ansible.builtin.file:
+        path: ~/homelab/terraform/{{ cluster_group }}
+        state: absent
+
+    - name: Create directory
+      ansible.builtin.file:
+        path: ~/homelab/terraform/{{ cluster_group }}
+        state: directory
+        mode: '0755'
+
+    - name: OpenShift Installer install-config.yaml
+      ansible.builtin.template:
+        src: templates/install-config.yaml.j2
+        dest: ~/homelab/terraform/{{ cluster_group }}/install-config.yaml
+        mode: '0644'
+
+    - name: OpenShift Installer agent-config.yaml
+      ansible.builtin.template:
+        src: templates/agent-config.yaml.j2
+        dest: ~/homelab/terraform/{{ cluster_group }}/agent-config.yaml
+        mode: '0644'
+
+    # - name: Quit
+    #   ansible.builtin.meta: end_play
+
+    - name: Create directory for OpenShift Installer files
+      become: true
+      ansible.builtin.file:
+        path: "{{ download_dir }}/{{ hostvars[groups[cluster_group][0]].cluster_version }}"
+        state: directory
+        mode: '0755'
+        owner: root
+        group: root
+
+    - name: Check if OpenShift installer file exists
+      ansible.builtin.stat:
+        path: "{{ download_dir }}/{{ hostvars[groups[cluster_group][0]].cluster_version }}/{{ hostvars[groups[cluster_group][0]].openshift_installer_file }}"
+      register: openshift_installer_file
+
+    - name: Download and install OpenShift installer package
+      when: not openshift_installer_file.stat.exists
+      block:
+        - name: Download OpenShift Installer file
+          become: true
+          ansible.builtin.get_url:
+            url: "{{ hostvars[groups[cluster_group][0]].openshift_installer_download_url }}"
+            dest: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}
+            mode: '0644'
+
+        - name: Unarchive installer file
+          become: true
+          ansible.builtin.unarchive:
+            src: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}/openshift-install-linux.tar.gz
+            dest: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}
+            remote_src: true
+
+        - name: Copy install binary
+          become: true
+          ansible.builtin.copy:
+            src: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}/openshift-install
+            dest: /usr/local/bin
+            remote_src: true
+            owner: wed
+            group: wed
+            mode: '0755'
+
+    - name: Check if OpenShift client file exists
+      ansible.builtin.stat:
+        path: "{{ download_dir }}/{{ hostvars[groups[cluster_group][0]].cluster_version }}/{{ hostvars[groups[cluster_group][0]].openshift_client_file }}"
+      register: openshift_client_file
+
+    - name: Download and install OpenShift client package
+      when: not openshift_client_file.stat.exists
+      block:
+        - name: Download OpenShift Client file
+          become: true
+          ansible.builtin.get_url:
+            url: "{{ hostvars[groups[cluster_group][0]].openshift_client_download_url }}"
+            dest: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}
+            mode: '0644'
+
+        - name: Unarchive client file
+          become: true
+          ansible.builtin.unarchive:
+            src: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}/openshift-client-linux.tar.gz
+            dest: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}
+            remote_src: true
+
+        - name: Copy client binary
+          become: true
+          ansible.builtin.copy:
+            src: /var/cache/openshift-install/{{ hostvars[groups[cluster_group][0]].cluster_version }}/oc
+            dest: /usr/local/bin
+            remote_src: true
+            owner: wed
+            group: wed
+            mode: '0755'
+
+    - name: Check if OpenShift image exists
+      ansible.builtin.stat:
+        path: ~/homelab/terraform/{{ cluster_group }}/boot-artifacts/agent.x86_64-initrd.img
+      register: openshift_image_exists
+
+    - name: OpenShift image creation
+      ansible.builtin.command: /usr/local/bin/openshift-install agent create pxe-files
+      args:
+        chdir: ~/homelab/terraform/{{ cluster_group }}
+      when: not openshift_image_exists.stat.exists
+      changed_when: true
+
+    - name: Create a directory if it does not exist
+      become: true
+      ansible.builtin.file:
+        path: "{{ hostvars[groups['matchbox_server'][0]].assets }}/{{ hostvars[groups[cluster_group][0]].cluster_name }}"
+        state: directory
+        owner: matchbox
+        group: matchbox
+        mode: '0755'
+
+    - name: Copy file with owner and permissions
+      become: true
+      ansible.builtin.copy:
+        src: "{{ ansible_env['HOME'] }}/homelab/terraform/{{ cluster_group }}/boot-artifacts/"
+        dest: "{{ hostvars[groups['matchbox_server'][0]].assets }}/{{ hostvars[groups[cluster_group][0]].cluster_name }}/"
+        remote_src: true
+        owner: matchbox
+        group: matchbox
+        mode: '0644'
+
+    - name: Verify directory permissions
+      become: true
+      ansible.builtin.file:
+        path: "{{ hostvars[groups['matchbox_server'][0]].assets }}/{{ hostvars[groups[cluster_group][0]].cluster_name }}"
+        state: directory
+        owner: matchbox
+        group: matchbox
+        mode: '0755'
+
+    - name: Create Terraform matchbox groups file from template
+      ansible.builtin.template:
+        src: templates/groups.tf.j2
+        dest: ~/homelab/terraform/{{ cluster_group }}/groups.tf
+        mode: '0644'
+
+    - name: Create Terraform matchbox profiles file from template
+      ansible.builtin.template:
+        src: templates/profiles.tf.j2
+        dest: ~/homelab/terraform/{{ cluster_group }}/profiles.tf
+        mode: '0644'
+
+    - name: Create Terraform matchbox provider file from template
+      ansible.builtin.template:
+        src: templates/provider.tf.j2
+        dest: ~/homelab/terraform/{{ cluster_group }}/provider.tf
+        mode: '0644'
+
+    - name: Configure Matchbox via Terraform
+      community.general.terraform:
+        project_path: ~/homelab/terraform/{{ cluster_group }}
+        state: present
+        force_init: true

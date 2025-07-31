@@ -21,11 +21,13 @@ hosts:
           ipv4:
             enabled: true
             dhcp: true
+{% if hostvars[host].boot_mac_address != hostvars[host].install_mac_address %}
         - name: {{ hostvars[host].boot_interface }}
           type: ethernet
           state: down
           identifier: mac-address
           mac-address: {{ hostvars[host].boot_mac_address }}
+{% endif %}
       dns-resolver:
         config:
           server:

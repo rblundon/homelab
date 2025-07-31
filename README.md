@@ -17,25 +17,31 @@ This implementation is built on easily accessible consumer based hardware and wi
 ### Phase 1: Foundation
 1. **[Overview & Hardware Allocation](./docs/01-overview.md)** - Complete architecture overview
 2. **[Networking Plan](./docs/02-networking.md)** - VLAN strategy and network design
-3. **[Core Services Setup](./docs/03-core-services.md)** *(TBD)* - k0s cluster, DNS, monitoring
+3. **[Core Services Setup](./docs/03-core-services.md)** *(TBD)* - Ansible, DNS, monitoring
 4. **[Storage Configuration](./docs/04-storage.md)** *(TBD)* - Synology, democratic-csi
 
 ### Phase 2: Proxmox Platform
-11. **[Proxmox Installation](./docs/11-vsphere-setup.md)** *(TBD)* - Dell 7050 virtualization
-12. **[Windows Infrastructure](./docs/12-windows-infrastructure.md)** *(TBD)* - AD, SQL Server
-13. **[VM Templates & Automation](./docs/13-vm-automation.md)** *(TBD)* - Template creation
+5. **[Proxmox Installation](./docs/11-vsphere-setup.md)** *(TBD)* - Dell 7050 virtualization
+6. **[VM Templates & Automation](./docs/13-vm-automation.md)** *(TBD)* - Template creation
 
-### Phase 3: OpenShift Clusters
-8. **[OpenShift Compact Cluster](./docs/08-openshift-compact.md)** *(TBD)* - 3-node production-like
-9. **[OpenShift SNO + Worker](./docs/09-openshift-sno.md)** *(TBD)* - Edge computing setup
+### Phase 3: Infrastructure Services
+7. **[Recursive DNS](./docs/09-openshift-sno.md)** *(TBD)* - ACM Hub Cluster
+8. **[Authoritative DNS](./docs/08-openshift-compact.md)** *(TBD)* - 3 Master/3 Worker node (production-like)
+9. **[Identity Management](./docs/10-acm-setup.md)** *(TBD)* - Multi-cluster management
+10. **[Matchbox](./docs/10-acm-setup.md)** *(TBD)* - External app cluster
+
+### Phase 4: OpenShift Clusters
+8. **[OpenShift SNO + Worker](./docs/09-openshift-sno.md)** *(TBD)* - ACM Hub Cluster
+9. **[OpenShift Cluster](./docs/08-openshift-compact.md)** *(TBD)* - 3 Master/3 Worker node (production-like)
 10. **[ACM Configuration](./docs/10-acm-setup.md)** *(TBD)* - Multi-cluster management
+11. **[HCP Cluster](./docs/10-acm-setup.md)** *(TBD)* - External app cluster
 
-### Phase 4: Container Platform
+### Phase 5: Container Platform
 5. **[Container Registry Setup](./docs/05-container-registry.md)** *(TBD)* - Harbor deployment
 6. **[Git Repository Setup](./docs/06-git-repository.md)** *(TBD)* - Gitea/GitLab on Synology
 7. **[Artifact Repository](./docs/07-artifact-repository.md)** *(TBD)* - Nexus/Artifactory
 
-### Phase 5: Advanced Services
+### Phase 6: Advanced Services
 14. **[Monitoring & Observability](./docs/14-monitoring.md)** *(TBD)* - Prometheus, Grafana, Splunk
 15. **[Security & Compliance](./docs/15-security.md)** *(TBD)* - ACS, certificates, auditing
 16. **[Backup & DR](./docs/16-backup-dr.md)** *(TBD)* - Backup strategies
@@ -47,7 +53,7 @@ This implementation is built on easily accessible consumer based hardware and wi
 - Hardware powered and networked
 - Initial VLAN setup (see [networking plan](./docs/02-networking.md))
 
-Ansible Collections
+### Ansible Collections
 - ansible-galaxy collection install freeipa.ansible_freeipa
 
 ### Deployment Scripts
@@ -66,8 +72,8 @@ source ~/venv-ansible/bin/activate
 ./deployment/openshift/compact-cluster/
 ./deployment/openshift/sno-cluster/
 
-# Phase 4: vSphere
-./deployment/vsphere/
+# Phase 4: Proxmox
+./deployment/proxmox/
 ```
 
 ## 📁 Repository Structure
@@ -79,7 +85,9 @@ homelab/
 │   ├── 01-overview.md
 │   ├── 02-networking.md
 │   └── ...
-├── deployment/                  # Deployment configurations
+├── ansible/                     # Directory structure for Ansible 
+├── deployment/                  # Deployment 
+configurations
 │   ├── synology/                # Docker Compose files for Synology
 │   ├── k0s/                     # k0s cluster manifests
 │   ├── openshift/               # OpenShift installation configs

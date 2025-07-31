@@ -20,9 +20,14 @@ networking:
   serviceNetwork:
   - {{ hostvars[groups[cluster_group][0]].service_network }}
 platform:
+{% if hostvars[groups[cluster_group][0]].platform_type == 'none' %}
+  {{ hostvars[groups['hub_cluster'][0]].platform_type }}: {}
+{% endif %}
+{% if hostvars[groups[cluster_group][0]].platform_type == 'baremetal' %}
   {{ hostvars[groups[cluster_group][0]].platform_type }}:
     apiVIP: {{ hostvars[groups[cluster_group][0]].api_address }}
     ingressVIP: {{ hostvars[groups[cluster_group][0]].app_address }}
+{% endif %}
 fips: false
 pullSecret: '{{ vault_pull_secret }}'
 sshKey: '{{ vault_ssh_key }}'

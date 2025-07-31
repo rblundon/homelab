@@ -1,0 +1,27 @@
+---
+- name: Interactively configure an OpenShift cluster
+  # Run this play on the controller to orchestrate the changes
+  hosts: localhost
+  gather_facts: false
+
+  vars_prompt:
+    - name: cluster_group
+      prompt: "What is the name of the Cluster Group?"
+      private: false
+
+  tasks:
+    - name: Create DNS entry for each cluster node
+      # Loop over every hostname in the user-provided group
+      loop: "{{ groups[cluster_group] }}"
+      loop_control:
+        # Use a descriptive name for the loop variable instead of 'item'
+        loop_var: node_hostname
+
+      ansible.builtin.debug:
+        msg: "Using {{ item, dns_address }}"
+
+#      ansible.builtin.include_tasks: tasks/create_dns_record.yml
+      vars:
+        # Access the 'ip_address' variable of the specific host in the loop
+        dns_address: "{{ hostvars[node_hostname]['ip_address'] }}"
+        dns_name: "{{ hostvars[node_hostname] }}"
