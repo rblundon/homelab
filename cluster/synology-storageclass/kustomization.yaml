@@ -12,4 +12,3 @@ resources:
 - storage-class.yaml
 - snapshotter.yaml
 - volume-snapshot-class.yaml
-- enable-iscsi.yaml

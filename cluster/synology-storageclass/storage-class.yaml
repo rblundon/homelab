@@ -1,3 +1,4 @@
+---
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
@@ -9,7 +10,23 @@ provisioner: csi.san.synology.com
 parameters:
   dsm: '10.10.121.35'
   protocol: 'iscsi'
-  location: '/volume1'
+  location: '/volume1/openshift-iscsi'
   csi.storage.k8s.io/fstype: 'ext4'
 reclaimPolicy: Delete #Retain
+allowVolumeExpansion: true
+
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: synology-nfs-storage
+provisioner: csi.san.synology.com
+parameters:
+  protocol: "nfs"
+  dsm: '10.10.121.35'
+  location: '/volume1/openshift-nfs'
+  mountPermissions: '0755'
+mountOptions:
+  - nfsvers=4.1
+reclaimPolicy: Delete
 allowVolumeExpansion: true
