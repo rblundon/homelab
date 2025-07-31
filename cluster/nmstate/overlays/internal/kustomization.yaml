@@ -7,3 +7,4 @@ commonAnnotations:
 resources:
 - ../../base
 - ocp-storage-vlan.yaml
+- enable-worker-iscsi.yaml
