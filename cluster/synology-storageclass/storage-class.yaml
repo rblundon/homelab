@@ -10,7 +10,7 @@ provisioner: csi.san.synology.com
 parameters:
   dsm: '10.10.121.35'
   protocol: 'iscsi'
-  location: '/volume1/openshift-iscsi'
+  location: '/volume1'
   csi.storage.k8s.io/fstype: 'ext4'
 reclaimPolicy: Delete #Retain
 allowVolumeExpansion: true
@@ -24,7 +24,7 @@ provisioner: csi.san.synology.com
 parameters:
   protocol: "nfs"
   dsm: '10.10.121.35'
-  location: '/volume1/openshift-nfs'
+  location: '/volume1'
   mountPermissions: '0755'
 mountOptions:
   - nfsvers=4.1
