@@ -1,0 +1,15 @@
+---
+apiVersion: authorization.openshift.io/v1
+kind: RoleBinding
+metadata:
+  name: nfs-client-provisioner-scc
+  namespace: openshift-nfs-storage
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:openshift:scc:hostmount-anyuid
+  #name: system:openshift:$NAMESPACE:hostmount-anyuid
+subjects:
+- kind: ServiceAccount
+  name: nfs-client-provisioner
+  namespace: openshift-nfs-storage

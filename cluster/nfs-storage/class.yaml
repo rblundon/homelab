@@ -1,0 +1,7 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: synology-nfs
+provisioner: storage.io/nfs
+parameters:
+  archiveOnDelete: "false"
