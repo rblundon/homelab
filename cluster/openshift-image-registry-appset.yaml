@@ -18,7 +18,7 @@ spec:
         argocd.argoproj.io/sync-wave: "3"
     spec:
       destination:
-        name: in-cluster
+        name: '{{.name}}'
         namespace: openshift-image-registry
       project: default
       source:
