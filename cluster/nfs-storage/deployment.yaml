@@ -30,9 +30,9 @@ spec:
             - name: NFS_SERVER
               value: 10.10.121.35
             - name: NFS_PATH
-              value: /volume1/nfs-ocp
+              value: /volume1/openshift-nfs
       volumes:
         - name: nfs-client-root
           nfs:
             server: 10.10.121.35
-            path: /volume1/nfs-ocp
+            path: /volume1/openshift-nfs
