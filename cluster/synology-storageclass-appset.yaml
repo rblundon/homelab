@@ -20,11 +20,12 @@ spec:
       project: default
       destination:
         name: '{{.name}}'
+        namespace: synology-csi
       source:
         path: cluster/synology-storageclass
         repoURL: https://github.com/rblundon/homelab.git
         targetRevision: HEAD
-        namespace: synology-csi
+
       syncPolicy:
         automated:
           prune: false

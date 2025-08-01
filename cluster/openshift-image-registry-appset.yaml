@@ -20,11 +20,12 @@ spec:
       project: default
       destination:
         name: '{{.name}}'
+        namespace: openshift-image-registry
       source:
         path: cluster/openshift-image-registry
         repoURL: https://github.com/rblundon/homelab.git
         targetRevision: HEAD
-        namespace: openshift-image-registry
+
       syncPolicy:
         automated:
           prune: true
