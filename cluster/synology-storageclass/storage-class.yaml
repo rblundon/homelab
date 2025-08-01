@@ -25,8 +25,8 @@ parameters:
   protocol: "nfs"
   dsm: '10.10.121.35'
   location: '/volume1'
-  mountPermissions: '0755'
+  mountPermissions: '0777'
 mountOptions:
-  - nfsvers=4.1
+  - nfsvers=4
 reclaimPolicy: Delete
 allowVolumeExpansion: true
