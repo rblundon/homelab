@@ -1,0 +1,19 @@
+---
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: StorageProfile
+metadata:
+  name: synology-iscsi-storage
+spec:
+  claimPropertySets:
+  - accessModes:
+    - ReadWriteOnce 
+    volumeMode:
+      Block
+  - accessModes:
+    - ReadWriteMany 
+    volumeMode:
+      Block  
+  cloneStrategy: csi-clone
+status:
+  provisioner: csi.san.synology.com
+  storageClass: synology-iscsi-storage

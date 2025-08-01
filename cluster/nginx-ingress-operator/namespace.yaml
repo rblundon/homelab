@@ -1,0 +1,24 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: nginx-ingress-external
+    name: nginx-ingress-external
+    argocd.argoproj.io/managed-by: openshift-gitops-operator
+  name: nginx-ingress-external
+spec:
+  finalizers:
+  - kubernetes
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: nginx-ingress-internal
+    name: nginx-ingress-internal
+    argocd.argoproj.io/managed-by: openshift-gitops-operator
+  name: nginx-ingress-internal
+spec:
+  finalizers:
+  - kubernetes

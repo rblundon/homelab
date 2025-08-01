@@ -1,0 +1,44 @@
+---
+kind: SecurityContextConstraints
+apiVersion: security.openshift.io/v1
+metadata:
+  name: nginx-ingress-admin
+  annotations:
+    kubernetes.io/description: nginx-ingress-admin allows nginx-ingress to
+      use the level of capabilities it requires, while forcing all processes
+      to run as UID 101 as reflected in the official docker images.
+allowPrivilegeEscalation: false
+allowPrivilegedContainer: true
+runAsUser:
+  type: MustRunAs
+  uid: 101
+seLinuxContext:
+  type: MustRunAs
+fsGroup:
+  type: MustRunAs
+supplementalGroups:
+  type: MustRunAs
+allowHostNetwork: false
+allowHostPID: false
+allowHostPorts: false
+allowHostDirVolumePlugin: false
+allowHostIPC: false
+readOnlyRootFilesystem: false
+seccompProfiles:
+- runtime/default
+volumes:
+- configMap
+- downwardAPI
+- emptyDir
+- persistentVolumeClaim
+- projected
+- secret
+allowedCapabilities:
+- NET_BIND_SERVICE
+defaultAddCapabilities:
+- NET_BIND_SERVICE
+requiredDropCapabilities:
+- ALL
+users:
+- 'system:serviceaccount:*:nginx-ingress'
+groups: []

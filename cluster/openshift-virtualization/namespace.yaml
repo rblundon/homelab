@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openshift-cnv
+  labels:
+    name: openshift-cnv
+    argocd.argoproj.io/managed-by: openshift-gitops-operator
+spec:
+  finalizers:
+  - kubernetes

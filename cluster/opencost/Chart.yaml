@@ -1,0 +1,13 @@
+---
+apiVersion: v2
+name: opencost-umbrella
+description: A helm chart to include opencost with values
+type: application
+version: 0.1.0
+appVersion: 0.1.0
+
+dependencies:
+- name: opencost
+  version: 1.9.8
+  repository: https://opencost.github.io/opencost-helm-chart
+#  condition: opencost.enabled

@@ -1,0 +1,16 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+commonAnnotations:
+  argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+
+resources:
+# Operator deployment
+- namespace.yaml
+- operatorgroup.yaml
+- subscription.yaml
+# Deploy cluster resources
+- externalsecrets.yaml
+- scc.yaml
+- cloudflare.yaml
