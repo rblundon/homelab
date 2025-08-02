@@ -2,20 +2,20 @@
 kind: NginxIngress
 apiVersion: charts.nginx.org/v1alpha1
 metadata:
-  name: nginxingress-internal
-  namespace: nginx-ingress-internal
+  name: nginx
+  namespace: nginx-ingress
 spec:
   routeSelector:
     matchLabels:
-      type: internal-ingress
+      type: nginx
   controller:
     affinity:
       podAntiAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
         - labelSelector:
             matchLabels:
-              app.kubernetes.io/instance: nginx-internal
-              app.kubernetes.io/name: nginx-internal
+              app.kubernetes.io/instance: nginx
+              app.kubernetes.io/name: nginx
           topologyKey: kubernetes.io/hostname
     config:
       entries:
@@ -71,7 +71,7 @@ spec:
       tag: 3.7.0-ubi
     ingressClass:
       create: true
-      name: nginx-internal
+      name: nginx
       setAsDefaultIngress: false
     replicaCount: 2
     reportIngressStatus:
@@ -79,10 +79,10 @@ spec:
       enable: true
       enableLeaderElection: true
       ingressLink: ''
-      leaderElectionLockName: internal-ingress-leader
+      leaderElectionLockName: ingress-leader
     service:
       externalTrafficPolicy: Local
-      loadBalancerIP: 10.1.82.2
+#      loadBalancerIP: 10.1.82.2
     prometheus:
       create: true
     serviceMonitor:
@@ -90,7 +90,7 @@ spec:
     volumes:
     - name: nginx-cache
       persistentVolumeClaim:
-        claimName: nginx-cache-internal
+        claimName: nginx-cache
     volumeMounts:
     - name: nginx-cache
       mountPath: /var/cache/nginx

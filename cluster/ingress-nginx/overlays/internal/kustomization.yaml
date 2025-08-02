@@ -6,3 +6,4 @@ commonAnnotations:
 
 resources:
 - ../../base
+- ingresscontroller.yaml
