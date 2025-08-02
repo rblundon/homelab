@@ -28,9 +28,6 @@ spec:
         path: cluster/ingress-nginx/overlays/{{.cluster}}
         repoURL: https://github.com/rblundon/homelab.git
         targetRevision: HEAD
-        helm:
-          valueFiles:
-            - values-{{.cluster}}.yaml
       syncPolicy:
         automated:
           prune: true
