@@ -1,0 +1,48 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: ingress-nginx
+  namespace: openshift-gitops
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+  # - clusters: {} # Variable is .name
+  - list: # Variable is .cluster
+      elements:
+      - cluster: internal
+  template:
+    metadata:
+      name: '{{.cluster}}-ingress-nginx'
+      annotations:
+        argocd.argoproj.io/sync-wave: "3"
+    spec:
+      destination:
+        name: '{{.cluster}}'
+        namespace: ingress-nginx
+      project: default
+      source:
+        path: cluster/ingress-nginx
+        repoURL: https://github.com/rblundon/homelab.git
+        targetRevision: HEAD
+        helm:
+          valueFiles:
+            - values-{{.cluster}}.yaml
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - RespectIgnoreDifferences=true
+        - CreateNamespace=true
+        managedNamespaceMetadata:
+          labels:
+            argocd.argoproj.io/managed-by: openshift-gitops
+      ignoreDifferences:
+      - group: apps
+        kind: Deployment
+        jsonPointers:
+        - /spec/replicas

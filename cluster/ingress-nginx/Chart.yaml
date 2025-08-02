@@ -1,0 +1,14 @@
+---
+apiVersion: v2
+name: ingress-nginx-umbrella
+description: A helm chart to include ingress-nginx with values
+type: application
+version: 0.1.0
+appVersion: 0.1.0
+
+dependencies:
+- name: ingress-nginx
+  version: v1.13.0
+  repository: https://charts.jetstack.io
+  alias: ingress-nginx
+  condition: ingress-nginx.enabled

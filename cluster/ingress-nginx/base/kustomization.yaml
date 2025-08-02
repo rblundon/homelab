@@ -12,5 +12,3 @@ resources:
 - scc.yaml
 - namespace.yaml
 - pvcs.yaml
-- ingresscontroller-external.yaml
-- ingresscontroller-internal.yaml
