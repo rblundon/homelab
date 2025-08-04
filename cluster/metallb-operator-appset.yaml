@@ -1,0 +1,46 @@
+---
+
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: metallb-operator
+  namespace: openshift-gitops
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+  # - clusters: {} # Variable is .name
+  - list: # Variable is .cluster
+      elements:
+      - cluster: internal
+  template:
+    metadata:
+      name: '{{.cluster}}-metallb-operator'
+      annotations:
+        argocd.argoproj.io/sync-wave: "2"
+    spec:
+      destination:
+        name: '{{.cluster}}'
+        namespace: metallb-system
+      project: default
+      source:
+        path: cluster/metallb-operator/overlays/{{.cluster}}
+        repoURL: https://github.com/rblundon/homelab.git
+        targetRevision: HEAD
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+        - RespectIgnoreDifferences=true
+        - CreateNamespace=true
+        managedNamespaceMetadata:
+          labels:
+            argocd.argoproj.io/managed-by: argocd
+      ignoreDifferences:
+      - group: apps
+        kind: Deployment
+        jsonPointers:
+        - /spec/replicas

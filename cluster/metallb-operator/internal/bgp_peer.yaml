@@ -1,0 +1,12 @@
+---
+apiVersion: metallb.io/v1beta2
+kind: BGPPeer
+metadata:
+  name: bgp-peer-worlddrive
+  namespace: metallb-system
+spec:
+  disableMP: false
+  myASN: 65001
+  peerASN: 65002
+  peerAddress: 10.1.71.1
+  peerPort: 179
