@@ -32,7 +32,7 @@ metadata:
   name: homepage-app2
   namespace: homepage-app
 spec:
-  host: homepage.apps.ocp.int.mk-labs.cloud
+  host: homepage.apps.openshift.int.mk-labs.cloud
 
   port:
     targetPort: http
