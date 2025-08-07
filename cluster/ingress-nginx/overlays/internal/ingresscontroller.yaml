@@ -1,12 +1,9 @@
 apiVersion: charts.nginx.org/v1alpha1
 kind: NginxIngress
 metadata:
-  name: nginxingress
+  name: nginx
   namespace: nginx-ingress
 spec:
-  routeSelector:
-    matchLabels:
-      type: nginx
   controller:
     affinity: {}
     annotations: {}
