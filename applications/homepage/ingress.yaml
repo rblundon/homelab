@@ -10,7 +10,7 @@ metadata:
 #    route.openshift.io/destination-ca-certificate-secret: letsencrypt-homepage
 spec:
   ingressClassName:
-    openshift-default
+    nginx
   rules:
   - host: homepage.int.mk-labs.cloud 
     http:
