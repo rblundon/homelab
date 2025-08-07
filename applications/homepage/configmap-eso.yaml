@@ -1,0 +1,30 @@
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: homepage-bookmarks-secret
+  namespace: homepage-app
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: doppler-cluster
+  refreshInterval: "1h"
+  data:
+    - secretKey: bookmarks.yaml
+      remoteRef:
+        key: HOMEPAGE_BOOKMARKS
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: homepage-services-secret
+  namespace: homepage-app
+spec:
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: doppler-cluster
+  refreshInterval: "1h"
+  data:
+    - secretKey: services.yaml
+      remoteRef:
+        key: HOMEPAGE_SERVICES

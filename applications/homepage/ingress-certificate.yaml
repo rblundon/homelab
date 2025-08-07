@@ -1,0 +1,20 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  annotations:
+  name: letsencrypt-homepage
+  namespace: homepage-app
+spec:
+  commonName: 'homepage.int.mk-labs.cloud'
+  dnsNames:
+  - homepage.int.mk-labs.cloud
+  duration: 2160h0m0s
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-prod
+  renewBefore: 360h0m0s
+  secretName: letsencrypt-homepage
+  usages:
+  - server auth
+  - client auth

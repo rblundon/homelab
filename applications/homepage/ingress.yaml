@@ -1,0 +1,46 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: homepage-ingress
+  namespace: homepage-app
+  annotations: {}
+
+#    route.openshift.io/termination: "reencrypt"
+#    route.openshift.io/destination-ca-certificate-secret: letsencrypt-homepage
+spec:
+  ingressClassName:
+    openshift-default
+  rules:
+  - host: homepage.int.mk-labs.cloud 
+    http:
+      paths:
+      - path: /
+        pathType: Exact
+        backend:
+          service:
+            name: homepage
+            port:
+              number: 443
+#    tls:
+#    - hosts:
+#      - homepage.int.mk-labs.cloud
+#      secretName: letsencrypt-homepage
+#---
+#apiVersion: networking.k8s.io/v1
+#kind: Ingress
+#metadata:
+#  name: hello-openshift
+#spec:
+#  rules:
+#  - host: hello-openshift.yourcluster.example.com
+#    http:
+#      paths:
+#      - backend:
+#          # Forward to a Service called 'hello-openshift'
+#          service:
+#            name: hello-openshift
+#            port:
+#              number: 8080
+#        path: /
+#        pathType: Exact
