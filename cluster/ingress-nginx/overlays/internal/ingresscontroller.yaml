@@ -1,8 +1,8 @@
 apiVersion: charts.nginx.org/v1alpha1
 kind: NginxIngress
 metadata:
-  name: nginxingress-sample
-  namespace: openshift-operators
+  name: nginxingress
+  namespace: nginx-ingress
 spec:
   controller:
     affinity: {}
