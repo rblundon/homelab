@@ -82,7 +82,7 @@ spec:
       leaderElectionLockName: ingress-leader
     service:
       externalTrafficPolicy: Local
-#      loadBalancerIP: 10.1.82.2
+      loadBalancerIP: 10.1.82.2
     prometheus:
       create: true
     serviceMonitor:
