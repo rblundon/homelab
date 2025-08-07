@@ -11,5 +11,6 @@ resources:
 - clusterrole.yaml
 - service.yaml
 - ingress-certificate.yaml
+- ingress.yaml
 - deployment.yaml
 - route.yaml
