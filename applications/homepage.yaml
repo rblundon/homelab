@@ -14,7 +14,7 @@ spec:
   project: default
   source:
     path: applications/homepage
-    repoURL: git@github.com:rblundon/MK-Labs.git
+    repoURL: https://github.com/rblundon/homelab.git
     targetRevision: HEAD
   syncPolicy:
     automated:
