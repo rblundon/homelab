@@ -22,10 +22,10 @@ spec:
             name: homepage
             port:
               number: 443
-   tls:
-   - hosts:
-     - homepage.int.mk-labs.cloud
-     secretName: letsencrypt-homepage
+#    tls:
+#    - hosts:
+#      - homepage.int.mk-labs.cloud
+#      secretName: letsencrypt-homepage
 #---
 #apiVersion: networking.k8s.io/v1
 #kind: Ingress
