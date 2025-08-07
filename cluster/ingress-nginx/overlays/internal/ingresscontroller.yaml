@@ -4,6 +4,9 @@ metadata:
   name: nginxingress
   namespace: nginx-ingress
 spec:
+  routeSelector:
+    matchLabels:
+      type: nginx
   controller:
     affinity: {}
     annotations: {}
