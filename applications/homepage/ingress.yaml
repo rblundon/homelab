@@ -4,13 +4,16 @@ kind: Ingress
 metadata:
   name: homepage-ingress
   namespace: homepage-app
-  annotations: {}
-
-#    route.openshift.io/termination: "reencrypt"
-#    route.openshift.io/destination-ca-certificate-secret: letsencrypt-homepage
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
   ingressClassName:
     nginx
+  tls:
+    - hosts:
+      - homepage.int.mk-labs.cloud
+      secretName: letsencrypt-homepage
   rules:
   - host: homepage.int.mk-labs.cloud 
     http:
@@ -19,7 +22,7 @@ spec:
         pathType: Exact
         backend:
           service:
-            name: homepage
+            name: homepage-nginx
             port:
               number: 443
 #    tls:
