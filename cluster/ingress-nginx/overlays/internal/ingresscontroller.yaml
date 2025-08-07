@@ -128,7 +128,7 @@ spec:
         enable: true
         port: 443
         targetPort: 443
-      loadBalancerIP: ''
+      loadBalancerIP: 10.1.82.0
       loadBalancerSourceRanges: []
       type: LoadBalancer
     serviceAccount:
