@@ -13,7 +13,7 @@ metadata:
     app.kubernetes.io/name: monetnaildesign
     app: external-dns-monetnaildesign
 spec:
-  ingressClassName: nginx-external
+  ingressClassName: nginx
   tls:
     - hosts:
         - monetnaildesign.com
