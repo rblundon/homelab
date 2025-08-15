@@ -48,6 +48,7 @@ le:
         cnameStrategy: Follow
     dnsZones:
     - mk-labs.cloud
+    - monetnaildesign.com
 
 cluster_name: openshift
 base_domain: int.mk-labs.cloud
