@@ -1,0 +1,42 @@
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  #  external-dns.alpha.kubernetes.io/hostname: monetnaildesign.com
+  #  external-dns.alpha.kubernetes.io/target: ingress.monetnaildesign.com
+  name: monetnaildesign-external
+  namespace: monetnaildesign
+  labels:
+    app.kubernetes.io/instance: monetnaildesign
+    app.kubernetes.io/name: monetnaildesign
+    app: external-dns-monetnaildesign
+spec:
+  ingressClassName: nginx-external
+  tls:
+    - hosts:
+        - monetnaildesign.com
+        - www.monetnaildesign.com
+      secretName: monetnaildesign-tls
+  rules:
+    - host: monetnaildesign.com
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: monetnaildesign-nginx
+                port:
+                  number: 80
+    - host: www.monetnaildesign.com
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: monetnaildesign-nginx
+                port:
+                  number: 80

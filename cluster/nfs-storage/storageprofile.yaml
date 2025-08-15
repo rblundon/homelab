@@ -1,0 +1,19 @@
+---
+apiVersion: cdi.kubevirt.io/v1beta1
+kind: StorageProfile
+metadata:
+  name: synology-nfs
+spec:
+  claimPropertySets:
+  - accessModes:
+    - ReadWriteOnce 
+    volumeMode:
+      Filesystem
+  - accessModes:
+    - ReadWriteMany 
+    volumeMode:
+      Filesystem  
+  cloneStrategy: csi-clone
+status:
+  provisioner: storage.io/nfs
+  storageClass: synology-nfs

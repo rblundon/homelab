@@ -1,0 +1,48 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    description: Defines how to deploy the application server
+    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"monetnaildesign-nginx:latest"},"fieldPath":
+      "spec.template.spec.containers[0].image"}]'
+    template.alpha.openshift.io/wait-for-ready: "true"
+  labels:
+    app: monetnaildesign-nginx
+    template: nginx-example
+  name: monetnaildesign-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: monetnaildesign-nginx
+      name: monetnaildesign-nginx
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: monetnaildesign-nginx
+        name: monetnaildesign-nginx
+    spec:
+      containers:
+      - env: []
+        image: 'image-registry.openshift-image-registry.svc:5000/monetnaildesign/monetnaildesign-nginx'
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 30
+          timeoutSeconds: 3
+        name: monetnaildesign-nginx
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 3
+          timeoutSeconds: 3
+        resources:
+          limits:
+            memory: 512Mi

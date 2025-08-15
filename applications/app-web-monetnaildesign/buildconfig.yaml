@@ -1,0 +1,40 @@
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  annotations:
+    description: Defines how to build the application
+    template.alpha.openshift.io/wait-for-ready: "true"
+    name: monetnaildesign-nginx-build
+  labels:
+    app: monetnaildesign-nginx
+    template: nginx-example
+  name: monetnaildesign-nginx
+spec:
+  output:
+    to:
+      kind: ImageStreamTag
+      name: monetnaildesign-nginx:latest
+  source:
+    contextDir: ""
+    git:
+      ref: ""
+      uri: https://github.com/rblundon/monetnaildesign.git
+#      uri: https://github.com/sclorg/nginx-ex.git
+    type: Git
+  strategy:
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        name: nginx:latest
+        namespace: openshift
+    type: Source
+  triggers:
+  - type: ImageChange
+  - type: ConfigChange
+  - github:
+      secret: 0Q6mNn8Qj2vCQNwKhvk5O1F8tIQVyxRPehiwhGrP
+    type: GitHub
+  - generic:
+      secret: q86RdskVovs1yd1lfqRm0BncEHc8HjdH2I86CnNP
+    type: Generic
