@@ -1,0 +1,46 @@
+#---
+#3apiVersion: route.openshift.io/v1
+#kind: Route
+#metadata:
+#  labels:
+#    app.kubernetes.io/instance: homepage-app
+#    app.kubernetes.io/name: homepage-app
+#  name: homepage-app
+# namespace: homepage-app
+#spec:
+#  host: homepage.int.mk-labs.cloud
+
+#  port:
+#    targetPort: http
+#  tls:
+#    insecureEdgeTerminationPolicy: Redirect
+#    termination: edge
+#    externalCertificate:
+#      name: letsencrypt-homepage
+#  to:
+#    kind: Service
+#    name: homepage
+#    weight: 100
+#  wildcardPolicy: None
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app.kubernetes.io/instance: homepage-app
+    app.kubernetes.io/name: homepage-app
+  name: homepage-app2
+  namespace: homepage-app
+spec:
+  host: homepage.apps.openshift.int.mk-labs.cloud
+
+  port:
+    targetPort: http
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name: homepage
+    weight: 100
+  wildcardPolicy: None

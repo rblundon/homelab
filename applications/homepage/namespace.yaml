@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: homepage-app
+    name: homepage-app
+    argocd.argoproj.io/managed-by: openshift-gitops-operator
+  name: homepage-app
+spec:
+  finalizers:
+  - kubernetes

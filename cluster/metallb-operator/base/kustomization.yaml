@@ -6,9 +6,10 @@ commonAnnotations:
   argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 
 resources:
-- namespace.yaml
 # Operator deployment
+- namespace.yaml
 - subscription.yaml
+- operatorgroup.yaml
 # Deploy cluster resources
-- scc.yaml
-- pvcs.yaml
+- metallb.yaml
+- bgp_advertisement.yaml

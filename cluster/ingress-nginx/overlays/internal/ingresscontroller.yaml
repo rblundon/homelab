@@ -1,96 +1,175 @@
----
-kind: NginxIngress
 apiVersion: charts.nginx.org/v1alpha1
+kind: NginxIngress
 metadata:
   name: nginx
   namespace: nginx-ingress
 spec:
-  routeSelector:
-    matchLabels:
-      type: nginx
   controller:
-    affinity:
-      podAntiAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-        - labelSelector:
-            matchLabels:
-              app.kubernetes.io/instance: nginx
-              app.kubernetes.io/name: nginx
-          topologyKey: kubernetes.io/hostname
+    affinity: {}
+    annotations: {}
+    appprotect:
+      enable: false
+    appprotectdos:
+      debug: false
+      enable: false
+      maxDaemons: 0
+      maxWorkers: 0
+      memory: 0
+    autoscaling:
+      annotations: {}
+      behavior: {}
+      enabled: false
+      maxReplicas: 3
+      minReplicas: 1
+      targetCPUUtilizationPercentage: 50
+      targetMemoryUtilizationPercentage: 50
     config:
-      entries:
-        http-snippets: proxy_cache_path /tmp/nginx_cache levels=1:2 keys_zone=static-cache:10m
-          max_size=10g inactive=60m use_temp_path=off;
-        log-format-escaping: json
-        log-format: |-
-          {
-            "msec": "$msec",
-            "connection": "$connection",
-            "connection_requests": "$connection_requests",
-            "pid": "$pid",
-            "request_id": "$request_id",
-            "request_length": "$request_length",
-            "remote_addr": "$remote_addr",
-            "remote_user": "$remote_user",
-            "remote_port": "$remote_port",
-            "time_local": "$time_local",
-            "time_iso8601": "$time_iso8601",
-            "request": "$request",
-            "request_uri": "$request_uri",
-            "args": "$args",
-            "status": "$status",
-            "body_bytes_sent": "$body_bytes_sent",
-            "bytes_sent": "$bytes_sent",
-            "http_referer": "$http_referer",
-            "http_user_agent": "$http_user_agent",
-            "http_x_forwarded_for": "$http_x_forwarded_for",
-            "http_host": "$http_host",
-            "server_name": "$server_name",
-            "request_time": "$request_time",
-            "upstream": "$upstream_addr",
-            "upstream_connect_time": "$upstream_connect_time",
-            "upstream_header_time": "$upstream_header_time",
-            "upstream_response_time": "$upstream_response_time",
-            "upstream_response_length": "$upstream_response_length",
-            "upstream_cache_status": "$upstream_cache_status",
-            "ssl_protocol": "$ssl_protocol",
-            "ssl_cipher": "$ssl_cipher",
-            "scheme": "$scheme",
-            "request_method": "$request_method",
-            "server_protocol": "$server_protocol",
-            "pipe": "$pipe",
-            "gzip_ratio": "$gzip_ratio",
-            "http_cf_ray": "$http_cf_ray"
-          }
+      annotations: {}
+      entries: {}
+    containerPort:
+      http: 80
+      https: 443
+    customConfigMap: ''
+    customPorts: []
+    defaultHTTPListenerPort: 80
+    defaultHTTPSListenerPort: 443
+    defaultTLS:
+      cert: ''
+      key: ''
+      secret: ''
+    disableIPV6: false
+    dnsPolicy: ClusterFirst
+    enableCertManager: false
     enableCustomResources: true
-    enableTLSPassthrough: true
-    enableSnippets: true
+    enableExternalDNS: false
+    enableLatencyMetrics: false
+    enableOIDC: false
+    enableSSLDynamicReload: true
+    enableSnippets: false
+    enableTLSPassthrough: false
+    env: []
+    extraContainers: []
+    globalConfiguration:
+      create: false
+      spec: {}
+    healthStatus: false
+    healthStatusURI: /nginx-health
+    hostNetwork: false
+    hostPort:
+      enable: false
+      http: 80
+      https: 443
     image:
       pullPolicy: IfNotPresent
       repository: nginx/nginx-ingress
-      tag: 3.7.0-ubi
+      tag: 5.1.0-ubi
     ingressClass:
       create: true
       name: nginx
       setAsDefaultIngress: false
-    replicaCount: 2
+    initContainerResources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    initContainers: []
+    lifecycle: {}
+    logFormat: glog
+    logLevel: info
+    mgmt:
+      licenseTokenSecretName: license-token
+    minReadySeconds: 0
+    name: controller
+    nginxDebug: false
+    nginxReloadTimeout: 60000
+    nginxStatus:
+      allowCidrs: 127.0.0.1
+      enable: true
+      port: 8080
+    nginxplus: false
+    pod:
+      annotations: {}
+      extraLabels: {}
+    podDisruptionBudget:
+      annotations: {}
+      enabled: false
+    readOnlyRootFilesystem: false
+    readyStatus:
+      enable: true
+      initialDelaySeconds: 0
+      port: 8081
+    replicaCount: 1
     reportIngressStatus:
       annotations: {}
       enable: true
       enableLeaderElection: true
       ingressLink: ''
-      leaderElectionLockName: ingress-leader
+      leaderElectionLockName: nginx-ingress-leader
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    selectorLabels: {}
     service:
+      annotations: {}
+      clusterIP: ''
+      create: true
+      customPorts: []
+      externalIPs: []
       externalTrafficPolicy: Local
-#      loadBalancerIP: 10.1.82.2
-    prometheus:
-      create: true
+      extraLabels: {}
+      httpPort:
+        enable: true
+        port: 80
+        targetPort: 80
+      httpsPort:
+        enable: true
+        port: 443
+        targetPort: 443
+      loadBalancerIP: 10.1.82.0
+      loadBalancerSourceRanges: []
+      type: LoadBalancer
+    serviceAccount:
+      annotations: {}
+      imagePullSecretName: ''
+      imagePullSecretsNames: []
+    shareProcessNamespace: false
+    strategy: {}
+    terminationGracePeriodSeconds: 30
+    tlsPassthroughPort: 443
+    tolerations: []
+    volumeMounts: []
+    volumes: []
+    watchNamespace: ''
+    watchNamespaceLabel: ''
+    watchSecretNamespace: ''
+    wildcardTLS:
+      cert: ''
+      key: ''
+      secret: ''
+    kind: deployment
+  nginxServiceMesh:
+    enable: false
+    enableEgress: false
+  prometheus:
+    create: true
+    port: 9113
+    scheme: http
+    secret: ''
+    service:
+      create: false
+      labels:
+        service: nginx-ingress-prometheus-service
     serviceMonitor:
-      create: true
-    volumes:
-    - name: nginx-cache
-      persistentVolumeClaim:
-        claimName: nginx-cache
-    volumeMounts:
-    - name: nginx-cache
-      mountPath: /var/cache/nginx
+      create: false
+      endpoints:
+        - port: prometheus
+      labels: {}
+      selectorMatchLabels:
+        service: nginx-ingress-prometheus-service
+  rbac:
+    create: true
+  serviceInsight:
+    create: false
+    port: 9114
+    scheme: http
+    secret: ''
