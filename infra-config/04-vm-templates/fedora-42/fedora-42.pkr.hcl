@@ -70,7 +70,7 @@ source "proxmox-iso" "fedora-kickstart" {
   network_adapters {
     model    = "virtio"
     bridge   = "${var.proxmox_bridge}"
-    vlan_tag = "${var.proxmox_vlan}"
+#    vlan_tag = "${var.proxmox_vlan}"
     firewall = "true"
   }
 

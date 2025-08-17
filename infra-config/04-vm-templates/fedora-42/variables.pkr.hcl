@@ -78,10 +78,10 @@ variable "proxmox_bridge" {
   description = "The Proxmox bridge the NIC connects to."
 }
 
-variable "proxmox_vlan" {
-  type = number
-  description = "The VLAN the NIC is on."
-}
+#variable "proxmox_vlan" {
+#  type = number
+#  description = "The VLAN the NIC is on."
+#}
 
 variable "vm_boot_wait" {
   type = string

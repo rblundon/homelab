@@ -12,8 +12,8 @@ vm_cpu_cores    = "2"
 vm_mem_size     = "4096"
 vm_disk_size    = "16"
 
-proxmox_bridge  = "vmbr1"
-proxmox_vlan    = "71"
+proxmox_bridge  = "vmbr0"
+#proxmox_vlan    = "71"
 
 ssh_username    = "wed"
 
