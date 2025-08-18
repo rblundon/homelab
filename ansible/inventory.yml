@@ -71,7 +71,7 @@ fastpass_control_plane:
 fastpass_workers:
   hosts:
     haunted-mansion: # backstage
-    pete-pans-flight: # backstage
+    peter-pans-flight: # backstage
 
 
 fastpass:
