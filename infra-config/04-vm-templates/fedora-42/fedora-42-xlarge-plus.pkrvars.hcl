@@ -5,7 +5,7 @@
 # Virtual Machine Settings
 
 vm_boot_wait    = "5s"
-vm_name         = "fedora-42-xlarge"
+vm_name         = "fedora-42-xlarge-plus"
 vm_id           = "9106"
 vm_cpu_sockets  = "1"
 vm_cpu_cores    = "4"
