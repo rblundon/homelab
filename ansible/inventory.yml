@@ -62,6 +62,23 @@ internal_cluster:
 #    int-worker01:
     int-worker02:
 
+fastpass_control_plane:
+  hosts:
+    space-mountain: # ansible_host=10.1.71.50
+    big-thunder-mountain: # ansible_host=10.1.71.51
+    splash-mountain: # ansible_host=10.1.71.52
+
+fastpass_workers:
+  hosts:
+    haunted-mansion: # backstage
+    pete-pans-flight: # backstage
+
+
+fastpass:
+  children:
+    fastpass_control_plane:
+    fastpass_workers:
+
 sql_servers:
   hosts:
     sql01:

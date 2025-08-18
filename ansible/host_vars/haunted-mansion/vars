@@ -21,7 +21,7 @@ proxmox_clone_node: "fantasyland"
 # - Large Plus: 4 cores, 4GB memory, 48 GiB virtual disk
 # - Xlarge: 4 cores, 8GB memory, 64 GiB virtual disk
 
-vm_clone_source: "fedora-42-large-plus"
+vm_clone_source: "fedora-42-xlarge"
 
 # Proxmox storage target.
 
@@ -36,7 +36,7 @@ proxmox_host_target: "pve03"
 # Currently, only single NIC VMs using IPv4 are supported via cloning.  The IP address also 
 # sets the Proxmox VMID.  The VMID is a combination of the 3rd and 4th octet of the IPv4 address.
 
-ip_address: 10.1.71.51
+ip_address: 10.1.71.61
 
 # Software
 # Future enhancement will allow specification of additional software to automatically deploy to

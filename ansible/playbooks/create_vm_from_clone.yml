@@ -6,11 +6,11 @@
 - name: Proxmox Clone VM Playbook
   ansible.builtin.import_playbook: proxmox_clone_vm.yml
 
-- name: DNS Playbook
-  ansible.builtin.import_playbook: add_dns_entry.yml
+# - name: DNS Playbook
+#   ansible.builtin.import_playbook: add_dns_entry.yml
 
-- name: DHCP Playbook
-  ansible.builtin.import_playbook: add_dhcp_entry.yml
+# - name: DHCP Playbook
+#   ansible.builtin.import_playbook: add_dhcp_entry.yml
 
 - name: Start VM Playbook
   ansible.builtin.import_playbook: proxmox_start_vm.yml

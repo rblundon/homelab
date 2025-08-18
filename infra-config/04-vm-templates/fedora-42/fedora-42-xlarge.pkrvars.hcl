@@ -6,11 +6,11 @@
 
 vm_boot_wait    = "5s"
 vm_name         = "fedora-42-xlarge"
-vm_id           = "9104"
+vm_id           = "9105"
 vm_cpu_sockets  = "1"
 vm_cpu_cores    = "4"
 vm_mem_size     = "8192"
-vm_disk_size    = "128"
+vm_disk_size    = "64"
 
 proxmox_bridge  = "vmbr0"
 #proxmox_vlan    = "71"
