@@ -1,0 +1,14 @@
+- name: 1. Prepare all nodes for Kubernetes
+  hosts: kube_cluster
+  roles:
+    - role: common
+
+- name: 2. Initialize and configure the control plane
+  hosts: control_plane
+  roles:
+    - role: control-plane
+
+- name: 3. Join worker nodes to the cluster
+  hosts: workers
+  roles:
+    - role: workers
