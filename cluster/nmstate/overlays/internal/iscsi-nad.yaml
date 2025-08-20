@@ -12,8 +12,8 @@ spec:
       "name": "iscsi-net",
       "cniVersion": "0.3.1",
       "type": "vlan",
-      "master": "enp1s0f0",
-      "mtu": 1500,
+      "master": "enp2s0f0",
+      "mtu": 1500, 
       "vlanId": 121,
       "linkInContainer": false,
       "ipam": {
