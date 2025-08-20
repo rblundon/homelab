@@ -1,0 +1,17 @@
+# ------------------------------------------------------------------------------
+# FILE: deploy_k8s.yml
+# ------------------------------------------------------------------------------
+- name: 1. Prepare all nodes for Kubernetes
+  hosts: kube_cluster
+  roles:
+    - role: kubernetes
+
+- name: 2. Initialize and configure the control plane
+  hosts: fastpass_control_plane
+  roles:
+    - role: fastpass-control-plane
+
+- name: 3. Join worker nodes to the cluster
+  hosts: fastpass-workers
+  roles:
+    - role: fastpass-workers
