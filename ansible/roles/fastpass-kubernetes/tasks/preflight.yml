@@ -1,0 +1,40 @@
+---
+# Preflight checks for Kubernetes installation
+
+- name: Check if running on supported OS
+  ansible.builtin.assert:
+    that:
+      - ansible_os_family == "RedHat"
+      - ansible_distribution == "Fedora"
+    fail_msg: "This role only supports Fedora"
+    success_msg: "OS check passed"
+
+- name: Check minimum memory requirement (2GB)
+  ansible.builtin.assert:
+    that: ansible_memtotal_mb >= 2048
+    fail_msg: "Minimum 2GB RAM required, found {{ ansible_memtotal_mb }}MB"
+    success_msg: "Memory check passed: {{ ansible_memtotal_mb }}MB"
+
+- name: Check minimum CPU cores (2)
+  ansible.builtin.assert:
+    that: ansible_processor_cores >= 2
+    fail_msg: "Minimum 2 CPU cores required, found {{ ansible_processor_cores }}"
+    success_msg: "CPU check passed: {{ ansible_processor_cores }} cores"
+
+- name: Check available disk space (10GB)
+  ansible.builtin.assert:
+    that: ansible_mounts | selectattr('mount', 'equalto', '/') | map(attribute='size_available') | first >= 10737418240
+    fail_msg: "Minimum 10GB free space required on root filesystem"
+    success_msg: "Disk space check passed"
+
+- name: Check if system is 64-bit
+  ansible.builtin.assert:
+    that: ansible_architecture in ['x86_64', 'amd64']
+    fail_msg: "Only 64-bit architectures are supported"
+    success_msg: "Architecture check passed: {{ ansible_architecture }}"
+
+- name: Check if running as root or with sudo
+  ansible.builtin.assert:
+    that: ansible_become | default(false)
+    fail_msg: "This role requires root privileges (become: true)"
+    success_msg: "Privilege check passed" 

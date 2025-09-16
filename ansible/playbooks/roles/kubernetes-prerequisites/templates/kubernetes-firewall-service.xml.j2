@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>Kubernetes</short>
+  <description>Kubernetes cluster communication ports</description>
+{% for port in k8s_firewall_ports %}
+  <port protocol="{{ port.protocol }}" port="{{ port.port }}"/>
+{% endfor %}
+</service>
+

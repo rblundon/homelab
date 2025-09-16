@@ -9,7 +9,7 @@ platform: "proxmox"
 
 # This is the Proxmox node where all the VM templates are stored. (Templates are not global.)
 
-proxmox_clone_node: "pve03"
+proxmox_clone_node: "fantasyland"
 
 # Templates are named in the following format (all lower case): <OS Distribution>-<OS Version>-<VM Size>
 # Current OS offerings are:
@@ -18,26 +18,25 @@ proxmox_clone_node: "pve03"
 # - Small: 2 cores, 2GB memory, 8 GiB virtual disk
 # - Medium: 2 cores, 4GB memory, 16 GiB virtual disk
 # - Large: 4 cores, 4GB memory, 32 GiB virtual disk
-# - Large Plus: 4 cores, 4GB memory, 48 GiB virtual disk
 # - Xlarge: 4 cores, 8GB memory, 64 GiB virtual disk
 # - Xlarge Plus: 4 cores, 8GB memory, 128 GiB virtual disk
 
-vm_clone_source: "fedora-42-large"
+vm_clone_source: "fedora-42-xlarge-plus"
 
 # Proxmox storage target.
 
-vm_storage: "pve-general"
+vm_storage: "general"
 
 # Proxmox does not yet do dynamic load balancing, the host target sets the target for HA groups
 # and backup groups. (ha_group will be factored out in the next functionality update.)
 
-ha_group: "pve03"
-proxmox_host_target: "pve03"
+ha_group: "fantasyland"
+proxmox_host_target: "fantasyland"
 
 # Currently, only single NIC VMs using IPv4 are supported via cloning.  The IP address also 
 # sets the Proxmox VMID.  The VMID is a combination of the 3rd and 4th octet of the IPv4 address.
 
-ip_address: 10.1.71.249
+ip_address: 10.1.71.21
 
 # Software
 # Future enhancement will allow specification of additional software to automatically deploy to

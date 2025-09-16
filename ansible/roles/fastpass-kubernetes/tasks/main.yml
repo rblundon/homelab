@@ -1,0 +1,16 @@
+---
+# FastPass Kubernetes Cluster Preparation for Fedora
+# This role prepares all nodes for Kubernetes installation
+
+- name: Include preflight checks
+  ansible.builtin.include_tasks: preflight.yml
+  when: preflight_checks | default(true)
+
+- name: Include system preparation
+  ansible.builtin.include_tasks: system-prep.yml
+
+- name: Include container runtime setup
+  ansible.builtin.include_tasks: container-runtime.yml
+
+- name: Include Kubernetes installation
+  ansible.builtin.include_tasks: kubernetes-install.yml 

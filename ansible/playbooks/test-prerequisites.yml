@@ -1,0 +1,8 @@
+---
+- name: Test Kubernetes Prerequisites Role
+  hosts: space-mountain
+  become: true
+  gather_facts: true
+  roles:
+    - role: kubernetes-prerequisites
+

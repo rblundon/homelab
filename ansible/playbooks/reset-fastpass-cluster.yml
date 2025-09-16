@@ -1,0 +1,115 @@
+---
+- name: Reset FastPass Kubernetes Cluster
+  hosts: fastpass
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Stop and disable kubelet service
+      ansible.builtin.systemd:
+        name: kubelet
+        state: stopped
+        enabled: false
+      ignore_errors: true
+
+    - name: Stop and disable containerd service
+      ansible.builtin.systemd:
+        name: containerd
+        state: stopped
+        enabled: false
+      ignore_errors: true
+
+    - name: Remove Kubernetes packages
+      ansible.builtin.dnf:
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+          - kubernetes-cni
+          - containernetworking-plugins
+        state: absent
+      ignore_errors: true
+
+    - name: Remove containerd
+      ansible.builtin.dnf:
+        name: containerd
+        state: absent
+      ignore_errors: true
+
+    - name: Remove Docker repository
+      ansible.builtin.file:
+        path: /etc/yum.repos.d/docker-ce.repo
+        state: absent
+      ignore_errors: true
+
+    - name: Remove Kubernetes repository
+      ansible.builtin.file:
+        path: /etc/yum.repos.d/kubernetes.repo
+        state: absent
+      ignore_errors: true
+
+    - name: Remove Kubernetes directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /etc/kubernetes
+        - /var/lib/kubelet
+        - /var/lib/etcd
+        - /etc/cni/net.d
+        - /opt/cni/bin
+        - /var/lib/containerd
+        - /etc/containerd
+      ignore_errors: true
+
+    - name: Remove CNI plugins
+      ansible.builtin.file:
+        path: /opt/cni
+        state: absent
+      ignore_errors: true
+
+    - name: Remove iptables rules
+      ansible.builtin.shell: |
+        iptables -F
+        iptables -t nat -F
+        iptables -t mangle -F
+        iptables -X
+      ignore_errors: true
+
+    - name: Remove firewall Kubernetes service
+      ansible.builtin.file:
+        path: /etc/firewalld/services/kubernetes.xml
+        state: absent
+      ignore_errors: true
+
+    - name: Remove firewall rules for Kubernetes
+      ansible.builtin.shell: |
+        firewall-cmd --permanent --remove-service=kubernetes || true
+        firewall-cmd --reload || true
+      ignore_errors: true
+
+    - name: Reset network interfaces
+      ansible.builtin.shell: |
+        ip link delete cni0 || true
+        ip link delete flannel.1 || true
+        ip link delete cali* || true
+      ignore_errors: true
+
+    - name: Clean up systemd drop-in files
+      ansible.builtin.file:
+        path: /usr/lib/systemd/system/kubelet.service.d
+        state: absent
+      ignore_errors: true
+
+    - name: Reset hostname to original
+      ansible.builtin.hostname:
+        name: "{{ inventory_hostname }}"
+
+    - name: Clean package cache
+      ansible.builtin.dnf:
+        clean: all
+      ignore_errors: true
+
+    - name: Reboot system
+      ansible.builtin.reboot:
+        reboot_timeout: 300
+

@@ -1,0 +1,34 @@
+# file: group_vars/prometheus_server/vars
+# Ansible vars template for Prometheus nodes created via Ansible\.
+
+# Version of Prometheus to install.  All available versions can be found at: https://prometheus.io/download/
+
+#prometheus_version: "3.5.0"
+#alertmanager_version: "0.28.1"
+
+# prometheus_nodes:
+# #  - '192.168.1.207'  # Worker node IP
+#   - cinderella-castle  # Master node IP 
+#   - 10.1.71.21
+#   - cinderella-castle.local.mk-labs.cloud
+
+# Static Variables
+# prometheus_installer_file: "prometheus-{{ prometheus_version }}.linux-amd64.tar.gz"
+# prometheus_installer_download_url: "https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_version }}/{{ prometheus_installer_file }}"
+
+# Grafana Variables
+
+#grafana_port: "3000"
+#grafana_url: "{{ inventory_hostname }}.{{ base_domain }}:3000"
+
+# prometheus_targets:
+#   node:
+#   - targets:
+#     - localhost:9100
+#     labels:
+#       env: mk-labs
+
+grafana_ini:
+  security:
+    admin_user: admin
+    admin_password: admin

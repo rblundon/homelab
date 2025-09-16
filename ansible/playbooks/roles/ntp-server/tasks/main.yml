@@ -1,0 +1,46 @@
+---
+# Role to install and configure an Chrony NTP server
+
+- name: 1. Install Chrony NTP for time synchronization
+  become: true
+  ansible.builtin.dnf:
+    name: chrony
+    state: present
+
+- name: 2.1 Remove DHCP NTP servers from config
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/chrony.conf
+    line: "server unifi.int.mk-labs.cloud iburst"
+    state: absent
+
+- name: 2.2 Ensure specific NTP servers are present
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/chrony.conf
+    line: "server {{ item }} iburst"
+    state: present
+  loop: "{{ ntp_servers }}"
+
+- name: 3. Ensure network allowed are present
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/chrony.conf
+    line: "allow {{ item }}"
+    state: present
+  loop: "{{ allowed_networks }}"
+
+- name: 4.Restart ntpd service
+  become: true
+  ansible.builtin.systemd:
+    name: chronyd
+    state: restarted
+    enabled: true
+
+- name: 5. Allow NTP traffic
+  become: true
+  ansible.posix.firewalld:
+    service: ntp
+    permanent: true
+    immediate: true
+    state: enabled

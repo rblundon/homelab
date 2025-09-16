@@ -15,18 +15,26 @@
         node: "{{ proxmox_clone_node }}"
         state: started
 
-    # - name: Wait for the VM to start
-    #   delegate_to: "localhost"
-    #   wait_for:
-    #     port: 22
-    #     host: "{{ inventory_hostname }}"
-    #     search_regex: OpenSSH
-    #     delay: 10
-    #     timeout: 60
+    - name: Wait for SSH service to be ready
+      delegate_to: "localhost"
+      when: platform is defined and platform == "proxmox"
+      ansible.builtin.wait_for:
+        port: 22
+        host: "{{ inventory_hostname }}"
+        search_regex: OpenSSH
+        timeout: 300
+        msg: "Waiting for SSH service to be ready on {{ inventory_hostname }}"
 
-    # - name: Wait for the reboot to complete if there was a change.
-    #   wait_for_connection:
-    #     connect_timeout: 10
-    #     sleep: 5
-    #     delay: 5
-    #     timeout: 300
+    - name: Wait for VM to be fully booted and responsive
+      delegate_to: "localhost"
+      when: platform is defined and platform == "proxmox"
+      ansible.builtin.wait_for_connection:
+        connect_timeout: 10
+        sleep: 5
+        timeout: 300
+
+    - name: Display VM startup completion
+      delegate_to: "localhost"
+      when: platform is defined and platform == "proxmox"
+      ansible.builtin.debug:
+        msg: "✅ {{ inventory_hostname }} is now running and accessible via SSH"

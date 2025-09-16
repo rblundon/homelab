@@ -1,0 +1,5 @@
+- name: 1. Deploy NTP servers
+  hosts: ntp_servers
+  gather_facts: true
+  roles:
+    - role: ntp-server

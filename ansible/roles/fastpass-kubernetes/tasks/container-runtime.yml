@@ -1,0 +1,72 @@
+---
+# Container runtime setup for Kubernetes
+
+- name: Add containerd repository
+  become: true
+  ansible.builtin.yum_repository:
+    name: docker-ce
+    description: "Docker CE Repository"
+    baseurl: "https://download.docker.com/linux/fedora/{{ ansible_distribution_major_version }}/x86_64/stable"
+    gpgkey: "https://download.docker.com/linux/fedora/gpg"
+    gpgcheck: true
+    enabled: true
+    state: present
+
+- name: Install containerd
+  become: true
+  ansible.builtin.dnf:
+    name: containerd
+    state: present
+    disable_excludes: docker-ce-stable
+
+- name: Create containerd config directory
+  become: true
+  ansible.builtin.file:
+    path: /etc/containerd
+    state: directory
+    mode: '0755'
+
+- name: Generate default containerd config
+  become: true
+  ansible.builtin.shell: |
+    containerd config default > /etc/containerd/config.toml
+  args:
+    creates: /etc/containerd/config.toml
+
+- name: Configure containerd for Kubernetes
+  become: true
+  ansible.builtin.replace:
+    path: /etc/containerd/config.toml
+    regexp: 'SystemdCgroup = false'
+    replace: 'SystemdCgroup = true'
+
+- name: Create containerd service override directory
+  become: true
+  ansible.builtin.file:
+    path: /etc/systemd/system/containerd.service.d
+    state: directory
+    mode: '0755'
+
+- name: Configure containerd service override
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/containerd.service.d/override.conf
+    content: |
+      [Service]
+      ExecStartPre=-/sbin/modprobe overlay
+      ExecStartPre=-/sbin/modprobe br_netfilter
+    mode: '0644'
+
+- name: Restart and enable containerd service
+  become: true
+  ansible.builtin.systemd:
+    name: containerd
+    state: restarted
+    enabled: true
+    daemon_reload: true
+
+- name: Verify containerd is running
+  become: true
+  ansible.builtin.systemd:
+    name: containerd
+    state: started 

@@ -22,7 +22,7 @@
             name: "{{ inventory_hostname }}"
             node: "{{ proxmox_clone_node }}"
             storage: "{{ vm_storage }}"
-            format: raw
+            format: qcow2 # raw
             timeout: 600
 
         # - name: Add VM to HA group

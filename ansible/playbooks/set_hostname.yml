@@ -9,3 +9,8 @@
       delegate_to: "{{ inventory_hostname }}"
       ansible.builtin.hostname:
         name: "{{ hostname }}"
+
+    - name: Set timezone to US/Central
+      become: true
+      community.general.timezone:
+        name: US/Central

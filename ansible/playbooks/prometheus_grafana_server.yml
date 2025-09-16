@@ -1,0 +1,143 @@
+---
+- name: Install Prometheus and Grafana on control node
+  hosts: prometheus_server
+  become: true
+  # vars_files:
+  #   - vars.yml
+  tasks:
+    - name: Install prerequisite software
+      ansible.builtin.dnf:
+        name: 
+          - tar
+          - wget
+        state: present
+
+    - name: Download Prometheus
+      ansible.builtin.get_url:
+        url: "{{ prometheus_installer_download_url }}"
+        dest: "/tmp/{{ prometheus_installer_file }}"
+
+    - name: Extract Prometheus
+      ansible.builtin.unarchive:
+        src: "/tmp/{{ prometheus_installer_file }}"
+        dest: "/usr/local/bin/"
+        remote_src: true
+
+    - name: Create Prometheus user
+      user:
+        name: prometheus
+        shell: /bin/false
+        state: present
+
+    - name: Create Prometheus directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: prometheus
+        group: prometheus
+      with_items:
+        - /etc/prometheus
+        - /var/lib/prometheus
+
+    - name: Move Prometheus binaries
+      ansible.builtin.command: "mv /usr/local/bin/prometheus-{{ prometheus_version }}.linux-amd64/prometheus /usr/local/bin/prometheus"
+
+    - name: Move Prometheus tool
+      ansible.builtin.command: "mv /usr/local/bin/prometheus-{{ prometheus_version }}.linux-amd64/promtool /usr/local/bin/promtool"
+
+    - name: Create Prometheus configuration file
+      ansible.builtin.copy:
+        dest: "/etc/prometheus/prometheus.yml"
+        content: |
+          global:
+            scrape_interval: 15s
+            evaluation_interval: 15s
+
+          scrape_configs:
+            - job_name: 'prometheus'
+              static_configs:
+                - targets: ['localhost:9090']
+
+            - job_name: 'nodes'
+              static_configs:
+                - targets:
+                  {% for ip in prometheus_nodes %}
+                  - '{{ ip }}:9100'
+                  {% endfor %}
+
+    - name: Create Prometheus service file
+      ansible.builtin.copy:
+        dest: "/etc/systemd/system/prometheus.service"
+        content: |
+          [Unit]
+          Description=Prometheus
+          Wants=network-online.target
+          After=network-online.target
+
+          [Service]
+          User=prometheus
+          Group=prometheus
+          Type=simple
+          ExecStart=/usr/local/bin/prometheus \
+            --config.file=/etc/prometheus/prometheus.yml \
+            --storage.tsdb.path=/var/lib/prometheus/ \
+            --web.console.templates=/etc/prometheus/consoles \
+            --web.console.libraries=/etc/prometheus/console_libraries
+
+          [Install]
+          WantedBy=multi-user.target
+
+      register: prometheus_service_status
+      ignore_errors: true
+
+    - name: Check if Prometheus service is running
+      ansible.builtin.command: systemctl is-active prometheus
+      register: prometheus_status
+      changed_when: false
+      ignore_errors: true
+
+    - name: Permit prometheus endpoint in default zone for dns service
+      firewalld:
+        port: 9090/tcp
+        permanent: true
+        immediate: true
+        state: enabled
+
+    - name: Permit prometheus metrics in default zone for dns service
+      firewalld:
+        port: 9100/tcp
+        permanent: true
+        immediate: true
+        state: enabled
+
+    - name: Permit grafana traffic in default zone for dns service
+      firewalld:
+        port: 3000/tcp
+        permanent: true
+        immediate: true
+        state: enabled
+
+    - name: Manage Prometheus service state
+      systemd:
+        name: prometheus
+        state: "{{ 'restarted' if prometheus_status.rc == 0 else 'started' }}"
+        enabled: true
+
+    - name: Add repository
+      ansible.builtin.yum_repository:
+        name: grafana
+        description: Grafana OSS repo
+        baseurl: https://rpm.grafana.com
+        gpgkey: https://rpm.grafana.com/gpg.key
+
+    - name: Install Grafana
+      ansible.builtin.dnf:
+        name: 
+          - grafana
+        state: present
+
+    - name: Start Grafana service
+      systemd:
+        name: grafana-server
+        state: started
+        enabled: true

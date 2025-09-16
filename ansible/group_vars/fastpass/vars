@@ -1,0 +1,66 @@
+---
+# FastPass Kubernetes Cluster Variables
+
+# Cluster Configuration
+cluster_name: "fastpass"
+kubernetes_version: "1.33.4"
+pod_network_cidr: "10.244.0.0/16"
+service_cidr: "10.96.0.0/12"
+
+# Control Plane Configuration
+control_plane_endpoint: "fastpass.local.mk-labs.cloud"
+control_plane_port: "6443"
+
+# CNI Configuration
+cni_plugin: "calico"
+calico_version: "v3.28.0"
+
+# Node Labels and Taints
+node_labels:
+  zone:
+    # Control Plane nodes (masters) - no zone labels needed
+    # space-mountain: (control plane - no zone label)
+    # big-thunder-mountain: (control plane - no zone label)
+    # splash-mountain: (control plane - no zone label)
+    
+    # Worker nodes
+    haunted-mansion: "backstage"      # Internal/backstage workloads
+    peter-pans-flight: "backstage"    # Internal/backstage workloads
+    # Future node: "on-stage"         # External/on-stage workloads (future)
+  
+  environment: "production"
+  cluster: "fastpass"
+
+# System Configuration
+selinux_mode: "permissive"
+firewall_enabled: false
+
+# Container Runtime
+container_runtime: "containerd"
+containerd_version: "latest"
+
+# Repository Configuration
+kubernetes_repo_url: "https://pkgs.k8s.io/core:/stable:/v1.33/rpm/"
+containerd_repo_url: "https://download.docker.com/linux/fedora/docker-ce.repo"
+
+# Validation
+preflight_checks: true
+validate_cluster: true
+
+# Kubeconfig Configuration
+kubeconfig_path: "{{ lookup('env', 'HOME') }}/.kube/config"
+
+# Hostname Configuration for Kubernetes
+# Override hostnames to remove dots for Kubernetes compatibility
+kubernetes_hostnames:
+  space-mountain: "space-mountain"
+  big-thunder-mountain: "big-thunder-mountain"
+  splash-mountain: "splash-mountain"
+  haunted-mansion: "haunted-mansion"
+  peter-pans-flight: "peter-pans-flight"
+
+# Generic Kubernetes Prerequisites Configuration
+configure_firewall: true
+configure_ntp: true
+selinux_state: "permissive"
+disable_swap: true 

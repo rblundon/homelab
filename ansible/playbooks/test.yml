@@ -1,27 +1,25 @@
 ---
-- name: Interactively configure an OpenShift cluster
-  # Run this play on the controller to orchestrate the changes
-  hosts: localhost
-  gather_facts: false
-
-  vars_prompt:
-    - name: cluster_group
-      prompt: "What is the name of the Cluster Group?"
-      private: false
+- name: Test Ansible Playbook
+  hosts: all
+  gather_facts: yes
+  become: false
 
   tasks:
-    - name: Create DNS entry for each cluster node
-      # Loop over every hostname in the user-provided group
-      loop: "{{ groups[cluster_group] }}"
-      loop_control:
-        # Use a descriptive name for the loop variable instead of 'item'
-        loop_var: node_hostname
+    - name: Ping all hosts
+      ansible.builtin.ping:
 
+    - name: Display hostname
       ansible.builtin.debug:
-        msg: "Using {{ item, dns_address }}"
+        msg: "The hostname of this system is {{ inventory_hostname }}"
 
-#      ansible.builtin.include_tasks: tasks/create_dns_record.yml
-      vars:
-        # Access the 'ip_address' variable of the specific host in the loop
-        dns_address: "{{ hostvars[node_hostname]['ip_address'] }}"
-        dns_name: "{{ hostvars[node_hostname] }}"
+    - name: Show OS distribution
+      ansible.builtin.debug:
+        msg: "This host is running {{ ansible_distribution }} {{ ansible_distribution_version }}"
+
+    - name: Run uptime command
+      ansible.builtin.command: uptime
+      register: uptime_result
+
+    - name: Display uptime result
+      ansible.builtin.debug:
+        var: uptime_result.stdout

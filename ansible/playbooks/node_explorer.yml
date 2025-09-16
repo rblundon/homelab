@@ -1,0 +1,16 @@
+---
+- name: Master playbook to install and configure prometheus node explorer
+  hosts: prometheus_server
+  become: true
+
+  tasks:
+    - name: Permit prometheus metrics in default zone for dns service
+      ansible.posix.firewalld:
+        port: 9100/tcp
+        permanent: true
+        immediate: true
+        state: enabled
+
+    - name: Install prometheus node exporter via role
+      ansible.builtin.import_role:
+        name: prometheus.prometheus.node_exporter

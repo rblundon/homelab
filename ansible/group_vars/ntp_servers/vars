@@ -1,0 +1,18 @@
+---
+# file: group_vars/ntp_servers/vars
+#Ansible vars template for NTP servers.
+
+ntp_servers:
+  - 0.us.pool.ntp.org
+  - 1.us.pool.ntp.org
+
+allowed_networks:
+  - "192.168.1.0/24"
+  - "192.168.2.0/24"
+  - "192.168.3.0/24"
+  - "192.168.5.0/24"
+  - "192.168.9.0/24"
+  - "192.168.10.0/24"
+  - "192.168.250.0/24"
+  - "10.1.71.0/24"
+  - "10.1.82.0/24"
