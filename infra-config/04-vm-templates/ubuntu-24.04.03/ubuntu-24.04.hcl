@@ -95,8 +95,8 @@ source "proxmox-iso" "ubuntu-24.04.03" {
 
 build {
 
-#    name = "ubuntu-24.04.03"
-  sources = ["proxmox-iso.ubuntu-24.04.03"]
+  sources = ["source.proxmox-iso.ubuntu-24.04.03"]
+  # name = "ubuntu-24.04.03"
 
   # Provisioning the VM Template for Cloud-Init Integration in Proxmox #1
   provisioner "shell" {
@@ -110,7 +110,7 @@ build {
           "sudo cloud-init clean",
           "sudo rm -f /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg",
           "sudo rm -f /etc/netplan/00-installer-config.yaml",
-          "sudo sync"
+          "sudo sync",
           "mkdir /home/wed/.ssh",
           "chown wed:wed /home/wed/.ssh",
           "cat /tmp/ansible.pub > /home/wed/.ssh/authorized_keys",
