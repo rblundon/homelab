@@ -8,10 +8,10 @@ locals {
 
 packer {
   required_plugins {
-#    ansible = {
-#      version = ">= 1.1.3"
-#      source  = "github.com/hashicorp/ansible"
-#    }
+    ansible = {
+      version = ">= 1.1.3"
+      source  = "github.com/hashicorp/ansible"
+    }
     name = {
       version = "~> 1"
       source  = "github.com/hashicorp/proxmox"
@@ -46,7 +46,7 @@ source "proxmox-iso" "ubuntu-24.04.03" {
 
   # VM Cloud-Init Settings
   cloud_init = true
-  cloud_init_storage_pool = "local-lvm"
+  cloud_init_storage_pool = "${var.proxmox_vm_storage_pool}"
 
   boot_command = [
         "<esc><wait>",
@@ -84,7 +84,7 @@ source "proxmox-iso" "ubuntu-24.04.03" {
   ssh_timeout          = "15m"
   ssh_username         = "${var.ssh_username}"
   ssh_password         = "${var.ssh_password}"
-  template_description = "Fedora 41-1.4, generated on ${timestamp()}"
+  template_description = "Ubuntu 24.04.03, generated on ${timestamp()}"
   template_name        = "${var.vm_name}"
 }
 
