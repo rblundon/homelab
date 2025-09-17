@@ -42,3 +42,4 @@
       ansible.builtin.command: kubectl get pods -A
       delegate_to: localhost
 
+
