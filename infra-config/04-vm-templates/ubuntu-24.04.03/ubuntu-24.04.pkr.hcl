@@ -23,7 +23,7 @@ packer {
 # SOURCE
 ##################################################################################
 
-source "proxmox-iso" "ubuntu-24.04.3" {
+source "proxmox-iso" "ubuntu-2404" {
   boot_iso {
     type = "scsi"
     iso_file = "${var.proxmox_iso_storage_pool}:iso/${var.iso_file}"
@@ -95,7 +95,7 @@ source "proxmox-iso" "ubuntu-24.04.3" {
 
 build {
 
-  sources = ["source.proxmox-iso.ubuntu-24.04.3"]
+  sources = ["source.proxmox-iso.ubuntu-2404"]
   # name = "ubuntu-24.04.3"
 
   # Provisioning the VM Template for Cloud-Init Integration in Proxmox #1
