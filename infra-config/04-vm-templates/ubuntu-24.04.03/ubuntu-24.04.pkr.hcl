@@ -52,11 +52,12 @@ source "proxmox-iso" "ubuntu-2404" {
   cloud_init_storage_pool = "${var.proxmox_vm_storage_pool}"
 
   boot_command = [
-        "<esc /><wait /><esc /><wait />",
-        "<f6 /><wait /><esc /><wait />",
-        "<bs /><bs /><bs /><bs /><bs />",
-        "autoinstall ds=nocloud-net;s=http://\{\{ .HTTPIP \}\}:\{\{ .HTTPPort \}\}/ ",
-        "--- <enter />"
+        "<esc><wait>",
+        "e<wait>",
+        "<down><down><down><end>",
+        "<bs><bs><bs><bs><wait>",
+        "autoinstall ds=nocloud-net\\;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ ---<wait>",
+        "<f10><wait>"
   ]
   boot = "c"
   boot_wait = "5s"
