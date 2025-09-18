@@ -5,7 +5,6 @@
 # Credentials
 
 proxmox_username   = "root@pam"
-ssh_username       = "wed"
 
 # Proxmox Objects
 proxmox_node                    = "fantasyland"
