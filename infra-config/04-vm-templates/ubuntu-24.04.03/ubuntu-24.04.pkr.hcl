@@ -94,9 +94,11 @@ source "proxmox-iso" "ubuntu-2404" {
 #    inline          = ["dnf -y update", "dnf -y install python-pip", "python3 -m pip install --upgrade pip", "alternatives --set python /usr/bin/python3", "pip3 install ansible"]
 
 build {
-
   sources = ["source.proxmox-iso.ubuntu-2404"]
   # name = "ubuntu-24.04.3"
+  PackerHTTPPort = 8543
+  # Reminder to disable the firewall before starting (or allow the port)
+  # sudo systemctl stop firewalld
 
   # Provisioning the VM Template for Cloud-Init Integration in Proxmox #1
   provisioner "shell" {
