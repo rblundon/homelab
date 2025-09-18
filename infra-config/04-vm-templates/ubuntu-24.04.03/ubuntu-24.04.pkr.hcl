@@ -2,6 +2,9 @@
 # LOCALS
 ##################################################################################
 
+# Reminder to disable the firewall before starting
+# sudo systemctl stop firewalld
+
 locals {
   buildtime = formatdate("YYYY-MM-DD hh:mm ZZZ", timestamp())
 }
@@ -96,9 +99,6 @@ source "proxmox-iso" "ubuntu-2404" {
 build {
   sources = ["source.proxmox-iso.ubuntu-2404"]
   # name = "ubuntu-24.04.3"
-  PackerHTTPPort = 8543
-  # Reminder to disable the firewall before starting (or allow the port)
-  # sudo systemctl stop firewalld
 
   # Provisioning the VM Template for Cloud-Init Integration in Proxmox #1
   provisioner "shell" {
