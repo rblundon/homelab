@@ -23,7 +23,7 @@ packer {
 # SOURCE
 ##################################################################################
 
-source "proxmox-iso" "ubuntu-24.04.03" {
+source "proxmox-iso" "ubuntu-24.04.3" {
   boot_iso {
     type = "scsi"
     iso_file = "${var.proxmox_iso_storage_pool}:iso/${var.iso_file}"
@@ -84,7 +84,7 @@ source "proxmox-iso" "ubuntu-24.04.03" {
   ssh_timeout          = "15m"
   ssh_username         = "${var.ssh_username}"
   ssh_password         = "${var.ssh_password}"
-  template_description = "Ubuntu 24.04.03, generated on ${timestamp()}"
+  template_description = "Ubuntu 24.04.3, generated on ${timestamp()}"
   template_name        = "${var.vm_name}"
 }
 
@@ -95,8 +95,8 @@ source "proxmox-iso" "ubuntu-24.04.03" {
 
 build {
 
-  sources = ["source.proxmox-iso.ubuntu-24.04.03"]
-  # name = "ubuntu-24.04.03"
+  sources = ["source.proxmox-iso.ubuntu-24.04.3"]
+  # name = "ubuntu-24.04.3"
 
   # Provisioning the VM Template for Cloud-Init Integration in Proxmox #1
   provisioner "shell" {
