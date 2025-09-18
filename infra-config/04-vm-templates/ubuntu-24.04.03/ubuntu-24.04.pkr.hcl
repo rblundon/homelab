@@ -2,7 +2,7 @@
 # LOCALS
 ##################################################################################
 
-# Reminder to disable the firewall before starting
+# Reminder to disable the firewall before starting (or allow port 8543)
 # sudo systemctl stop firewalld
 
 locals {
@@ -45,8 +45,6 @@ source "proxmox-iso" "ubuntu-2404" {
     #pre_enrolled_keys = true
   }
 
-  http_directory      = "http"
-
   # VM Cloud-Init Settings
   cloud_init = true
   cloud_init_storage_pool = "${var.proxmox_vm_storage_pool}"
@@ -62,6 +60,15 @@ source "proxmox-iso" "ubuntu-2404" {
   boot = "c"
   boot_wait = "5s"
   # boot_wait    = "${var.vm_boot_wait}"
+
+  # PACKER Autoinstall Settings
+  http_directory = "./http" 
+    
+  # (Optional) Bind IP Address and Port
+  # http_bind_address = "10.1.149.166"
+  http_port = 8543
+  # http_port_min = 8543
+  # http_port_max = 8543
 
   sockets         = "${var.vm_cpu_sockets}"
   cores           = "${var.vm_cpu_cores}"
