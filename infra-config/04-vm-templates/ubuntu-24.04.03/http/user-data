@@ -23,7 +23,7 @@ autoinstall:
     timezone: America/Chicago
     users:
       - name: wed
- #       passwd: "$6$rounds=4096$4SY5kMDOITTy3R6s$vgp01IwfMWJRYxY1pa.D6xS.TEzGkMpVqxZtxPQrYuHzvywq2sSw/Z.yEmG3hsWnERCorBbN7tdMttVTcj4u61"
+        passwd: "$6$rounds=4096$PDyQf30/35socXkZ$AF3StbrRkg0l4y2edIvZB3Vb0cV/ic2t2G42IvAvHLl6Cj5vEyKiZ03I9EYd7UvVzti7f6U60nhDDHRN0AynS/"
         groups: [adm, sudo]
         lock-passwd: false
         sudo: ALL=(ALL) NOPASSWD:ALL
