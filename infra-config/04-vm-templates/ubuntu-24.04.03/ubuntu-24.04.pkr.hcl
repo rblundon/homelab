@@ -66,9 +66,8 @@ source "proxmox-iso" "ubuntu-2404" {
     
   # (Optional) Bind IP Address and Port
   # http_bind_address = "10.1.149.166"
-  http_port = 8543
-  # http_port_min = 8543
-  # http_port_max = 8543
+  http_port_min = 8543
+  http_port_max = 8543
 
   sockets         = "${var.vm_cpu_sockets}"
   cores           = "${var.vm_cpu_cores}"
