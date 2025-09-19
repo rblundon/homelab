@@ -120,12 +120,12 @@ build {
           "sudo rm -f /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg",
           "sudo rm -f /etc/netplan/00-installer-config.yaml",
           "sudo sync",
-          "mkdir /home/wed/.ssh",
-          "chown wed:wed /home/wed/.ssh",
-          "cat /tmp/ansible.pub > /home/wed/.ssh/authorized_keys",
-          "chmod 600 /home/wed/.ssh/authorized_keys",
-          "chown wed:wed /home/wed/.ssh/authorized_keys",
-          "rm /tmp/ansible.pub"          
+          // "mkdir /home/wed/.ssh",
+          // "chown wed:wed /home/wed/.ssh",
+          // "cat /tmp/ansible.pub > /home/wed/.ssh/authorized_keys",
+          // "chmod 600 /home/wed/.ssh/authorized_keys",
+          // "chown wed:wed /home/wed/.ssh/authorized_keys",
+          // "rm /tmp/ansible.pub"          
       ]
   }
 

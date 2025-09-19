@@ -27,9 +27,9 @@ autoinstall:
     layout:
       name: lvm # direct
       policy: all
-    swap:
-      filename: /swap.img
-      size: auto
+    # swap:
+    #   filename: /swap.img
+    #   size: auto
   
   user-data:
     disable_root: true
