@@ -91,7 +91,7 @@ source "proxmox-iso" "ubuntu-2404" {
   username             = "${var.proxmox_username}"
   password             = "${var.proxmox_password}"
   proxmox_url          = "https://${var.proxmox_node}.${var.proxmox_domain}:8006/api2/json"
-  ssh_timeout          = "15m"
+  ssh_timeout          = "30m"
   ssh_username         = "${var.ssh_username}"
   ssh_password         = "${var.ssh_password}"
   template_description = "Ubuntu 24.04.3, generated on ${timestamp()}"
