@@ -46,4 +46,4 @@ autoinstall:
           - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINnSM/9fO8rz/amqkyoGUzUKNNzzmtSXPwOCr1O9zKNO ansible
         sudo: ALL=(ALL) NOPASSWD:ALL
 
-  shutdown: poweroff
+  shutdown: reboot
