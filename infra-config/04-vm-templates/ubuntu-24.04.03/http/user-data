@@ -1,30 +1,40 @@
 #cloud-config
 autoinstall:
   version: 1
-  locale: en_US
-  keyboard:
-    layout: us
+
   ssh:
     install-server: true
     allow-pw: true
     disable_root: true
     ssh_quiet_keygen: true
     allow_public_ssh_keys: true
+
+  locale: en_US
+  keyboard:
+    layout: us
+
   packages:
     - qemu-guest-agent
     - sudo
+  
   storage:
     layout:
-      name: direct
+      name: lvm # direct
     swap:
-      size: 0
+      filename: /swap.img
+      size: "auto"
+  
   user-data:
+    disable_root: true
     package_upgrade: false
     timezone: America/Chicago
     users:
       - name: wed
+        primary-group: users
+        groups: sudo
+        lock_passwd: true
         passwd: "$6$rounds=4096$PDyQf30/35socXkZ$AF3StbrRkg0l4y2edIvZB3Vb0cV/ic2t2G42IvAvHLl6Cj5vEyKiZ03I9EYd7UvVzti7f6U60nhDDHRN0AynS/"
-        groups: [adm, sudo]
-        lock-passwd: false
-        sudo: ALL=(ALL) NOPASSWD:ALL
         shell: /bin/bash
+        ssh_authorized_keys:
+          - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINnSM/9fO8rz/amqkyoGUzUKNNzzmtSXPwOCr1O9zKNO ansible
+        sudo: ALL=(ALL) NOPASSWD:ALL
