@@ -19,8 +19,8 @@ autoinstall:
   refresh-installer:
     update: false
 
-  packages:
-    - qemu-guest-agent
+#  packages:
+#    - qemu-guest-agent
 #    - sudo
   
   storage:
