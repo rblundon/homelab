@@ -9,16 +9,19 @@ autoinstall:
     install-server: true
     allow-pw: true
     disable_root: true
-    ssh_quiet_keygen: true
-    allow_public_ssh_keys: true
+#    ssh_quiet_keygen: true
+#    allow_public_ssh_keys: true
 
-  locale: en_US
+  locale: en_US.UTF-8
   keyboard:
     layout: us
 
+  refresh-installer:
+    update: false
+
   packages:
     - qemu-guest-agent
-    - sudo
+#    - sudo
   
   storage:
     layout:
