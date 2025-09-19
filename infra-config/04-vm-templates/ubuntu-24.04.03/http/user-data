@@ -2,6 +2,9 @@
 autoinstall:
   version: 1
 
+  source:
+    id: ubuntu-server-minimal
+
   ssh:
     install-server: true
     allow-pw: true
@@ -20,6 +23,7 @@ autoinstall:
   storage:
     layout:
       name: lvm # direct
+      policy: all
     swap:
       filename: /swap.img
       size: "auto"
@@ -38,3 +42,5 @@ autoinstall:
         ssh_authorized_keys:
           - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINnSM/9fO8rz/amqkyoGUzUKNNzzmtSXPwOCr1O9zKNO ansible
         sudo: ALL=(ALL) NOPASSWD:ALL
+
+  shutdown: poweroff
