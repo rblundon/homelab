@@ -72,6 +72,7 @@ source "proxmox-iso" "ubuntu-2404" {
   sockets         = "${var.vm_cpu_sockets}"
   cores           = "${var.vm_cpu_cores}"
   cpu_type        = "host"
+  machine         = "q35"
   memory          = "${var.vm_mem_size}"
   scsi_controller = "virtio-scsi-single"
 
