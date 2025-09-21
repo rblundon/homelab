@@ -22,13 +22,13 @@ autoinstall:
         primary:
             - arches: [i386, amd64]
               uri: "http://archive.ubuntu.com/ubuntu"
-    packages:
-        - curl
-        - unzip
-        - openssh-server
-        - util-linux-extra
-        - qemu-guest-agent
-        - cloud-init
+    # packages:
+    #     - curl
+    #     - unzip
+    #     - openssh-server
+    #     - util-linux-extra
+    #     - qemu-guest-agent
+    #     - cloud-init
     user-data:
         disable_root: false
     late-commands:
