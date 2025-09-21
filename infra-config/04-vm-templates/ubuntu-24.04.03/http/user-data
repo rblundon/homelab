@@ -1,41 +1,49 @@
 #cloud-config
 autoinstall:
-    version: 1
-    early-commands:
-        # Stop ssh for packer
-        - sudo systemctl stop ssh
-    locale: en_US
-    keyboard:
-        layout: us
-    identity:
-        hostname: ubuntu-server
-        username: wed
-        password: '$1$Cc71g3Aa$WUMTLZg7B94dhHdxT7J/P/'
-    ssh:
-        install-server: yes
-        allow-pw: yes
-    storage:
-        layout:
-            name: lvm
-    apt:
-        geoip: true
-        primary:
-            - arches: [i386, amd64]
-              uri: "http://archive.ubuntu.com/ubuntu"
-    # packages:
-    #     - curl
-    #     - unzip
-    #     - openssh-server
-    #     - util-linux-extra
-    #     - qemu-guest-agent
-    #     - cloud-init
-    user-data:
-        disable_root: false
-    late-commands:
-        - sed -i -e 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/g' /target/etc/ssh/sshd_config
-        - sed -i -e 's/^#\?PermitRootLogin.*/PermitRootLogin yes/g' /target/etc/ssh/sshd_config
-        - echo 'wed ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/wed
-        - curtin in-target --target=/target -- vmware-toolbox-cmd config set deployPkg enable-custom-scripts true
-        - curtin in-target --target=/target -- chmod 440 /etc/sudoers.d/wed
-        - curtin in-target --target=/target -- apt-get update
-        - curtin in-target --target=/target -- apt-get upgrade --yes
+  version: 1
+
+  source:
+    id: ubuntu-server-minimal
+
+  ssh:
+    install-server: true
+    allow-pw: true
+    disable_root: true
+#    ssh_quiet_keygen: true
+#    allow_public_ssh_keys: true
+
+  locale: en_US.UTF-8
+  keyboard:
+    layout: us
+
+  refresh-installer:
+    update: false
+
+  packages:
+    - qemu-guest-agent
+#    - sudo
+  
+  storage:
+    layout:
+      name: lvm # direct
+      policy: all
+    # swap:
+    #   filename: /swap.img
+    #   size: auto
+  
+  user-data:
+    disable_root: true
+    package_upgrade: false
+    timezone: America/Chicago
+    users:
+      - name: wed
+        primary-group: users
+        groups: sudo
+        lock_passwd: true
+        passwd: "$6$rounds=4096$PDyQf30/35socXkZ$AF3StbrRkg0l4y2edIvZB3Vb0cV/ic2t2G42IvAvHLl6Cj5vEyKiZ03I9EYd7UvVzti7f6U60nhDDHRN0AynS/"
+        shell: /bin/bash
+        ssh_authorized_keys:
+          - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINnSM/9fO8rz/amqkyoGUzUKNNzzmtSXPwOCr1O9zKNO ansible
+        sudo: ALL=(ALL) NOPASSWD:ALL
+
+  shutdown: reboot
