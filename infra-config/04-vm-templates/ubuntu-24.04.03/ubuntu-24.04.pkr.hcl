@@ -31,7 +31,6 @@ source "proxmox-iso" "ubuntu-2404" {
     type = "scsi"
     iso_file = "${var.proxmox_iso_storage_pool}:iso/${var.iso_file}"
     unmount = true
-      #iso_checksum = "sha512:33c08e56c83d13007e4a5511b9bf2c4926c4aa12fd5dd56d493c0653aecbab380988c5bf1671dbaea75c582827797d98c4a611f7fb2b131fbde2c677d5258ec9"
     iso_checksum = "${var.iso_checksum_type}:${var.iso_checksum}"
   }
 
@@ -46,8 +45,8 @@ source "proxmox-iso" "ubuntu-2404" {
   }
 
   # VM Cloud-Init Settings
-  cloud_init = true
-  cloud_init_storage_pool = "${var.proxmox_vm_storage_pool}"
+  # cloud_init = true
+  # cloud_init_storage_pool = "${var.proxmox_vm_storage_pool}"
 
   boot_command = [
         "<esc><wait>",
@@ -59,7 +58,6 @@ source "proxmox-iso" "ubuntu-2404" {
   ]
   boot = "c"
   boot_wait = "5s"
-  # boot_wait    = "${var.vm_boot_wait}"
 
   # PACKER Autoinstall Settings
   http_directory = "./http" 
@@ -72,7 +70,7 @@ source "proxmox-iso" "ubuntu-2404" {
   sockets         = "${var.vm_cpu_sockets}"
   cores           = "${var.vm_cpu_cores}"
   cpu_type        = "host"
-  machine         = "q35"
+  # machine         = "q35"
   memory          = "${var.vm_mem_size}"
   scsi_controller = "virtio-scsi-single"
 
