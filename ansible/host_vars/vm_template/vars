@@ -13,6 +13,7 @@ proxmox_clone_node: "pve03"
 
 # Templates are named in the following format (all lower case): <OS Distribution>-<OS Version>-<VM Size>
 # Current OS offerings are:
+# - Ubuntu (24.04)
 # - Fedora (42)
 # Current VM sizes are:
 # - Small: 2 cores, 2GB memory, 8 GiB virtual disk
