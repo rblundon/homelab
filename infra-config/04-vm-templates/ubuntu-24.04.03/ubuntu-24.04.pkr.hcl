@@ -95,7 +95,7 @@ source "proxmox-iso" "ubuntu-2404" {
   ssh_timeout          = "120m"
   ssh_username         = "${var.ssh_username}"
 #  ssh_password         = "${var.ssh_password}"
-  ssh_private_key_file = "files/ansible.pub"
+  ssh_private_key_file = "./files/ansible.pub"
   template_description = "Ubuntu 24.04.3, generated on ${timestamp()}"
   template_name        = "${var.vm_name}"
 }
