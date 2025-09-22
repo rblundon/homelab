@@ -142,3 +142,10 @@ variable "ssh_password" {
   default = ""
   sensitive = true
 }
+
+variable "ssh_private_key" {
+  type    = string
+  description = "The private key to use to authenticate over SSH."
+  default = ""
+  sensitive = true
+}
