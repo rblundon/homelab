@@ -94,7 +94,8 @@ source "proxmox-iso" "ubuntu-2404" {
   proxmox_url          = "https://${var.proxmox_node}.${var.proxmox_domain}:8006/api2/json"
   ssh_timeout          = "120m"
   ssh_username         = "${var.ssh_username}"
-  ssh_password         = "${var.ssh_password}"
+#  ssh_password         = "${var.ssh_password}"
+  ssh_private_key_file = "files/ansible.pub"
   template_description = "Ubuntu 24.04.3, generated on ${timestamp()}"
   template_name        = "${var.vm_name}"
 }
@@ -120,13 +121,7 @@ build {
           "sudo cloud-init clean",
           "sudo rm -f /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg",
           "sudo rm -f /etc/netplan/00-installer-config.yaml",
-          "sudo sync",
-          // "mkdir /home/wed/.ssh",
-          // "chown wed:wed /home/wed/.ssh",
-          // "cat /tmp/ansible.pub > /home/wed/.ssh/authorized_keys",
-          // "chmod 600 /home/wed/.ssh/authorized_keys",
-          // "chown wed:wed /home/wed/.ssh/authorized_keys",
-          // "rm /tmp/ansible.pub"          
+          "sudo sync"       
       ]
   }
 
