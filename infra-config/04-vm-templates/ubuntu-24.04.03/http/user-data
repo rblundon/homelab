@@ -42,7 +42,7 @@ autoinstall:
         primary-group: users
         groups: sudo
         lock_passwd: false # true
-#        passwd: "$6$KuJJYQtKFO02HoEG$AzpYknAjxx1E7LqH.T3eZou5rgQ2RTkxstHwuRaXflT6ZN2NPPS0SiD/F.KdZmz4A3/OR2VNmfoSzuoYwzdfT."
+        passwd: "$6$KuJJYQtKFO02HoEG$AzpYknAjxx1E7LqH.T3eZou5rgQ2RTkxstHwuRaXflT6ZN2NPPS0SiD/F.KdZmz4A3/OR2VNmfoSzuoYwzdfT."
         shell: /bin/bash
         ssh_authorized_keys:
           - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINnSM/9fO8rz/amqkyoGUzUKNNzzmtSXPwOCr1O9zKNO ansible
