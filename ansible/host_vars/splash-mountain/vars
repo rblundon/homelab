@@ -13,8 +13,14 @@ proxmox_clone_node: "fantasyland"
 
 # Templates are named in the following format (all lower case): <OS Distribution>-<OS Version>-<VM Size>
 # Current OS offerings are:
-# - Ubuntu (24.04)
-# - Fedora (42)
+# - Ubuntu 
+#    - 24.04
+# - Fedora
+#    - 42
+
+vm_os_distribution: "ubuntu"
+vm_os_version: "24.04"
+
 # Current VM sizes are:
 # - Small: 2 cores, 2GB memory, 8 GiB virtual disk
 # - Medium: 2 cores, 4GB memory, 16 GiB virtual disk
@@ -22,7 +28,7 @@ proxmox_clone_node: "fantasyland"
 # - Large Plus: 4 cores, 4GB memory, 48 GiB virtual disk
 # - Xlarge: 4 cores, 8GB memory, 64 GiB virtual disk
 
-vm_clone_source: "ubuntu-24.04-large-plus"
+vm_size: "large-plus"
 
 # Proxmox storage target.
 
@@ -47,4 +53,5 @@ ip_address: 10.1.71.53
 
 # ---
 
+vm_clone_source: "{{ vm_os_distribution }}-{{ vm_os_version }}-{{ vm_size }}"
 hostname: "{{ inventory_hostname }}.{{ base_domain }}" # Change variable to fqdn
