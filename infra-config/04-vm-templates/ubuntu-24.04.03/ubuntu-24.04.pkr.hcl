@@ -44,9 +44,9 @@ source "proxmox-iso" "ubuntu-2404" {
     #pre_enrolled_keys = true
   }
 
-  # VM Cloud-Init Settings
-  # cloud_init = true
-  # cloud_init_storage_pool = "${var.proxmox_vm_storage_pool}"
+   VM Cloud-Init Settings
+   cloud_init = true
+   cloud_init_storage_pool = "${var.proxmox_vm_storage_pool}"
 
   boot_command = [
         "<esc><wait>",
