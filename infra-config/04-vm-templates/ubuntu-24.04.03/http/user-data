@@ -12,6 +12,8 @@ autoinstall:
 #    ssh_quiet_keygen: true
 #    allow_public_ssh_keys: true
 
+  ssh_pwauth: true
+
   locale: en_US.UTF-8
   keyboard:
     layout: us
