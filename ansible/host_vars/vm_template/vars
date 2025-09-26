@@ -9,12 +9,18 @@ platform: "proxmox"
 
 # This is the Proxmox node where all the VM templates are stored. (Templates are not global.)
 
-proxmox_clone_node: "pve03"
+proxmox_clone_node: "fantasyland"
 
 # Templates are named in the following format (all lower case): <OS Distribution>-<OS Version>-<VM Size>
 # Current OS offerings are:
-# - Ubuntu (24.04)
-# - Fedora (42)
+# - Ubuntu 
+#    - 24.04
+# - Fedora
+#    - 42
+
+vm_os_distribution: "ubuntu"
+vm_os_version: "24.04"
+
 # Current VM sizes are:
 # - Small: 2 cores, 2GB memory, 8 GiB virtual disk
 # - Medium: 2 cores, 4GB memory, 16 GiB virtual disk
@@ -23,11 +29,11 @@ proxmox_clone_node: "pve03"
 # - Xlarge: 4 cores, 8GB memory, 64 GiB virtual disk
 # - Xlarge Plus: 4 cores, 8GB memory, 128 GiB virtual disk
 
-vm_clone_source: "fedora-42-large"
+vm_size: "large-plus"
 
 # Proxmox storage target.
 
-vm_storage: "pve-general"
+vm_storage: "general"
 
 # Proxmox does not yet do dynamic load balancing, the host target sets the target for HA groups
 # and backup groups. (ha_group will be factored out in the next functionality update.)
@@ -39,6 +45,7 @@ proxmox_host_target: "pve03"
 # sets the Proxmox VMID.  The VMID is a combination of the 3rd and 4th octet of the IPv4 address.
 
 ip_address: 10.1.71.249
+# vm_mac_address: 'BC:24:11:11:BC:58'
 
 # Software
 # Future enhancement will allow specification of additional software to automatically deploy to
@@ -48,4 +55,5 @@ ip_address: 10.1.71.249
 
 # ---
 
+vm_clone_source: "{{ vm_os_distribution }}-{{ vm_os_version }}-{{ vm_size }}"
 hostname: "{{ inventory_hostname }}.{{ base_domain }}" # Change variable to fqdn

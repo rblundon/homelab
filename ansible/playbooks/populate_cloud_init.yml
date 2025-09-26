@@ -4,28 +4,20 @@
   gather_facts: false
 
   tasks:
-    - name: Create Proxmox VMs
+    - name: Modify Proxmox Ubuntu VM
       delegate_to: "localhost"
       when: platform is defined and platform == "proxmox"
       block:
-        - name: Create VM ID from IP address
-          ansible.builtin.set_fact:
-            vm_id: "{{ ip_address.split('.')[-2] }}{{ '%03d' % (ip_address.split('.')[-1] | int) }}"
-
-        - name: Clone VM with source vmid and target newid and raw format
+        - name: Update cloud-init file
           community.proxmox.proxmox_kvm:
             api_user: "{{ proxmox_user }}"
             api_password: "{{ proxmox_password }}"
             api_host: "{{ proxmox_host }}"
-            clone: "{{ vm_clone_source }}"
-            newid: "{{ vm_id }}"
-            name: "{{ inventory_hostname }}"
             node: "{{ proxmox_clone_node }}"
-            storage: "{{ vm_storage }}"
-            format: qcow2 # raw
-            timeout: 600
+            vmid: "{{ vm_id }}"
             ipconfig:
-              ipconfig0: 'ip=dhcp'
+              ipconfig0: "ip=dhcp"
+            update: true
 
         # - name: Add VM to HA group
         #   community.proxmox.proxmox_cluster_ha_resources:

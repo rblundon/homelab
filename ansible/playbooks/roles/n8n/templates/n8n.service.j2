@@ -1,0 +1,22 @@
+[Unit]
+Description=n8n - Workflow Automation Tool
+After=network.target
+
+[Service]
+Type=simple
+User=n8n
+Group=n8n
+ExecStart=/usr/local/bin/n8n
+WorkingDirectory=/home/n8n
+Environment=NODE_ENV=production
+Environment=N8N_BASIC_AUTH_ACTIVE=true
+Environment=N8N_BASIC_AUTH_USER=admin
+#Environment=N8N_BASIC_AUTH_PASSWORD=your_secure_password
+Environment=N8N_HOST=0.0.0.0
+Environment=N8N_PORT=5678
+Environment=N8N_PROTOCOL=http
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

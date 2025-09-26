@@ -2,7 +2,7 @@
 # Kubernetes Prerequisites Role Defaults
 
 # Kubernetes version to install (should be overridden in group_vars)
-kubernetes_version: "v1.33"
+kubernetes_version: "v1.30"
 
 # Container runtime (containerd is default)
 container_runtime: "containerd"
@@ -13,14 +13,8 @@ cni_plugin: "calico"
 # Firewall configuration
 configure_firewall: true
 
-# Time synchronization
-configure_ntp: true
-
 # SELinux configuration
 selinux_state: "permissive"
-
-# Swap configuration
-disable_swap: true
 
 # Kernel modules to load
 required_kernel_modules:
@@ -29,9 +23,9 @@ required_kernel_modules:
 
 # Sysctl parameters for Kubernetes
 k8s_sysctl_params:
-  net.bridge.bridge-nf-call-iptables: 1
-  net.bridge.bridge-nf-call-ip6tables: 1
-  net.ipv4.ip_forward: 1
+  - "net.bridge.bridge-nf-call-iptables: 1"
+  - "net.bridge.bridge-nf-call-ip6tables: 1"
+  - "net.ipv4.ip_forward: 1"
 
 # Kubernetes firewall ports
 k8s_firewall_ports:

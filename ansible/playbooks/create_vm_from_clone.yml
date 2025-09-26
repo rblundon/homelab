@@ -3,19 +3,18 @@
   hosts: all
   gather_facts: false
 
-- name: Proxmox Clone Ubuntu VM Playbook
-  ansible.builtin.import_playbook: proxmox_clone_ubuntu_vm.yml
-  when: vm_os_distribution == "ubuntu" and platform == "proxmox"
+- name: Proxmox Clone VM Playbook
+  ansible.builtin.import_playbook: proxmox_clone_vm.yml
 
-- name: Proxmox Clone Fedora VM Playbook
-  ansible.builtin.import_playbook: proxmox_clone_fedora_vm.yml
-  when: vm_os_distribution == "fedora" and platform == "proxmox"
+- name: Set cloud-init network
+  ansible.builtin.import_playbook: populate_cloud_init.yml
+  when: vm_os_distribution == "ubuntu"
 
-# - name: DNS Playbook
-#   ansible.builtin.import_playbook: add_dns_entry.yml
+- name: DNS Playbook
+  ansible.builtin.import_playbook: add_technitium_dns_entry.yml
 
-# - name: DHCP Playbook
-#   ansible.builtin.import_playbook: add_dhcp_entry.yml
+- name: DHCP Playbook
+  ansible.builtin.import_playbook: add_dhcp_reservation.yml
 
 - name: Start VM Playbook
   ansible.builtin.import_playbook: proxmox_start_vm.yml

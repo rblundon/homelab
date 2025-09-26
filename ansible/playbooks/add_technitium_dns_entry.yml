@@ -1,0 +1,18 @@
+---
+- name: Add entry to Technitium DNS
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: "Create DNS entry for {{ inventory_hostname }}"
+      delegate_to: localhost
+      effectivelywild.technitium_dns.technitium_dns_add_record:
+        api_url: "http://{{ dns_server }}.{{ base_domain }}"
+        api_token: "{{ vault_technitium_api_key }}"
+        zone: "{{ base_domain }}"
+        name: "{{ inventory_hostname }}.{{ base_domain }}"
+        type: "A"
+        ipAddress: "{{ ip_address }}"
+        ptr: true
+        ttl: 360
+#        validate_certs: false

@@ -6,40 +6,38 @@
   roles:
     - role: kubernetes-prerequisites
 
-- name: Step 2 - Deploy First Control Plane Node
-  hosts: fastpass_control_plane[0]
-  become: true
-  gather_facts: false
-  roles:
-    - role: fastpass-first-control-plane
+# - name: Step 2 - Deploy First Control Plane Node
+#   hosts: fastpass_control_plane[0]
+#   become: true
+#   gather_facts: false
+#   roles:
+#     - role: fastpass-first-control-plane
 
-- name: Step 3 - Deploy Additional Control Plane Nodes
-  hosts: fastpass_control_plane[1:]
-  become: true
-  gather_facts: false
-  roles:
-    - role: fastpass-additional-control-plane
+# - name: Step 3 - Deploy Additional Control Plane Nodes
+#   hosts: fastpass_control_plane[1:]
+#   become: true
+#   gather_facts: false
+#   roles:
+#     - role: fastpass-additional-control-plane
 
-- name: Step 4 - Deploy Worker Nodes
-  hosts: fastpass_workers
-  become: true
-  gather_facts: false
-  roles:
-    - role: fastpass-workers
+# - name: Step 4 - Deploy Worker Nodes
+#   hosts: fastpass_workers
+#   become: true
+#   gather_facts: false
+#   roles:
+#     - role: fastpass-workers
 
-- name: Final Cluster Validation
-  hosts: fastpass_control_plane[0]
-  become: false
-  gather_facts: false
-  environment:
-    KUBECONFIG: "{{ kubeconfig_path }}"
-  tasks:
-    - name: Display cluster status
-      ansible.builtin.command: kubectl get nodes
-      delegate_to: localhost
+# - name: Final Cluster Validation
+#   hosts: fastpass_control_plane[0]
+#   become: false
+#   gather_facts: false
+#   environment:
+#     KUBECONFIG: "{{ kubeconfig_path }}"
+#   tasks:
+#     - name: Display cluster status
+#       ansible.builtin.command: kubectl get nodes
+#       delegate_to: localhost
 
-    - name: Display all pods
-      ansible.builtin.command: kubectl get pods -A
-      delegate_to: localhost
-
-
+#     - name: Display all pods
+#       ansible.builtin.command: kubectl get pods -A
+#       delegate_to: localhost

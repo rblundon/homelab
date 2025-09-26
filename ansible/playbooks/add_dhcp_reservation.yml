@@ -1,0 +1,84 @@
+---
+- name: Bind VM MAC address to IP address on Ubiquiti
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Set VM MAC address (if defined in vars)
+      delegate_to: "localhost"
+      community.proxmox.proxmox_kvm:
+        api_user: "{{ proxmox_user }}"
+        api_password: "{{ proxmox_password }}"
+        api_host: "{{ proxmox_host }}"
+        node: "{{ proxmox_clone_node }}"
+        vmid: "{{ vm_id }}"
+        net:
+          net0: "virtio={{ vm_mac_address }},bridge=vmbr0,firewall=1"
+        update: true
+        update_unsafe: true
+      when: vm_mac_address is defined
+
+    - name: Get VM MAC address from Proxmox (not defined in vars)
+      when: vm_mac_address is not defined
+      block:
+        - name: Retrieve information about specific VM by name and get current configuration
+          delegate_to: "localhost"
+          community.proxmox.proxmox_vm_info:
+            api_user: "{{ proxmox_user }}"
+            api_password: "{{ proxmox_password }}"
+            api_host: "{{ proxmox_host }}"
+            name: "{{ inventory_hostname }}"
+            config: current
+          register: proxmox_vm_info
+
+        - name: Extract net0 information
+          ansible.builtin.set_fact:
+            vm_net0: "{{ proxmox_vm_info.proxmox_vms[0].config.net0 }}"
+
+        - name: Extract MAC address using regex
+          ansible.builtin.set_fact:
+            vm_mac_address: "{{ vm_net0 | regex_search('([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}') }}"
+
+    - name: Assign VM MAC address to IP address on Ubiquiti with Terraform
+      when: vm_mac_address is defined
+      delegate_to: "{{ groups['terraform_server'][0] }}"
+      block:
+        - name: Create a directory if it does not exist
+          ansible.builtin.file:
+            path: "~/homelab/terraform/unifi-dhcp"
+            state: directory
+            mode: '0755'
+
+        - name: Create Unifi provider file from template
+          ansible.builtin.template:
+            src: templates/unifi_provider.tf.j2
+            dest: ~/homelab/terraform/unifi-dhcp/provider.tf
+            mode: '0644'
+
+        - name: Create Unifi user (host) file from template
+          ansible.builtin.template:
+            src: templates/unifi-user.tf.j2
+            dest: ~/homelab/terraform/unifi-dhcp/{{ inventory_hostname }}.tf
+            mode: '0644'
+
+        - name: Configure Unifi via Terraform
+          community.general.terraform:
+            project_path: ~/homelab/terraform/unifi-dhcp
+            state: present
+            force_init: true
+
+    # - name: Add line to hosts file
+    #   delegate_to: "{{ groups['dhcp_server'][0] }}"
+    #   become: true
+    #   ansible.builtin.lineinfile:
+    #     path: /etc/dnsmasq.d/hosts.conf
+    #     regexp: "# {{ inventory_hostname }}$"
+    #     line: "dhcp-host={{ vm_mac_address | lower }},{{ ip_address }} # {{ inventory_hostname }}"
+    #     state: present
+    # # restart dnsmasq service
+    # - name: Restart service dnsmasq
+    #   delegate_to: "{{ groups['dhcp_server'][0] }}"
+    #   become: true
+    #   ansible.builtin.service:
+    #     name: dnsmasq
+    #     state: restarted

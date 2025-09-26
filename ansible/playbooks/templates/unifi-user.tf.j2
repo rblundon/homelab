@@ -1,0 +1,8 @@
+resource "unifi_user" "{{ inventory_hostname }}" {
+  mac  = "{{ vm_mac_address }}"
+  name = "{{ inventory_hostname }}"
+#  note = "my note"
+
+  fixed_ip   = "{{ ip_address }}"
+  allow_existing         = true
+}

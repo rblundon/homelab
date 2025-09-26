@@ -3,15 +3,19 @@ proxmox:
   hosts:
     pve0[1:3]:
 
+ntp_servers:
+  hosts:
+    sundial:
+    
+dns_server:
+  hosts:
+    monorail:
+
 magic_kingdom:
   hosts:
     main-street-usa:
     tomorrowland:
     fantasyland:
-
-ntp_servers:
-  hosts:
-    sundial:
 
 prometheus_server:
   hosts:
@@ -37,25 +41,33 @@ semaphore_server:
   hosts:
     imagineering:
 
-dhcp_server:
+n8n_server:
   hosts:
-    matchbox:
+    tiki-room:
+
+# dhcp_server:
+#   hosts:
+#     matchbox:
 
 backup_servers:
   hosts:
     timekeeper:
 
-freeipa:
+# freeipa:
+#   hosts:
+#     infra01:
+
+# ipaserver:
+#   hosts:
+#     infra01.int.mk-labs.cloud:
+
+# matchbox_server:
+#   hosts:
+#     matchbox:
+
+terraform_server:
   hosts:
     infra01:
-
-ipaserver:
-  hosts:
-    infra01.int.mk-labs.cloud:
-
-matchbox_server:
-  hosts:
-    matchbox:
 
 hub_cluster:
   hosts:
@@ -88,10 +100,6 @@ fastpass:
 # sql_servers:
 #   hosts:
 #     sql01:
-
-# n8n_servers:
-#   hosts:
-#     n8n:
 
 # docker_servers:
 #   hosts:

@@ -1,0 +1,34 @@
+---
+# Role to disable swap
+
+- name: 1. Check if swap is enabled
+  ansible.builtin.shell: swapon --show=NAME --noheadings
+  register: swap_status
+  changed_when: false
+
+- name: 2. Disable swap
+  become: true
+  when: swap_status.stdout != ''
+  block:
+    - name: 2.1 Disable swap
+      ansible.builtin.shell: swapoff -a
+
+    - name: 2.2 Persist swap off by commenting out swap in fstab
+      ansible.builtin.replace:
+        path: /etc/fstab
+        regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+        replace: '# \1'
+        backup: true
+
+    - name: 2.3 Remove swap file
+      become: true
+      ansible.builtin.file:
+        path: "{{ swap_status.stdout }}"
+        state: absent
+
+    - name: 2.4 Remove zram-generator-defaults
+      become: true
+      when: ansible_os_family == "RedHat"
+      ansible.builtin.file:
+        path: /etc/systemd/zram-generator.conf
+        state: absent

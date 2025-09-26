@@ -27,6 +27,7 @@ vm_os_version: "24.04"
 # - Large: 4 cores, 4GB memory, 32 GiB virtual disk
 # - Large Plus: 4 cores, 4GB memory, 48 GiB virtual disk
 # - Xlarge: 4 cores, 8GB memory, 64 GiB virtual disk
+# - Xlarge Plus: 4 cores, 8GB memory, 128 GiB virtual disk
 
 vm_size: "large-plus"
 
@@ -44,6 +45,7 @@ proxmox_host_target: "pve03"
 # sets the Proxmox VMID.  The VMID is a combination of the 3rd and 4th octet of the IPv4 address.
 
 ip_address: 10.1.71.53
+vm_mac_address: 'BC:24:11:84:D7:2F'
 
 # Software
 # Future enhancement will allow specification of additional software to automatically deploy to

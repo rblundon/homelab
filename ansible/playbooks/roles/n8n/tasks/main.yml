@@ -1,0 +1,100 @@
+---
+# Role to install and configure a n8n server
+
+- name: 1. Pre-install system updates
+  become: true
+  ansible.builtin.apt:
+    name: '*'
+    state: present
+    update_cache: true
+
+- name: 2. Install required packages
+  become: true
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - curl
+    - wget
+    - gnupg
+    - lsb-release
+    - ca-certificates
+    - software-properties-common
+
+# firewall
+# sudo ufw enable
+# sudo ufw allow ssh
+# sudo ufw allow 5678/tcp
+
+- name: 3. Enable UFW
+  become: true
+  community.general.ufw:
+    state: enabled
+
+- name: 4. Open firewall ports for n8n
+  become: true
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop:
+    - 22
+    - 5678
+
+- name: 5. Download node installer
+#  become: true
+  ansible.builtin.get_url:
+    url: 'https://deb.nodesource.com/setup_lts.x'
+    dest: '/tmp/setup_lts.x'
+    mode: '0755'
+
+- name: 6. Run node installer
+  become: true
+  ansible.builtin.shell:
+    cmd: '/tmp/setup_lts.x'
+
+- name: 7. Install Node.js and npm
+  become: true
+  ansible.builtin.package:
+    name: nodejs
+    state: present
+
+- name: 8. Install npm@latest
+  become: true
+  ansible.builtin.shell:
+    cmd: 'sudo npm install -g npm@latest'
+
+- name: 9. Install "n8n" node.js package globally.
+  become: true
+  community.general.npm:
+    name: n8n
+    global: true
+
+- name: 10. Copy n8n.service to /etc/systemd/system
+  become: true
+  ansible.builtin.template:
+    dest: /etc/systemd/system/n8n.service
+    owner: root
+    group: root
+    mode: '0644'
+    src: n8n.service.j2
+
+- name: 11. Create n8n user
+  become: true
+  ansible.builtin.user:
+    name: n8n
+    state: present
+    shell: /bin/bash
+    home: /home/n8n
+    createhome: true
+
+- name: 12. Reload systemd to re-read configs
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+
+- name: 13. Start n8n service
+  become: true
+  ansible.builtin.systemd:
+    name: n8n.service
+    state: restarted
+    enabled: true
