@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<service>
+  <short>kubernetes_API</short>
+  <description>Kubernetes API</description>
+  <port protocol="tcp" port="6443"/>
+</service>
+
+<service>
+  <short>etcd</short>
+  <description>Kubernetes etcd</description>
+  <port protocol="tcp" port="2379-2380"/>
+</service>
+
+<service>
+  <short>kubelet</short>
+  <description>Kubernetes Kubelet</description>
+  <port protocol="tcp" port="10250"/>
+</service>
+
+<service>
+  <short>kube-scheduler</short>
+  <description>Kubernetes kube-scheduler</description>
+  <port protocol="tcp" port="10259"/>
+</service>
+
+<service>
+  <short>kube-controller-manager</short>
+  <description>Kubernetes kube-controller-manager</description>
+  <port protocol="tcp" port="10257"/>
+</service>
+
+<service>
+  <short>kube-proxy</short>
+  <description>Kubernetes kube-proxy</description>
+  <port protocol="tcp" port="10256"/>
+</service>
+
+<service>
+  <short>NodePort</short>
+  <description>NodePort</description>
+  <port protocol="tcp" port="30000-32767"/>
+</service>
+
+<service>
+  <short>NodePort</short>
+  <description>NodePort</description>
+  <port protocol="udp" port="30000-32767"/>
+</service>

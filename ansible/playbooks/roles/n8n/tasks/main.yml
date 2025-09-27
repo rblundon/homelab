@@ -21,11 +21,6 @@
     - ca-certificates
     - software-properties-common
 
-# firewall
-# sudo ufw enable
-# sudo ufw allow ssh
-# sudo ufw allow 5678/tcp
-
 - name: 3. Enable UFW
   become: true
   community.general.ufw:

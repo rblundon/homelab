@@ -1,256 +1,97 @@
-# ------------------------------------------------------------------------------
-# FILE: roles/common/tasks/main.yml
-# ------------------------------------------------------------------------------
-- name: Set Kubernetes-compatible hostname
-  become: true
-  ansible.builtin.hostname:
-    name: "{{ kubernetes_hostnames[inventory_hostname] | default(inventory_hostname) }}"
-  when: kubernetes_hostnames is defined
-
-- name: Remove zram-generator-defaults
-  become: true
-  ansible.builtin.dnf:
-    name: zram-generator-defaults
-    state: absent
-
-- name: Disable swap
-  ansible.builtin.command: swapoff -a
-  become: true
-  changed_when: false
-
-- name: Persist swap off by commenting out swap in fstab
-  become: true
-  ansible.builtin.replace:
-    path: /etc/fstab
-    regexp: '^(\s*)([^#\n]+\s+swap\s+.*)$'
-    replace: '#\2'
-    backup: true
-
+---
+# tasks file for kubernetes
 - name: Load required kernel modules
   become: true
   community.general.modprobe:
     name: "{{ item }}"
-    state: present
-  loop:
-    - overlay
-    - br_netfilter
+  loop: "{{ required_kernel_modules }}"
 
 - name: Persist kernel modules on boot
   become: true
   ansible.builtin.copy:
     dest: /etc/modules-load.d/k8s.conf
+    content: "{{ required_kernel_modules | join('\n') }}"
+    owner: root
+    group: root
     mode: '0644'
-    content: |
-      overlay
-      br_netfilter
 
 - name: Configure required sysctl params for Kubernetes
   become: true
   ansible.builtin.copy:
-    dest: /etc/sysctl.d/k8s.conf
+    dest: /etc/sysctl.d/kubernetes.conf
+    content: "{{ k8s_sysctl_params | join('\n') }}"
+    owner: root
+    group: root
     mode: '0644'
-    content: |
-      net.bridge.bridge-nf-call-iptables  = 1
-      net.bridge.bridge-nf-call-ip6tables = 1
-      net.ipv4.ip_forward                 = 1
 
 - name: Apply sysctl params without reboot
   become: true
   ansible.builtin.command: sysctl --system
-  changed_when: false
 
-- name: Install python3-libselinux for managing selinux
+- name: Manage firewall (ufw)
   become: true
-  ansible.builtin.dnf:
-    name: python3-libselinux
-    state: present
+  when: ansible_os_family == "Debian"
+  block:
+    - name: Create Kubernetes service definition (ufw)
+      ansible.builtin.template:
+        dest: /etc/ufw/applications.d/kubernetes
+        owner: root
+        group: root
+        mode: '0644'
+        src: kubernetes-ufw-service.xml.j2
 
-- name: Set SELinux to permissive mode
+- name: Manage firewall (firewalld)
   become: true
-  ansible.posix.selinux:
-    policy: targeted
-    state: permissive
+  when: ansible_os_family == "RedHat"
+  block:
+    - name: Create Kubernetes service definition (firewalld)
+      ansible.builtin.template:
+        dest: /etc/firewalld/services/kubernetes.xml
+        owner: root
+        group: root
+        mode: '0644'
+        src: kubernetes-firewalld-service.xml.j2
 
-- name: Create Kubernetes service definition
+- name: Install via apt
   become: true
-  ansible.builtin.copy:
-    dest: /etc/firewalld/services/kubernetes.xml
-    owner: root
-    group: root
-    mode: '0644'
-    content: |
-      <?xml version="1.0" encoding="utf-8"?>
-      <service>
-        <short>Kubernetes</short>
-        <description>Kubernetes cluster communication ports</description>
-        <port protocol="tcp" port="6443"/>
-        <port protocol="tcp" port="2379"/>
-        <port protocol="tcp" port="2380"/>
-        <port protocol="tcp" port="10250"/>
-        <port protocol="tcp" port="10251"/>
-        <port protocol="tcp" port="10252"/>
-        <port protocol="tcp" port="10255"/>
-        <port protocol="tcp" port="30000-32767"/>
-        <port protocol="udp" port="4789"/>
-        <port protocol="tcp" port="179"/>
-      </service>
+  when: ansible_os_family == "Debian"
+  block:
+    - name: Add Kubernetes apt key
+      ansible.builtin.apt_key:
+        url: "https://pkgs.k8s.io/core:/stable:/v{{ kubernetes_version }}/deb/Release.key"
+        state: present
 
-- name: Reload firewalld to load new service
+    - name: Add Kubernetes repository
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /"
+        state: present
+        filename: kubernetes
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+
+- name: Install via dnf (may not work)
   become: true
-  ansible.builtin.command: firewall-cmd --reload
+  when: ansible_os_family == "RedHat"
+  block:
+    - name: Add repo using key from URL (dnf)
+      ansible.builtin.yum_repository:
+        name: kubernetes
+        description: "Kubernetes repository"
+        baseurl: https://pkgs.k8s.io/core:/stable:/{{ kubernetes_version }}/rpm/
+        gpgcheck: true
+        gpgkey: https://pkgs.k8s.io/core:/stable:/{{ kubernetes_version }}/rpm/repodata/repomd.xml.key
 
-- name: Add Kubernetes service to default zone
-  become: true
-  ansible.builtin.command: firewall-cmd --permanent --add-service=kubernetes
-
-- name: Add SSH service to default zone (ensure SSH access)
-  become: true
-  ansible.builtin.command: firewall-cmd --permanent --add-service=ssh
-
-- name: Reload firewalld to apply changes
-  become: true
-  ansible.builtin.command: firewall-cmd --reload
-
-- name: Verify Kubernetes service is active
-  become: true
-  ansible.builtin.command: firewall-cmd --list-services
-  register: firewall_services
-  changed_when: false
-
-- name: Display active firewall services
-  ansible.builtin.debug:
-    msg: "Active firewall services: {{ firewall_services.stdout }}"
-
-- name: Install DNF plugins core for managing repositories
-  become: true
-  ansible.builtin.dnf:
-    name: dnf-plugins-core
-    state: present
-
-- name: Add Docker CE repository
-  become: true
-  ansible.builtin.yum_repository:
-    name: docker-ce
-    baseurl: https://download.docker.com/linux/fedora/docker-ce.repo
-    gpgcheck: false
-    enabled: true
-    description: "Docker repository"
-
-- name: Install containerd
-  become: true
-  ansible.builtin.dnf:
-    name: containerd
-    state: present
-
-- name: Create containerd config directory
-  become: true
-  ansible.builtin.file:
-    path: /etc/containerd
-    mode: '0755'
-    state: directory
-
-- name: Generate default containerd config and enable SystemdCgroup
-  become: true
-  ansible.builtin.shell: |
-    containerd config default > /etc/containerd/config.toml
-    sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
-  args:
-    creates: /etc/containerd/config.toml
-
-- name: Restart and enable containerd service
-  become: true
-  ansible.builtin.systemd:
-    name: containerd
-    state: restarted
-    enabled: true
-    daemon_reload: true
-
-- name: Add Kubernetes repository
-  become: true
-  ansible.builtin.yum_repository:
-    name: kubernetes
-    description: Kubernetes
-    baseurl: https://pkgs.k8s.io/core:/stable:/v1.33/rpm/
-    gpgkey: https://pkgs.k8s.io/core:/stable:/v1.33/rpm/repodata/repomd.xml.key
-    gpgcheck: true
+    - name: Update dnf cache
+      ansible.builtin.dnf:
+        update_cache: true
 
 - name: Install Kubernetes packages
   become: true
-  ansible.builtin.dnf:
-    name:
-      - kubelet
-      - kubeadm
-      - kubectl
+  ansible.builtin.package:
+    name: "{{ item }}"
+    update_cache: true
     state: present
-    disable_excludes: kubernetes
-
-- name: Create kubelet config directory
-  become: true
-  ansible.builtin.file:
-    path: /var/lib/kubelet
-    state: directory
-    owner: root
-    group: root
-    mode: '0755'
-
-- name: Create initial kubelet config file
-  become: true
-  ansible.builtin.copy:
-    dest: /var/lib/kubelet/config.yaml
-    owner: root
-    group: root
-    mode: '0644'
-    content: |
-      apiVersion: kubelet.config.k8s.io/v1beta1
-      kind: KubeletConfiguration
-      authentication:
-        anonymous:
-          enabled: false
-        webhook:
-          enabled: true
-        x509:
-          clientCAFile: /etc/kubernetes/pki/ca.crt
-      authorization:
-        mode: Webhook
-      clusterDomain: cluster.local
-      clusterDNS:
-        - 10.96.0.10
-      cpuManagerPolicy: none
-      evictionHard:
-        imagefs.available: 15%
-        memory.available: 100Mi
-        nodefs.available: 10%
-        nodefs.inodesFree: 5%
-      maxPods: 110
-      podCIDR: {{ pod_network_cidr | default('10.244.0.0/16') }}
-      resolvConf: /etc/resolv.conf
-      runtimeRequestTimeout: 2m
-      staticPodPath: /etc/kubernetes/manifests
-      streamingConnectionIdleTimeout: 4h0m0s
-      syncFrequency: 1m0s
-      volumeStatsAggPeriod: 1m0s
-
-- name: Install CNI plugins via dnf
-  become: true
-  ansible.builtin.dnf:
-    name: containernetworking-plugins
-    state: present
-
-- name: Verify CNI plugins installation
-  become: true
-  ansible.builtin.command: ls -la /usr/libexec/cni/
-  register: cni_plugins_list
-  changed_when: false
-
-
-
-- name: Display installed CNI plugins
-  ansible.builtin.debug:
-    msg: "Installed CNI plugins: {{ cni_plugins_list.stdout_lines }}"
-
-- name: Enable and start the kubelet service
-  become: true
-  ansible.builtin.systemd:
-    name: kubelet
-    enabled: true
-    state: started
+  loop:
+    "{{ kubernetes_packages }}"

@@ -9,176 +9,71 @@
   ansible.builtin.include_role:
     name: no-swap
 
-- name: 3.1 Load required kernel modules
-  become: true
-  ansible.builtin.modprobe:
-    name: "{{ item }}"
-  loop: "{{ required_kernel_modules }}"
-
-- name: 3.2 Persist kernel modules on boot
-  become: true
-  ansible.builtin.copy:
-    dest: /etc/modules-load.d/k8s.conf
-    content: "{{ required_kernel_modules | join('\n') }}"
-    owner: root
-    group: root
-    mode: '0644'
-
-- name: 3.3 Configure required sysctl params for Kubernetes
-  become: true
-  ansible.builtin.copy:
-    dest: /etc/sysctl.d/kubernetes.conf
-    content: "{{ k8s_sysctl_params | join('\n') }}"
-    owner: root
-    group: root
-    mode: '0644'
-
-- name: 3.4 Apply sysctl params without reboot
-  become: true
-  ansible.builtin.shell: sysctl --system
-
-- name: 3.5 Manage SELinux
+- name: 3. Manage SELinux
   become: true
   when: ansible_os_family == "RedHat"
   block:
-    - name: 3.5.1 Install python3-libselinux for managing selinux
+    - name: 3.1 Install python3-libselinux for managing selinux
       ansible.builtin.dnf:
         name: python3-libselinux
         state: present
 
-    - name: 3.5.2 Set SELinux to permissive mode
+    - name: 3.2 Set SELinux to permissive mode
       ansible.posix.selinux:
         policy: targeted
         state: "{{ selinux_state }}"
 
 - name: 4 Manage Time Synchronization
+  ansible.builtin.include_role:
+    name: time-sync
+
+- name: 5.1 Manage firewall (ufw)
   become: true
+  when: ansible_os_family == "Debian"
   block:
-    - name: Check if ntp is installed
-      ansible.builtin.package: rpm -q ntp
-      register: ntp_installed
-      changed_when: false
-
-    - name: 4.1 Remove the ntp package
+    - name: 5.1.1 Install ufw
       ansible.builtin.package:
-        name: ntp
-        state: absent
-
-    - name: 4.2 Install the chrony package
-      ansible.builtin.package:
-        name: chrony
+        name: ufw
         state: present
 
+    - name: 5.1.2 Open firewall ports OpenSSH
+      community.general.ufw:
+        rule: allow
+        name: OpenSSH
 
-# - name: Start and enable chronyd
-#   ansible.builtin.systemd:
-#     name: chronyd
-#     state: started
-#     enabled: true
-#   when: configure_ntp | default(true)
+    - name: 5.1.3 Enable ufw
+      community.general.ufw:
+        state: enabled
 
-# - name: Force time synchronization
-#   ansible.builtin.shell: chronyc makestep
-#   ignore_errors: true
-#   when: configure_ntp | default(true)
+- name: 5.2 Manage firewall (firewalld)
+  become: true
+  when: ansible_os_family == "RedHat"
+  block:
+    - name: 5.2.1 Install firewalld
+      ansible.builtin.package:
+        name: firewalld
+        state: present
 
-# - name: Install firewalld
-#   ansible.builtin.dnf:
-#     name: firewalld
-#     state: present
-#   when: configure_firewall | default(true)
+    - name: 5.2.2 Add SSH service to default zone (ensure SSH access)
+      ansible.posix.firewalld:
+        service: ssh
+        permanent: true
+        immediate: true
+        state: enabled
 
-# - name: Start and enable firewalld
-#   ansible.builtin.systemd:
-#     name: firewalld
-#     state: started
-#     enabled: true
-#   when: configure_firewall | default(true)
+    - name: 5.2.3 Start and enable firewalld
+      ansible.builtin.systemd:
+        name: firewalld
+        state: started
+        enabled: true
 
-# - name: Create Kubernetes service definition
-#   ansible.builtin.template:
-#     dest: /etc/firewalld/services/kubernetes.xml
-#     owner: root
-#     group: root
-#     mode: '0644'
-#     src: kubernetes-firewall-service.xml.j2
-#   when: configure_firewall | default(true)
+- name: 6 Install kubernetes
+  ansible.builtin.include_role:
+    name: kubernetes
 
-# - name: Reload firewalld to load new service
-#   ansible.builtin.shell: firewall-cmd --reload
-#   when: configure_firewall | default(true)
-
-# - name: Add Kubernetes service to default zone
-#   ansible.builtin.shell: firewall-cmd --permanent --add-service=kubernetes
-#   when: configure_firewall | default(true)
-
-# - name: Add SSH service to default zone (ensure SSH access)
-#   ansible.builtin.shell: firewall-cmd --permanent --add-service=ssh
-#   when: configure_firewall | default(true)
-
-# - name: Reload firewalld to apply changes
-#   ansible.builtin.shell: firewall-cmd --reload
-#   when: configure_firewall | default(true)
-
-# - name: Verify Kubernetes service is active
-#   ansible.builtin.shell: firewall-cmd --list-services
-#   register: active_services
-#   when: configure_firewall | default(true)
-
-# - name: Display active firewall services
-#   ansible.builtin.debug:
-#     msg: "Active firewall services: {{ active_services.stdout }}"
-#   when: configure_firewall | default(true)
-
-# - name: Install DNF plugins core for managing repositories
-#   ansible.builtin.dnf:
-#     name: dnf-plugins-core
-#     state: present
-
-# - name: Add Docker CE repository
-#   ansible.builtin.shell: |
-#     curl -fsSL https://download.docker.com/linux/fedora/docker-ce.repo -o /etc/yum.repos.d/docker-ce.repo
-
-# - name: Install containerd
-#   ansible.builtin.dnf:
-#     name: containerd
-#     state: present
-
-# - name: Create containerd config directory
-#   ansible.builtin.file:
-#     path: /etc/containerd
-#     state: directory
-#     owner: root
-#     group: root
-#     mode: '0755'
-
-# - name: Generate default containerd config and enable SystemdCgroup
-#   ansible.builtin.shell: |
-#     containerd config default > /etc/containerd/config.toml
-#     sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
-
-# - name: Restart and enable containerd service
-#   ansible.builtin.systemd:
-#     name: containerd
-#     state: restarted
-#     enabled: true
-
-# - name: Add Kubernetes repository
-#   ansible.builtin.template:
-#     dest: /etc/yum.repos.d/kubernetes.repo
-#     owner: root
-#     group: root
-#     mode: '0644'
-#     src: kubernetes.repo.j2
-
-# - name: Install Kubernetes packages
-#   ansible.builtin.dnf:
-#     name:
-#       - kubelet
-#       - kubeadm
-#       - kubectl
-#       - kubernetes-cni
-#     state: present
+- name: 7 Install containerd
+  ansible.builtin.include_role:
+    name: containerd
 
 # - name: Create kubelet config directory
 #   ansible.builtin.file:

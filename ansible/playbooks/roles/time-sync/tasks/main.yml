@@ -1,0 +1,41 @@
+---
+# tasks file for time-sync
+- name: Manage Time Synchronization
+  become: true
+  block:
+    - name: Remove the ntp package
+      ansible.builtin.package:
+        name: ntp
+        state: absent
+
+    - name: Install the chrony package
+      ansible.builtin.package:
+        name: chrony
+        state: present
+
+    - name: Remove pool entries from Chrony config file
+      ansible.builtin.lineinfile:
+        path: /etc/chrony/chrony.conf
+        regexp: '^pool\s*'
+        state: absent
+
+    - name: Add local NTP servers to Chrony config file
+      ansible.builtin.lineinfile:
+        path: /etc/chrony/chrony.conf
+        line: "server 10.1.71.21 iburst"
+        state: present
+
+    - name: Start and enable chronyd
+      ansible.builtin.systemd:
+        name: chronyd
+        state: started
+        enabled: true
+
+    - name: Force time synchronization
+      become: true
+      ansible.builtin.command: chronyc makestep
+      register: chronyc_status
+
+    - name: Display chronyc status
+      ansible.builtin.debug:
+        var: chronyc_status.stdout

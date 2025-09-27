@@ -2,16 +2,10 @@
 # Kubernetes Prerequisites Role Defaults
 
 # Kubernetes version to install (should be overridden in group_vars)
-kubernetes_version: "v1.30"
-
-# Container runtime (containerd is default)
-container_runtime: "containerd"
+kubernetes_version: "v1.33"
 
 # CNI plugin to install
 cni_plugin: "calico"
-
-# Firewall configuration
-configure_firewall: true
 
 # SELinux configuration
 selinux_state: "permissive"
@@ -27,15 +21,14 @@ k8s_sysctl_params:
   - "net.bridge.bridge-nf-call-ip6tables: 1"
   - "net.ipv4.ip_forward: 1"
 
-# Kubernetes firewall ports
-k8s_firewall_ports:
-  - { protocol: "tcp", port: "6443" }    # API server
-  - { protocol: "tcp", port: "2379" }    # etcd client
-  - { protocol: "tcp", port: "2380" }    # etcd peer
-  - { protocol: "tcp", port: "10250" }   # kubelet
-  - { protocol: "tcp", port: "10251" }   # kube-scheduler
-  - { protocol: "tcp", port: "10252" }   # kube-controller-manager
-  - { protocol: "tcp", port: "10255" }   # kubelet read-only
-  - { protocol: "tcp", port: "30000-32767" }  # NodePort services
-  - { protocol: "udp", port: "4789" }    # VXLAN (Flannel)
-  - { protocol: "tcp", port: "179" }     # BGP (Calico)
+containerd_dependencies:
+  - curl
+  - gnupg2
+  - software-properties-common
+  - apt-transport-https
+  - ca-certificates
+
+kubernetes_packages:
+  - kubelet
+  - kubeadm
+  - kubectl
