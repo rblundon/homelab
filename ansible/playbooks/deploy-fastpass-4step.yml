@@ -1,17 +1,17 @@
 ---
-- name: Step 1 - Install Prerequisites
-  hosts: fastpass
-  become: true
-  gather_facts: true
-  roles:
-    - role: kubernetes-prerequisites
-
-# - name: Step 2 - Deploy First Control Plane Node
-#   hosts: fastpass_control_plane[0]
+# - name: Step 1 - Install Prerequisites
+#   hosts: fastpass
 #   become: true
-#   gather_facts: false
+#   gather_facts: true
 #   roles:
-#     - role: fastpass-first-control-plane
+#     - role: kubernetes-prerequisites
+
+- name: Step 2 - Deploy First Control Plane Node
+  hosts: fastpass_control_plane[0]
+  become: true
+  gather_facts: true # false
+  roles:
+    - role: fastpass-first-control-plane
 
 # - name: Step 3 - Deploy Additional Control Plane Nodes
 #   hosts: fastpass_control_plane[1:]

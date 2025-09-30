@@ -1,0 +1,66 @@
+---
+# role: fastpass-first-control-plane
+# description: FastPass First Control Plane
+# author: mk-labs
+# version: 1.0.0
+# date: 2025-09-27
+
+# Open sevices for control plane
+- name: Open services for control plane
+  become: true
+  when: ansible_os_family == "Debian"
+  block:
+    - name: Open firewall ports for control plane
+      community.general.ufw:
+        rule: allow
+        name: "{{ item }}"
+      loop:
+        "{{ kubernetes_services_control_plane }}"
+
+- name: Create initial kubelet config file
+  become: true
+  ansible.builtin.copy:
+    dest: /var/lib/kubelet/config.yaml
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      apiVersion: kubelet.config.k8s.io/v1beta1
+      kind: KubeletConfiguration
+      cgroupDriver: systemd
+      containerRuntimeEndpoint: unix:///run/containerd/containerd.sock
+
+# - name: Initialize Kubernetes cluster
+#   become: true
+#   ansible.builtin.command: kubeadm init --ignore-preflight-errors=NumCPU,Mem --control-plane-endpoint=fastpass # {{ cluster_name }}
+#   args:
+#     creates: /etc/kubernetes/admin.conf
+#   register: kubeadm_init
+#   changed_when: kubeadm_init.rc == 0
+
+- name: Ensure kubelet is enabled and started
+  become: true
+  ansible.builtin.systemd:
+    name: kubelet
+    enabled: true
+    state: started
+  
+- name: Debug ansible_env.HOME
+  delegate_to: localhost
+  ansible.builtin.debug:
+    var: ansible_env.HOME
+
+
+- name: Create .kube directory for user
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.kube"
+    state: directory
+    mode: '0755'
+
+- name: Copy admin.conf to user's .kube directory on controller
+  ansible.builtin.fetch:
+    src: /etc/kubernetes/admin.conf
+    dest: "{{ ansible_env.HOME }}/.kube/config-fastpass" # {{cluster_name}}"
+    mode: '0644'
+  

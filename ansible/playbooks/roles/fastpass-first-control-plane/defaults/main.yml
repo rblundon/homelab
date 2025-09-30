@@ -1,0 +1,15 @@
+---
+# FastPass First Control Plane Role Defaults
+
+# Kubernetes services for control plane
+kubernetes_services_control_plane:
+  - kubernetes_API
+  - etcd
+  - kubelet
+  - kube-scheduler
+  - kube-controller-manager
+
+kubernetes_services_worker:
+  - kubelet
+  - kube-proxy
+  - NodePort
