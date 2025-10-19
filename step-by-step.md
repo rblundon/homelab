@@ -38,6 +38,28 @@ May refactor folder structure to:
   ansible-vault create vault
   ```
 
+To set up the virtual environment, follow these steps:
+
+1. Create a virtual environment named `venv-ansible`:
+
+   ```bash
+   python3 -m venv ~/venv-ansible
+   ```
+
+2. Activate the virtual environment:
+
+   ```bash
+   source ~/venv-ansible/bin/activate
+   ```
+
+3. Install the required packages:
+
+   ```bash
+   pip install -r </path/to/your/repo>/requirements.txt
+   ```
+ansible-galaxy collection install -r ansible/requirements.yml
+
+
 - Modify ansible variables for your environment
 
 ## [Network](00-network/README.md) *Manual*
@@ -73,7 +95,7 @@ May refactor folder structure to:
   ssh infra01
 
   cd homelab
-  ansible-galaxy collection install -r requirements.yml
+  ansible-galaxy collection install -r ansible/requirements.yml
   ansible-playbook -i inventory.yml 10-sno-hub-cluster/install.yml
   ```
 

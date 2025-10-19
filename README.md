@@ -6,11 +6,9 @@ This implementation is built on easily accessible consumer based hardware and wi
 
 ## 🎯 Project Goals
 
-- **Multi-cluster OpenShift management** with ACM
-- **Hybrid cloud scenarios** (bare metal + virtualized + containerized)
-- **Enterprise integration testing** (AD, SQL Server, SIEM)
+- **Kubernetes cluster for applications**
+- **IAM integration testing**
 - **GitOps and automation workflows**
-- **Red Hat certification preparation**
 
 ## 📋 Documentation (Priority Order)
 
@@ -25,18 +23,18 @@ This implementation is built on easily accessible consumer based hardware and wi
 6. **[VM Templates & Automation](./docs/13-vm-automation.md)** *(TBD)* - Template creation
 
 ### Phase 3: Infrastructure Services
-7. **[Recursive DNS](./docs/09-openshift-sno.md)** *(TBD)* - ACM Hub Cluster
-8. **[Authoritative DNS](./docs/08-openshift-compact.md)** *(TBD)* - 3 Master/3 Worker node (production-like)
-9. **[Identity Management](./docs/10-acm-setup.md)** *(TBD)* - Multi-cluster management
-10. **[Matchbox](./docs/10-acm-setup.md)** *(TBD)* - External app cluster
+7. **[Recursive DNS]
+8. **[Authoritative DNS]
+9. **[Identity Management](./docs/10-acm-setup.md)** *(TBD)*
+10. **[Matchbox] (Depreciated?)
 
-### Phase 4: OpenShift Clusters
+### Phase 4: OpenShift Clusters (Depreciated)
 8. **[OpenShift SNO + Worker](./docs/09-openshift-sno.md)** *(TBD)* - ACM Hub Cluster
 9. **[OpenShift Cluster](./docs/08-openshift-compact.md)** *(TBD)* - 3 Master/3 Worker node (production-like)
 10. **[ACM Configuration](./docs/10-acm-setup.md)** *(TBD)* - Multi-cluster management
 11. **[HCP Cluster](./docs/10-acm-setup.md)** *(TBD)* - External app cluster
 
-### Phase 5: Container Platform
+### Phase 5: Kubernetes Container Platform
 5. **[Container Registry Setup](./docs/05-container-registry.md)** *(TBD)* - Harbor deployment
 6. **[Git Repository Setup](./docs/06-git-repository.md)** *(TBD)* - Gitea/GitLab on Synology
 7. **[Artifact Repository](./docs/07-artifact-repository.md)** *(TBD)* - Nexus/Artifactory
@@ -99,14 +97,13 @@ configurations
 ## 🔧 Technology Stack
 
 ### Infrastructure
-- **Networking**: Ubiquiti UDM SE
+- **Networking**: Ubiquiti UDM Pro
 - **Storage**: Synology DS1621+, Ubiquiti UNAS Pro
-- **Compute**: 3x Beelink S12 Pro, 5x Lenovo M710q, Dell T640
+- **Compute**: 3x Minisforum TH60, 2x Minisforum MS01, 7x Dell 7050 SFF
 
 ### Container Platforms
-- **OpenShift 4.14+**: Two clusters (compact + SNO)
-- **k0s**: Core services cluster
-- **vSphere**: VM workloads
+- **k8s**: Core services cluster
+- **Proxmox**: VM workloads
 
 ### Core Services
 - **Container Registry**: Harbor

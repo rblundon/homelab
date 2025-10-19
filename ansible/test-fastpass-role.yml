@@ -1,0 +1,9 @@
+---
+- name: Test FastPass First Control Plane Role
+  hosts: localhost
+  gather_facts: true
+  vars:
+    cluster_name: "fastpass"
+    kubernetes_services_control_plane: []
+  roles:
+    - role: playbooks/roles/fastpass-first-control-plane

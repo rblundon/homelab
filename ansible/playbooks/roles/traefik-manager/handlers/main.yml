@@ -1,0 +1,8 @@
+---
+# Handlers for traefik-manager role
+
+- name: reload traefik
+  ansible.builtin.systemd:
+    name: traefik
+    state: reloaded
+  delegate_to: "{{ traefik_host }}"

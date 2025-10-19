@@ -8,12 +8,12 @@ pod_network_cidr: "10.244.0.0/16"
 service_cidr: "10.96.0.0/12"
 
 # Control Plane Configuration
-control_plane_endpoint: "fastpass.local.mk-labs.cloud"
+control_plane_endpoint: "{{ cluster_name}}.{{ base_domain}}"
 control_plane_port: "6443"
 
 # CNI Configuration
 cni_plugin: "calico"
-calico_version: "v3.28.0"
+calico_version: "v3.30.3"
 
 # Node Labels and Taints
 node_labels:

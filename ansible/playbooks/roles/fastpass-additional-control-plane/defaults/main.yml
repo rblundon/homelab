@@ -1,0 +1,22 @@
+---
+# FastPass Additional Control Plane Role Defaults
+
+# Kubernetes services for control plane
+kubernetes_services_control_plane:
+  - kubernetes_API
+  - etcd
+  - kubelet
+  - kube-scheduler
+  - kube-controller-manager
+
+# Join token configuration
+join_token_ttl: "24h"
+certificate_key_ttl: "2h"
+
+# Default cluster configuration
+pod_network_cidr: "10.244.0.0/16"
+service_cidr: "10.96.0.0/12"
+
+# Kubelet configuration
+kubelet_cgroup_driver: "systemd"
+container_runtime_endpoint: "unix:///run/containerd/containerd.sock"

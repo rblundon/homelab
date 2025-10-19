@@ -1,0 +1,11 @@
+---
+- name: Test DNS CNAME Creation
+  hosts: fastpass_control_plane[0]
+  gather_facts: false
+  tasks:
+    - name: Test DNS CNAME entry creation
+      ansible.builtin.include_role:
+        name: dns-manager
+      vars:
+        cluster_endpoint: "{{ control_plane_endpoint }}"
+        cluster_cname_target: "{{ traefik_server }}.{{ base_domain }}"

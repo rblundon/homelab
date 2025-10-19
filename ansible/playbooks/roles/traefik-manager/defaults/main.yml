@@ -1,0 +1,12 @@
+---
+# Default variables for traefik-manager role
+
+# Traefik Configuration
+traefik_config_dir: "/etc/traefik"
+traefik_host: "{{ traefik_server | default(groups['traefik_servers'][0] | default('localhost')) }}"
+cluster_api_port: 6443
+
+# Cluster Configuration (to be provided by calling role)
+# cluster_name: "fastpass"
+# cluster_endpoint: "fastpass.local.mk-labs.cloud"
+# control_plane_nodes: ["space-mountain", "big-thunder-mountain", "splash-mountain"]

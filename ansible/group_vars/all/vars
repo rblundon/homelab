@@ -15,3 +15,6 @@ base_domain: "local.mk-labs.cloud"
 
 # Terraform variables
 terraform_server: "infra01"
+
+# Traefik variables
+traefik_server: "lightning-lane"

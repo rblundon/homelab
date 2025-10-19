@@ -1,0 +1,17 @@
+---
+# role: dns-manager
+# description: Reusable role for managing DNS entries across clusters using Technitium DNS
+# author: mk-labs
+# version: 1.0.0
+
+- name: Create DNS entry using Technitium DNS task
+  ansible.builtin.include_tasks: "{{ playbook_dir }}/tasks/add_technitium_dns_entry.yml"
+
+- name: Wait for DNS propagation
+  ansible.builtin.pause:
+    seconds: "{{ dns_propagation_wait | default(10) }}"
+  when: dns_management_enabled | default(true)
+
+- name: Look up A (IPv4) records for example.org
+  ansible.builtin.debug:
+    msg: "{{ query('community.dns.lookup', 'fastpass') }}"

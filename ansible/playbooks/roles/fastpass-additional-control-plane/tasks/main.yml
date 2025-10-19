@@ -1,0 +1,29 @@
+---
+# role: fastpass-additional-control-plane
+# description: FastPass Additional Control Plane - Deploy additional control plane nodes to existing FastPass Kubernetes cluster
+# author: Ryan Blundon
+# version: 1.0.0
+# date: 2025-10-05
+
+# This role joins additional nodes to an existing Kubernetes cluster as control plane nodes
+# It follows the same patterns as fastpass-first-control-plane but uses kubeadm join instead of kubeadm init
+
+- name: Display role information
+  ansible.builtin.debug:
+    msg: "Starting FastPass Additional Control Plane deployment for {{ inventory_hostname }}"
+
+- name: Setup DNS record for cluster
+  ansible.builtin.include_role:
+    name: dns-manager
+  vars:
+    host_name: "{{ cluster_name }}"
+
+- name: Open services for control plane
+  become: true
+  when: ansible_os_family == "Debian"
+  block:
+    - name: Open firewall ports for control plane
+      community.general.ufw:
+        rule: allow
+        name: "{{ item }}"
+      loop: "{{ kubernetes_services_control_plane }}"

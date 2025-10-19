@@ -1,0 +1,23 @@
+---
+# Traefik TCP Router for {{ cluster_name }} Kubernetes API
+tcp:
+  routers:
+    {{ cluster_name }}-api:
+      rule: "HostSNI(`{{ cluster_endpoint }}`)"
+      service: "{{ cluster_name }}-backend"
+      tls:
+        passthrough: true
+      entryPoints:
+        - "k8s-api"
+
+  services:
+    {{ cluster_name }}-backend:
+      loadBalancer:
+        servers:
+{% for node in control_plane_nodes %}
+          - address: "{{ hostvars[node]['ansible_default_ipv4']['address'] }}:{{ cluster_api_port }}"
+{% endfor %}
+        healthCheck:
+          path: "/healthz"
+          interval: "10s"
+          timeout: "3s"

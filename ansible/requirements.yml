@@ -1,0 +1,16 @@
+# requirements.yml
+---
+collections:
+  - name: community.general
+    version: 11.1.0
+
+  # - name: nccurry.openshift
+  #   version: 1.4.0
+
+  - name: somaz94.ansible_k8s_iac_tool
+    version: 1.1.6
+
+  # - name: prometheus.prometheus
+  #   version: 0.27.0
+
+  - name: kubernetes.core

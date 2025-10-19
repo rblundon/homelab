@@ -1,0 +1,20 @@
+---
+# Reusable task file for adding Technitium DNS entries
+# This replaces the standalone playbook and can be imported into any playbook
+
+# - name: Display cluster_name
+#   ansible.builtin.debug:
+#     msg: "{{ host_name }} - {{ ip_address }} - {{ vault_technitium_api_key }}"
+
+- name: Create DNS A Record entry for {{ host_name }}
+  delegate_to: localhost
+  effectivelywild.technitium_dns.technitium_dns_add_record:
+    api_url: "http://{{ dns_server }}.{{ base_domain }}"
+    api_token: "{{ vault_technitium_api_key }}"
+    zone: "{{ base_domain }}"
+    name: "{{ host_name }}.{{ base_domain }}"
+    type: "A"
+    ipAddress: "{{ ip_address }}"
+    ptr: true
+    ttl: 360
+    validate_certs: false

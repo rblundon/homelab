@@ -1,0 +1,12 @@
+---
+# role: cluster-kubeconfig
+# description: Generic role for any Kubernetes cluster kubeconfig management
+# author: mk-labs
+# version: 1.0.0
+
+- name: Setup kubeconfig for {{ cluster_name }} cluster
+  ansible.builtin.include_role:
+    name: kubeconfig-manager
+  vars:
+    cluster_name: "{{ cluster_name }}"
+    kubeconfig_source_path: "{{ kubeconfig_source_path | default('/etc/kubernetes/admin.conf') }}"

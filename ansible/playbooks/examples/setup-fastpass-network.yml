@@ -1,0 +1,60 @@
+---
+# Example: Setup network infrastructure for FastPass cluster
+# This demonstrates the modular approach for DNS and load balancer setup
+
+- name: Setup FastPass Cluster Network Infrastructure
+  hosts: fastpass_control_plane[0]
+  gather_facts: true
+  vars:
+    cluster_name: "fastpass"
+    cluster_endpoint: "{{ control_plane_endpoint }}"
+    cluster_vip: "{{ ansible_default_ipv4.address }}"
+    control_plane_nodes: "{{ groups['fastpass_control_plane'] }}"
+  
+  tasks:
+    - name: Display cluster configuration
+      ansible.builtin.debug:
+        msg: |
+          Setting up network for FastPass cluster:
+          - Cluster Name: {{ cluster_name }}
+          - Endpoint: {{ cluster_endpoint }}
+          - VIP: {{ cluster_vip }}
+          - Control Plane Nodes: {{ control_plane_nodes | join(', ') }}
+
+    - name: Setup cluster network infrastructure
+      ansible.builtin.include_role:
+        name: cluster-network-setup
+      vars:
+        cluster_name: "{{ cluster_name }}"
+        cluster_endpoint: "{{ cluster_endpoint }}"
+        cluster_vip: "{{ cluster_vip }}"
+        control_plane_nodes: "{{ control_plane_nodes }}"
+
+# Alternative approach using task file directly
+- name: Alternative - Use Technitium DNS task directly
+  hosts: localhost
+  gather_facts: false
+  vars:
+    cluster_endpoint: "{{ hostvars[groups['fastpass_control_plane'][0]]['control_plane_endpoint'] }}"
+    cluster_vip: "{{ hostvars[groups['fastpass_control_plane'][0]]['ansible_default_ipv4']['address'] }}"
+  
+  tasks:
+    - name: Create DNS entry using task file
+      ansible.builtin.include_tasks: ../tasks/add_technitium_dns_entry.yml
+      vars:
+        dns_record_name: "{{ cluster_endpoint.split('.')[0] }}"
+        dns_zone: "{{ base_domain }}"
+        dns_ip_address: "{{ cluster_vip }}"
+        dns_record_type: "A"
+        dns_ttl: 360
+        dns_create_ptr: true
+        dns_debug: true
+      when: use_task_approach | default(false)
+
+# Usage examples:
+# 
+# Use modular approach (recommended):
+# ansible-playbook -i inventory.yml playbooks/examples/setup-fastpass-network.yml
+#
+# Use task file approach:
+# ansible-playbook -i inventory.yml playbooks/examples/setup-fastpass-network.yml -e use_task_approach=true

@@ -1,0 +1,33 @@
+---
+# file: host_vars/lightning_lane/vars
+# Traefik Load Balancer Server
+
+# Supported hypervisors:
+# - Proxmox
+
+platform: "proxmox"
+
+# This is the Proxmox node where all the VM templates are stored. (Templates are not global.)
+proxmox_clone_node: "fantasyland"
+
+# VM Configuration
+vm_os_distribution: "ubuntu"
+vm_os_version: "24.04"
+vm_size: "medium"
+vm_storage: "general"
+
+# Proxmox HA Configuration
+ha_group: "pve02"
+proxmox_host_target: "pve02"
+
+# Network Configuration
+# IP address for the Traefik load balancer
+ip_address: 10.1.71.80
+vm_mac_address: 'BC:24:11:50:00:80'
+
+# Software Configuration
+# Traefik will be installed and configured on this host
+
+# VM Template Configuration
+vm_clone_source: "{{ vm_os_distribution }}-{{ vm_os_version }}-{{ vm_size }}"
+hostname: "{{ inventory_hostname }}.{{ base_domain }}"

@@ -11,7 +11,7 @@
   when: vm_os_distribution == "ubuntu"
 
 - name: DNS Playbook
-  ansible.builtin.import_playbook: add_technitium_dns_entry.yml
+  ansible.builtin.import_playbook: add_dns_entry.yml
 
 - name: DHCP Playbook
   ansible.builtin.import_playbook: add_dhcp_reservation.yml

@@ -1,0 +1,33 @@
+---
+galaxy_info:
+  author: Ryan Blundon
+  description: FastPass Additional Control Plane - Deploy additional control plane nodes to existing FastPass Kubernetes cluster
+  company: Homelab
+
+  license: MIT
+
+  min_ansible_version: "2.9"
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+    - name: Debian
+      versions:
+        - bullseye
+        - bookworm
+
+  galaxy_tags:
+    - kubernetes
+    - k8s
+    - controlplane
+    - cluster
+    - fastpass
+    - kubeadm
+
+dependencies:
+  - role: dns-manager
+    when: cluster_name is defined
+  - role: kubeconfig-manager
+    when: cluster_name is defined

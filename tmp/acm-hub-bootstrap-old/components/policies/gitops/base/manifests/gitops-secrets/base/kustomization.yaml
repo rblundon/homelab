@@ -1,3 +1,0 @@
-resources:
-- argocd-external-secret.yaml
-- notifications-secret.yaml

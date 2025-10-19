@@ -1,0 +1,48 @@
+---
+# role: cluster-network-setup
+# description: Combined DNS and Load Balancer setup for Kubernetes clusters
+# author: mk-labs
+# version: 1.0.0
+
+- name: Setup DNS entry for cluster
+  ansible.builtin.include_role:
+    name: dns-manager
+  vars:
+    cluster_endpoint: "{{ cluster_endpoint }}"
+    cluster_vip: "{{ cluster_vip }}"
+
+- name: Setup Traefik load balancer for cluster
+  ansible.builtin.include_role:
+    name: traefik-manager
+  vars:
+    cluster_name: "{{ cluster_name }}"
+    cluster_endpoint: "{{ cluster_endpoint }}"
+    control_plane_nodes: "{{ control_plane_nodes }}"
+  when: traefik_enabled | default(true)
+
+- name: Wait for DNS propagation
+  ansible.builtin.wait_for:
+    timeout: 30
+  delegate_to: localhost
+
+- name: Test cluster endpoint connectivity
+  ansible.builtin.wait_for:
+    host: "{{ cluster_endpoint }}"
+    port: "{{ cluster_api_port | default(6443) }}"
+    timeout: 60
+  delegate_to: localhost
+  register: connectivity_test
+  failed_when: false
+
+- name: Display network setup results
+  ansible.builtin.debug:
+    msg: |
+      🌐 Network Setup Complete for {{ cluster_name }}:
+      
+      DNS Entry: {{ cluster_endpoint }} → {{ cluster_vip }}
+      Load Balancer: {{ 'Configured' if traefik_enabled | default(true) else 'Skipped' }}
+      Connectivity: {{ 'Success' if connectivity_test.failed == false else 'Failed - Check firewall/network' }}
+      
+      Next steps:
+      1. Verify: kubectl --kubeconfig ~/.kube/config-{{ cluster_name }} cluster-info
+      2. Switch context: kubectl config use-context {{ cluster_name }}-admin

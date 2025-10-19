@@ -37,6 +37,11 @@ prometheus_nodes:
 #   hosts:
 #     cinderella-castle:
 
+papermc_server:
+# ansible-galaxy role install engonzal.papermc
+  hosts:
+    arcade:
+
 semaphore_server:
   hosts:
     imagineering:
@@ -44,6 +49,10 @@ semaphore_server:
 n8n_server:
   hosts:
     tiki-room:
+
+traefik_server:
+  hosts:
+    lightning_lane:
 
 # dhcp_server:
 #   hosts:

@@ -1,0 +1,45 @@
+---
+# role: traefik-manager
+# description: Reusable role for managing Traefik load balancer configuration
+# author: mk-labs
+# version: 1.0.0
+
+- name: Create Traefik configuration directory
+  ansible.builtin.file:
+    path: "{{ traefik_config_dir }}/dynamic"
+    state: directory
+    mode: "0755"
+  delegate_to: "{{ traefik_host }}"
+
+- name: Generate Traefik TCP router configuration for Kubernetes API
+  ansible.builtin.template:
+    src: k8s-api-router.yml.j2
+    dest: "{{ traefik_config_dir }}/dynamic/{{ cluster_name }}-api.yml"
+    mode: "0644"
+  delegate_to: "{{ traefik_host }}"
+  notify: reload traefik
+
+- name: Generate Traefik service configuration for control plane nodes
+  ansible.builtin.template:
+    src: k8s-api-service.yml.j2
+    dest: "{{ traefik_config_dir }}/dynamic/{{ cluster_name }}-service.yml"
+    mode: "0644"
+  delegate_to: "{{ traefik_host }}"
+  notify: reload traefik
+
+- name: Verify Traefik configuration syntax
+  ansible.builtin.command: |
+    traefik --configfile={{ traefik_config_dir }}/traefik.yml --dry-run
+  delegate_to: "{{ traefik_host }}"
+  register: traefik_syntax_check
+  failed_when: traefik_syntax_check.rc != 0
+  changed_when: false
+
+- name: Display Traefik configuration status
+  ansible.builtin.debug:
+    msg: |
+      ✅ Traefik configuration created successfully:
+      - Router: {{ cluster_name }}-api
+      - Service: {{ cluster_name }}-backend
+      - Endpoint: {{ cluster_endpoint }}:{{ cluster_api_port }}
+      - Backend nodes: {{ control_plane_nodes | join(', ') }}

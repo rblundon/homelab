@@ -1,0 +1,11 @@
+---
+# Default variables for kubeconfig-manager role
+
+# Source path for the kubeconfig file on the remote host
+kubeconfig_source_path: "/etc/kubernetes/admin.conf"
+
+# Cluster name - should be provided by the calling playbook
+cluster_name: "kubernetes"
+
+# Context suffix for the cluster
+context_suffix: "admin"

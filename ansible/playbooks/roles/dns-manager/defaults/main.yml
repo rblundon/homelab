@@ -1,0 +1,18 @@
+---
+# Default variables for dns-manager role
+
+# DNS Configuration
+dns_management_enabled: true
+use_hosts_file_fallback: false
+dns_ttl: 360
+dns_propagation_wait: 2
+create_ptr_record: true
+
+# Cluster Configuration (to be provided by calling role)
+# cluster_endpoint: "fastpass.local.mk-labs.cloud"
+# cluster_vip: "10.1.71.53"
+
+# DNS Server Configuration (from group_vars)
+# dns_server: "monorail"
+# base_domain: "local.mk-labs.cloud"
+# vault_technitium_api_key: "{{ vault_technitium_api_key }}"
