@@ -1,28 +1,22 @@
 ---
+# - name: Install additional packages
+#   hosts: papermc_server
+#   become: true
+#   tasks:
+#     - name: Install python-apt packages
+#       ansible.builtin.package:
+#         name: "libapt-pkg"
+#         state: latest
+#         update_cache: true
+
 - name: 1. Deploy Paper Minecraft server
   hosts: papermc_server
-  vars:
-    papermc_mem: 2G
-    papermc_server_port: 25565
-    papermc_motd: "MK-Labs Minecraft Server"
-    papermc_broadcast_console_to_ops: false
-    papermc_version: 1.21.8
-    papermc_dir_main: /app/minecraft
-    papermc_dir_data: /app/minecraft/data
-    papermc_dir_logs: /app/minecraft/logs
-    papermc_dir_plugins: /app/minecraft/plugins
-    papermc_dir_worlds: /app/minecraft/worlds
-    papermc_dir_worlds_nether: /app/minecraft/worlds/nether
-    papermc_dir_worlds_the_end: /app/minecraft/worlds/the_end
-    papermc_dir_worlds_world: /app/minecraft/worlds/world
-    papermc_jar_url: https://papermc.io/api/v2/projects/paper/versions/{{ papermc_version }}/builds/latest/downloads/paper-{{ papermc_version }}-{{ papermc_build }}.jar
-    papermc_jar_path: /opt/papermc/paper-{{ papermc_version }}-{{ papermc_build }}.jar
-    papermc_jar_checksum_type: sha256
-    papermc_jar_checksum_path: /opt/papermc/paper-{{ papermc_version }}-{{ papermc_build }}.jar.sha256
-    papermc_whitelist:
-      - ryansrailroad
-    papermc_white_list: "true"
-    papermc_enforce_whitelist: "true"
   roles:
-    - role: engonzal.papermc
+
+  vars:
+    user:
+      home_dir: /opt/minecraft
+      name: wed
+  roles:
+    - role: apigban.papermc_role
       become: yes
