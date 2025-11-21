@@ -1,0 +1,23 @@
+---
+- name: Master playbook to create VM
+  hosts: all
+  gather_facts: false
+
+- name: Proxmox Create VM Playbook
+  ansible.builtin.import_playbook: proxmox_create_vm.yml
+
+- name: Set cloud-init network
+  ansible.builtin.import_playbook: populate_cloud_init.yml
+  when: vm_os_distribution == "ubuntu"
+
+- name: DNS Playbook
+  ansible.builtin.import_playbook: add_dns_entry.yml
+
+- name: DHCP Playbook
+  ansible.builtin.import_playbook: add_dhcp_reservation.yml
+
+- name: Start VM Playbook
+  ansible.builtin.import_playbook: proxmox_start_vm.yml
+
+- name: Set Hostname Playbook
+  ansible.builtin.import_playbook: set_hostname.yml

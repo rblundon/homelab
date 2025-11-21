@@ -2,7 +2,7 @@
 ---
 collections:
   - name: community.general
-    version: 11.1.0
+    version: 11.4.1
 
   # - name: nccurry.openshift
   #   version: 1.4.0
@@ -14,3 +14,6 @@ collections:
   #   version: 0.27.0
 
   - name: kubernetes.core
+
+  - name: community.proxmox
+    version: 1.4.0

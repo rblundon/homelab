@@ -90,6 +90,10 @@ internal_cluster:
 #    int-worker01:
     int-worker02:
 
+talos_cluster:
+  hosts:
+    splash:
+
 fastpass_control_plane:
   hosts:
     space-mountain:

@@ -1,0 +1,50 @@
+---
+- name: Create VM ID from IP address for Proxmox hosts
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Create Proxmox VMs
+      delegate_to: "localhost"
+      when: platform is defined and platform == "proxmox"
+      block:
+        - name: Create VM ID from IP address
+          ansible.builtin.set_fact:
+            vm_id: "{{ ip_address.split('.')[-2] }}{{ '%03d' % (ip_address.split('.')[-1] | int) }}"
+
+        - name: Create VM with an EFI disk, with Secure Boot disabled by default
+          community.proxmox.proxmox_kvm:
+            api_user: "{{ proxmox_user }}"
+            api_password: "{{ proxmox_password }}"
+            api_host: "{{ proxmox_host }}"
+            name: "{{ inventory_hostname }}"
+            node: "{{ proxmox_clone_node }}"
+            vmid: "{{ vm_id }}"
+            net:
+              net0: "virtio,bridge=vmbr0"
+            ide:
+              ide0: "{{ vm_iso_storage }}:iso/{{ vm_iso }},media=cdrom"
+            scsihw: "virtio-scsi-single"
+            scsi:
+              scsi0: "{{ vm_storage }}:{{ vm_definitions[vm_size]['disk'] }},format=qcow2"
+            bios: "ovmf"
+            cpu: "x86-64-v2"
+            cores: "{{ vm_definitions[vm_size]['cores'] }}"
+            memory: "{{ vm_definitions[vm_size]['memory'] }}"
+            efidisk0:
+              storage: "{{ vm_storage }}"
+              format: raw
+              efitype: 4m
+              pre_enrolled_keys: false
+            timeout: 600
+
+        # - name: Add VM to HA group
+        #   community.proxmox.proxmox_cluster_ha_resources:
+        #     api_user: "{{ proxmox_user }}"
+        #     api_password: "{{ proxmox_password }}"
+        #     api_host: "{{ proxmox_host }}"
+        #     name: vm:"{{ vm_id }}"
+        #     state: "present"
+        #     group: "{{ ha_group }}"
+        #     max_relocate: 2
+        #     max_restart: 2

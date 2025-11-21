@@ -7,19 +7,32 @@
 
 platform: "proxmox"
 
+# Templates are named in the following format (all lower case): <OS Distribution>-<OS Version>-<VM Size>
+# Current OS offerings are:
+# - Ubuntu (clone)
+#    - 24.04
+# - Fedora (clone)
+#    - 42
+# - Talos (create)
+#    - 1.11.5
+
+vm_os_distribution: "talos"
+vm_os_version: "1.11.5"
+
+# VM ISO
+# Talos: talos-v1.11.5-nocloud-amd64.iso
+
+vm_iso_storage: "templates"
+vm_iso: "talos-v{{ vm_os_version }}-nocloud-amd64.iso"
+
 # This is the Proxmox node where all the VM templates are stored. (Templates are not global.)
+# Comment out for VM create
 
 proxmox_clone_node: "fantasyland"
 
-# Templates are named in the following format (all lower case): <OS Distribution>-<OS Version>-<VM Size>
-# Current OS offerings are:
-# - Ubuntu 
-#    - 24.04
-# - Fedora
-#    - 42
+# Proxmox storage target.
 
-vm_os_distribution: "ubuntu"
-vm_os_version: "24.04"
+vm_storage: "liberty-tree"
 
 # Current VM sizes are:
 # - Small: 2 cores, 2GB memory, 8 GiB virtual disk
@@ -30,10 +43,6 @@ vm_os_version: "24.04"
 # - Xlarge Plus: 4 cores, 8GB memory, 128 GiB virtual disk
 
 vm_size: "large-plus"
-
-# Proxmox storage target.
-
-vm_storage: "general"
 
 # Proxmox does not yet do dynamic load balancing, the host target sets the target for HA groups
 # and backup groups. (ha_group will be factored out in the next functionality update.)
@@ -57,3 +66,34 @@ vm_mac_address: 'BC:24:11:1A:E8:8C'
 
 vm_clone_source: "{{ vm_os_distribution }}-{{ vm_os_version }}-{{ vm_size }}"
 hostname: "{{ inventory_hostname }}.{{ base_domain }}" # Change variable to fqdn
+
+# Dictionaries for VM resources
+# - cores (quantity)
+# - memory (MB)
+# - virtual disk (GiB)
+
+vm_definitions:
+  small:
+    cores: 2
+    memory: 2048
+    disk: 8
+  medium:
+    cores: 2
+    memory: 4096
+    disk: 16
+  large:
+    cores: 4
+    memory: 4096
+    disk: 32
+  large-plus:
+    cores: 4
+    memory: 4096
+    disk: 48
+  xlarge:
+    cores: 4
+    memory: 8192
+    disk: 64
+  xlarge-plus:
+    cores: 4
+    memory: 8192
+    disk: 128
