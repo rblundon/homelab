@@ -49,4 +49,4 @@ crash.log
 .terraformrc.json
 
 # Ignore secrets
-doppler-token.yaml
+doppler-token.yaml.DS_Store
