@@ -1,0 +1,94 @@
+---
+# ansible/roles/haproxy/tasks/configure.yml
+
+- name: Fetch services from NetBox
+  when: haproxy_netbox_integration
+  block:
+    - name: Query NetBox for service configurations
+      ansible.builtin.uri:
+        url: "{{ haproxy_netbox_url }}/api/ipam/services/"
+        method: GET
+        headers:
+          Authorization: "Token {{ haproxy_netbox_token }}"
+          Accept: "application/json"
+        return_content: true
+      register: netbox_services
+      changed_when: false
+
+    - name: Parse NetBox services
+      ansible.builtin.set_fact:
+        haproxy_frontends: "{{ haproxy_frontends | default([]) + netbox_parsed_frontends }}"
+        haproxy_backends: "{{ haproxy_backends | default([]) + netbox_parsed_backends }}"
+      vars:
+        netbox_parsed_frontends: "{{ netbox_services.json.results | map(attribute='custom_fields') | list }}"
+        netbox_parsed_backends: "{{ netbox_services.json.results | map(attribute='custom_fields') | list }}"
+      when: netbox_services.json.results is defined
+
+- name: Generate HAProxy main configuration
+  ansible.builtin.template:
+    src: haproxy.cfg.j2
+    dest: "{{ haproxy_config_dir }}/haproxy.cfg"
+    owner: root
+    group: root
+    mode: '0644'
+    backup: true
+    validate: 'haproxy -c -f %s'
+  notify: reload haproxy
+
+- name: Configure rsyslog for HAProxy
+  when: haproxy_rsyslog_config
+  block:
+    - name: Create rsyslog configuration for HAProxy
+      ansible.builtin.copy:
+        content: |
+          # HAProxy logging configuration
+          $ModLoad imudp
+          $UDPServerRun 514
+
+          # Create separate log files for HAProxy
+          local0.* {{ haproxy_log_dir }}/haproxy.log
+          local0.info {{ haproxy_log_dir }}/haproxy-info.log
+          local0.notice {{ haproxy_log_dir }}/haproxy-notice.log
+          local0.err {{ haproxy_log_dir }}/haproxy-error.log
+
+          # Stop processing HAProxy logs
+          & stop
+        dest: /etc/rsyslog.d/49-haproxy.conf
+        mode: '0644'
+      notify: restart rsyslog
+
+- name: Configure logrotate for HAProxy
+  when: haproxy_log_rotation
+  ansible.builtin.template:
+    src: logrotate.j2
+    dest: /etc/logrotate.d/haproxy
+    mode: '0644'
+
+- name: Create HAProxy systemd override directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/haproxy.service.d
+    state: directory
+    mode: '0755'
+
+- name: Configure HAProxy systemd service overrides
+  ansible.builtin.copy:
+    content: |
+      [Service]
+      # Increase file descriptor limits
+      LimitNOFILE=65536
+
+      # Runtime directory
+      RuntimeDirectory=haproxy
+      RuntimeDirectoryMode=0755
+
+      # Security hardening
+      NoNewPrivileges=true
+      ProtectSystem=strict
+      ProtectHome=true
+      PrivateTmp=true
+      ReadWritePaths={{ haproxy_log_dir }}
+    dest: /etc/systemd/system/haproxy.service.d/override.conf
+    mode: '0644'
+  notify:
+    - Reload systemd
+    - Restart haproxy

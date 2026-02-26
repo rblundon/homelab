@@ -1,0 +1,47 @@
+---
+# ansible/roles/haproxy/tasks/validate.yml
+
+- name: Validate HAProxy configuration syntax
+  command: haproxy -c -f {{ haproxy_config_dir }}/haproxy.cfg
+  register: haproxy_validation
+  changed_when: false
+  failed_when: haproxy_validation.rc != 0
+
+- name: Display validation results
+  debug:
+    msg: "{{ haproxy_validation.stdout_lines }}"
+  when: haproxy_validation.stdout_lines is defined
+
+- name: Check HAProxy service status
+  systemd:
+    name: haproxy
+    state: started
+  register: haproxy_status
+  changed_when: false
+
+- name: Verify HAProxy is listening on configured ports
+  wait_for:
+    host: "{{ ansible_default_ipv4.address }}"
+    port: "{{ item }}"
+    timeout: 10
+  loop:
+    - 80
+    - 443
+    - "{{ haproxy_stats_port }}"
+  when: haproxy_status.status.ActiveState == "active"
+
+- name: Test stats interface accessibility
+  uri:
+    url: "http://localhost:{{ haproxy_stats_port }}{{ haproxy_stats_uri }}"
+    user: "{{ haproxy_stats_username }}"
+    password: "{{ haproxy_stats_password }}"
+    force_basic_auth: true
+    status_code: 200
+  register: stats_test
+  changed_when: false
+  failed_when: false
+
+- name: Display stats interface status
+  debug:
+    msg: "Stats interface is {{ 'accessible' if stats_test.status == 200 else 'not accessible' }}"
+    

@@ -1,0 +1,202 @@
+---
+# ansible/roles/haproxy/tasks/certbot-cloudflare.yml
+
+- name: Install Certbot and Cloudflare DNS plugin
+  ansible.builtin.package:
+    name:
+      - certbot
+      - python3-certbot-dns-cloudflare
+    state: present
+
+- name: Create Let's Encrypt configuration directory
+  ansible.builtin.file:
+    path: /etc/letsencrypt
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Create Cloudflare credentials file
+  ansible.builtin.template:
+    src: cloudflare-credentials.ini.j2
+    dest: "{{ haproxy_certbot_cloudflare_credentials_file }}"
+    owner: root
+    group: root
+    mode: '0600'
+  no_log: true
+
+- name: Create Certbot post-renewal hook script
+  ansible.builtin.template:
+    src: certbot-post-hook.sh.j2
+    dest: "{{ haproxy_certbot_post_hook }}"
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Create Certbot renewal hooks directory
+  ansible.builtin.file:
+    path: /etc/letsencrypt/renewal-hooks/deploy
+    state: directory
+    mode: '0755'
+
+- name: Link post-hook to renewal hooks directory
+  ansible.builtin.file:
+    src: "{{ haproxy_certbot_post_hook }}"
+    dest: /etc/letsencrypt/renewal-hooks/deploy/haproxy-reload.sh
+    state: link
+    force: true
+
+- name: Check for existing certificates
+  ansible.builtin.stat:
+    path: "{{ haproxy_certbot_cert_dir }}/{{ item.domain | regex_replace('\\*\\.', '') }}"
+  register: existing_certs
+  loop: "{{ haproxy_certbot_domains }}"
+  loop_control:
+    label: "{{ item.domain }}"
+
+- name: Build certificate request commands
+  ansible.builtin.set_fact:
+    certbot_commands: "{{ certbot_commands | default([]) + [command_item] }}"
+  vars:
+    cert_name: "{{ item.item.domain | regex_replace('\\*\\.', '') }}"
+    domain_list: >-
+      {{ [item.item.domain] + 
+         (item.item.include_base | default(false) | ternary(
+           [item.item.domain | regex_replace('\\*\\.', '')], 
+           []
+         ))
+      }}
+    command_item:
+      domain: "{{ item.item.domain }}"
+      cert_name: "{{ cert_name }}"
+      domains: "{{ domain_list }}"
+      exists: "{{ item.stat.exists }}"
+  loop: "{{ existing_certs.results }}"
+  loop_control:
+    label: "{{ item.item.domain }}"
+
+- name: Display certificate request plan
+  ansible.builtin.debug:
+    msg: |
+      Will request certificates for:
+      {% for cmd in certbot_commands %}
+      - {{ cmd.cert_name }} ({{ cmd.domains | join(', ') }}) - {{ 'EXISTS' if cmd.exists else 'NEW' }}
+      {% endfor %}
+
+- name: Request certificates from Let's Encrypt via Cloudflare DNS
+  ansible.builtin.command: >
+    certbot certonly
+    --non-interactive
+    --agree-tos
+    --email {{ haproxy_certbot_email }}
+    --dns-cloudflare
+    --dns-cloudflare-credentials {{ haproxy_certbot_cloudflare_credentials_file }}
+    --dns-cloudflare-propagation-seconds {{ haproxy_certbot_dns_propagation_seconds }}
+    --cert-name {{ item.cert_name }}
+    {% for domain in item.domains %}
+    --domain {{ domain }}
+    {% endfor %}
+    {% if haproxy_certbot_staging %}
+    --staging
+    {% endif %}
+    --deploy-hook {{ haproxy_certbot_post_hook }}
+  loop: "{{ certbot_commands }}"
+  loop_control:
+    label: "{{ item.cert_name }}"
+  when: not item.exists
+  register: certbot_result
+  failed_when:
+    - certbot_result.rc != 0
+    - "'Certificate not yet due for renewal' not in certbot_result.stdout"
+    - "'too many certificates already issued' not in certbot_result.stderr"
+
+- name: Display certificate request results
+  ansible.builtin.debug:
+    msg: "Certificate for {{ item.item.cert_name }}: {{ 'SUCCESS' if item.rc == 0 else 'SKIPPED/FAILED' }}"
+  loop: "{{ certbot_result.results }}"
+  loop_control:
+    label: "{{ item.item.cert_name }}"
+  when: certbot_result.results is defined
+
+- name: Run post-hook to combine certificates for HAProxy
+  ansible.builtin.command: "{{ haproxy_certbot_post_hook }}"
+  changed_when: true
+  when: certbot_result.changed
+
+- name: Setup automatic certificate renewal via cron
+  ansible.builtin.cron:
+    name: "Certbot certificate renewal"
+    minute: "{{ haproxy_certbot_renewal_cron_minute }}"
+    hour: "{{ haproxy_certbot_renewal_cron_hour }}"
+    day: "{{ haproxy_certbot_renewal_cron_day }}"
+    job: "/usr/bin/certbot renew --quiet --deploy-hook {{ haproxy_certbot_post_hook }} 2>&1 | logger -t certbot"
+    user: root
+    state: present
+
+- name: Create systemd timer for certificate renewal (alternative to cron)
+  when: ansible_service_mgr == "systemd"
+  block:
+    - name: Create certbot renewal service
+      ansible.builtin.copy:
+        content: |
+          [Unit]
+          Description=Certbot Renewal
+          After=network-online.target
+          Wants=network-online.target
+
+          [Service]
+          Type=oneshot
+          ExecStart=/usr/bin/certbot renew --quiet --deploy-hook {{ haproxy_certbot_post_hook }}
+          StandardOutput=journal
+          StandardError=journal
+        dest: /etc/systemd/system/certbot-renewal.service
+        mode: '0644'
+
+    - name: Create certbot renewal timer
+      ansible.builtin.copy:
+        content: |
+          [Unit]
+          Description=Certbot Renewal Timer
+
+          [Timer]
+          OnCalendar=daily
+          RandomizedDelaySec=1h
+          Persistent=true
+
+          [Install]
+          WantedBy=timers.target
+        dest: /etc/systemd/system/certbot-renewal.timer
+        mode: '0644'
+
+    - name: Enable and start certbot renewal timer
+      ansible.builtin.systemd:
+        name: certbot-renewal.timer
+        enabled: true
+        state: started
+        daemon_reload: true
+
+- name: Test certificate renewal (dry-run)
+  ansible.builtin.command: certbot renew --dry-run --dns-cloudflare --dns-cloudflare-credentials {{ haproxy_certbot_cloudflare_credentials_file }}
+  register: renewal_test
+  changed_when: false
+  failed_when: false
+
+- name: Display renewal test results
+  ansible.builtin.debug:
+    msg: |
+      Certificate renewal dry-run: {{ 'SUCCESS ✓' if renewal_test.rc == 0 else 'FAILED ✗' }}
+
+      {% if renewal_test.rc == 0 %}
+      Your certificates will renew automatically.
+      {% else %}
+      Please check the output above for errors.
+      {% endif %}
+
+- name: List all certificates
+  ansible.builtin.command: certbot certificates
+  register: cert_list
+  changed_when: false
+
+- name: Display certificate information
+  ansible.builtin.debug:
+    msg: "{{ cert_list.stdout_lines }}"

@@ -1,0 +1,40 @@
+---
+# ansible/roles/haproxy/tasks/main.yml
+
+# - name: Include OS-specific variables
+#   include_vars: "{{ ansible_os_family }}.yml"
+#   tags: [haproxy, always]
+
+- name: Include installation tasks
+  ansible.builtin.include_tasks: install.yml
+  tags: [haproxy, install]
+
+- name: Include Certbot with Cloudflare DNS tasks
+  ansible.builtin.include_tasks: certbot-cloudflare.yml
+  when:
+    - haproxy_certbot_enable
+    - haproxy_certbot_challenge_method == "dns-cloudflare"
+  tags: [haproxy, certificates, certbot, cloudflare]
+
+- name: Include fallback self-signed certificate tasks
+  ansible.builtin.include_tasks: certificates.yml
+  when:
+    - not haproxy_certbot_enable
+    - haproxy_certbot_fallback_selfsigned | default(false)
+  tags: [haproxy, certificates, selfsigned]
+
+- name: Include configuration tasks
+  ansible.builtin.include_tasks: configure.yml
+  tags: [haproxy, configure]
+
+- name: Include validation tasks
+  ansible.builtin.include_tasks: validate.yml
+  tags: [haproxy, validate]
+
+- name: Ensure HAProxy is started and enabled
+  ansible.builtin.systemd:
+    name: haproxy
+    state: started
+    enabled: true
+    daemon_reload: true
+  tags: [haproxy, service]

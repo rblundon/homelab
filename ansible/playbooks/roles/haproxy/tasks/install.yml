@@ -1,0 +1,128 @@
+---
+# ansible/roles/haproxy/tasks/install.yml
+
+- name: Install HAProxy repository (Ubuntu)
+  when: ansible_os_family == "Debian"
+  block:
+    - name: Add HAProxy PPA
+      ansible.builtin.apt_repository:
+        repo: "ppa:vbernat/haproxy-{{ haproxy_version }}"
+        state: present
+        update_cache: true
+
+    - name: Install HAProxy
+      ansible.builtin.apt:
+        name: haproxy
+        state: present
+        update_cache: true
+
+- name: Install HAProxy (Fedora/RHEL)
+  when: ansible_os_family == "RedHat"
+  block:
+    - name: Install HAProxy
+      ansible.builtin.dnf:
+        name: haproxy
+        state: present
+
+- name: Install additional packages
+  ansible.builtin.package:
+    name:
+      - rsyslog
+      - logrotate
+      - socat  # For HAProxy socket communication
+    state: present
+
+- name: Create HAProxy system user
+  ansible.builtin.user:
+    name: "{{ haproxy_user }}"
+    group: "{{ haproxy_group }}"
+    system: true
+    shell: /usr/sbin/nologin
+    home: "{{ haproxy_chroot_dir }}"
+    create_home: true
+
+- name: Create required directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ haproxy_user }}"
+    group: "{{ haproxy_group }}"
+    mode: '0755'
+  loop:
+    - "{{ haproxy_config_dir }}"
+    - "{{ haproxy_ssl_cert_dir }}"
+    - "{{ haproxy_log_dir }}"
+    - "{{ haproxy_chroot_dir }}"
+    - /var/lib/haproxy/dev
+
+- name: Create HAProxy socket directory
+  ansible.builtin.file:
+    path: /run/haproxy
+    state: directory
+    owner: "{{ haproxy_user }}"
+    group: "{{ haproxy_group }}"
+    mode: '0755'
+
+- name: Configure firewall rules
+  when: haproxy_configure_firewall
+  block:
+    - name: Open HAProxy ports (UFW)
+      when: ansible_os_family == "Debian"
+      community.general.ufw:
+        rule: allow
+        port: "{{ item.split('/')[0] }}"
+        proto: "{{ item.split('/')[1] }}"
+      loop: "{{ haproxy_firewall_allowed_ports }}"
+
+    - name: Open HAProxy ports (firewalld)
+      when: ansible_os_family == "RedHat"
+      ansible.posix.firewalld:
+        port: "{{ item }}"
+        permanent: true
+        state: enabled
+        immediate: true
+      loop: "{{ haproxy_firewall_allowed_ports }}"
+
+- name: Install Prometheus HAProxy exporter
+  when: haproxy_prometheus_exporter
+  block:
+    - name: Download HAProxy exporter
+      ansible.builtin.get_url:
+        url: "https://github.com/prometheus/haproxy_exporter/releases/download/v0.15.0/haproxy_exporter-0.15.0.linux-amd64.tar.gz"
+        dest: /tmp/haproxy_exporter.tar.gz
+        mode: '0644'
+
+    - name: Extract HAProxy exporter
+      ansible.builtin.unarchive:
+        src: /tmp/haproxy_exporter.tar.gz
+        dest: /usr/local/bin/
+        remote_src: true
+        extra_opts:
+          - --strip-components=1
+          - --wildcards
+          - '*/haproxy_exporter'
+
+    - name: Create HAProxy exporter systemd service
+      ansible.builtin.copy:
+        content: |
+          [Unit]
+          Description=HAProxy Exporter
+          After=network.target
+
+          [Service]
+          Type=simple
+          User={{ haproxy_user }}
+          ExecStart=/usr/local/bin/haproxy_exporter --haproxy.scrape-uri=unix:/run/haproxy/admin.sock
+          Restart=on-failure
+
+          [Install]
+          WantedBy=multi-user.target
+        dest: /etc/systemd/system/haproxy-exporter.service
+        mode: '0644'
+
+    - name: Enable and start HAProxy exporter
+      ansible.builtin.systemd:
+        name: haproxy-exporter
+        state: started
+        enabled: true
+        daemon_reload: true

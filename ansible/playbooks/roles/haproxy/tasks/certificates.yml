@@ -1,0 +1,78 @@
+---
+# ansible/roles/haproxy/tasks/certificates.yml
+
+- name: Check if default certificate exists
+  ansible.builtin.stat:
+    path: "{{ haproxy_ssl_default_crt }}"
+  register: default_cert
+
+- name: Generate self-signed certificate for development
+  when: not default_cert.stat.exists
+  block:
+    - name: Generate private key
+      openssl_privatekey:
+        path: "{{ haproxy_ssl_cert_dir }}/default.key"
+        size: 2048
+        mode: '0600'
+        owner: "{{ haproxy_user }}"
+        group: "{{ haproxy_group }}"
+
+    - name: Generate certificate signing request
+      openssl_csr:
+        path: "{{ haproxy_ssl_cert_dir }}/default.csr"
+        privatekey_path: "{{ haproxy_ssl_cert_dir }}/default.key"
+        common_name: "lightning-lane.local.mk-labs.cloud"
+        subject_alt_name:
+          - "DNS:lightning-lane.local.mk-labs.cloud"
+          - "DNS:*.local.mk-labs.cloud"
+        owner: "{{ haproxy_user }}"
+        group: "{{ haproxy_group }}"
+
+    - name: Generate self-signed certificate
+      openssl_certificate:
+        path: "{{ haproxy_ssl_cert_dir }}/default.crt"
+        privatekey_path: "{{ haproxy_ssl_cert_dir }}/default.key"
+        csr_path: "{{ haproxy_ssl_cert_dir }}/default.csr"
+        provider: selfsigned
+        selfsigned_not_after: "+3650d"
+        owner: "{{ haproxy_user }}"
+        group: "{{ haproxy_group }}"
+
+    - name: Combine certificate and key for HAProxy
+      ansible.builtin.shell: |
+        cat {{ haproxy_ssl_cert_dir }}/default.crt \
+            {{ haproxy_ssl_cert_dir }}/default.key \
+            > {{ haproxy_ssl_default_crt }}
+      args:
+        creates: "{{ haproxy_ssl_default_crt }}"
+
+    - name: Set permissions on combined certificate
+      ansible.builtin.file:
+        path: "{{ haproxy_ssl_default_crt }}"
+        owner: "{{ haproxy_user }}"
+        group: "{{ haproxy_group }}"
+        mode: '0600'
+
+- name: Create certificate directory structure
+  ansible.builtin.file:
+    path: "{{ haproxy_ssl_cert_dir }}/{{ item }}"
+    state: directory
+    owner: "{{ haproxy_user }}"
+    group: "{{ haproxy_group }}"
+    mode: '0755'
+  loop:
+    - live
+    - archive
+
+- name: Deploy additional certificates
+  when: haproxy_ssl_certificates is defined
+  block:
+    - name: Copy certificate files
+      ansible.builtin.copy:
+        src: "{{ item.src }}"
+        dest: "{{ haproxy_ssl_cert_dir }}/live/{{ item.name }}.pem"
+        owner: "{{ haproxy_user }}"
+        group: "{{ haproxy_group }}"
+        mode: '0600'
+      loop: "{{ haproxy_ssl_certificates }}"
+      notify: Reload haproxy

@@ -1,0 +1,107 @@
+#!/bin/bash
+# {{ ansible_managed }}
+# Certbot post-renewal hook for HAProxy
+# Combines certificate and private key for HAProxy consumption
+
+set -euo pipefail
+
+# Configuration
+LETSENCRYPT_LIVE="/etc/letsencrypt/live"
+HAPROXY_CERT_DIR="{{ haproxy_ssl_cert_dir }}/live"
+HAPROXY_USER="{{ haproxy_user }}"
+HAPROXY_GROUP="{{ haproxy_group }}"
+LOG_FILE="{{ haproxy_log_dir }}/certbot-hook.log"
+
+# Ensure HAProxy cert directory exists
+mkdir -p "$HAPROXY_CERT_DIR"
+
+# Logging function
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LOG_FILE"
+}
+
+log "Starting certificate deployment for HAProxy"
+
+# Track if any certificates were updated
+CERTS_UPDATED=false
+
+# Process each certificate in Let's Encrypt live directory
+for cert_dir in "$LETSENCRYPT_LIVE"/*; do
+    if [ ! -d "$cert_dir" ] || [ "$(basename "$cert_dir")" = "README" ]; then
+        continue
+    fi
+    
+    CERT_NAME=$(basename "$cert_dir")
+    
+    # Check if certificate files exist
+    if [ ! -f "$cert_dir/fullchain.pem" ] || [ ! -f "$cert_dir/privkey.pem" ]; then
+        log "WARNING: Missing certificate files for $CERT_NAME, skipping"
+        continue
+    fi
+    
+    log "Processing certificate: $CERT_NAME"
+    
+    # Create combined PEM file (fullchain + privkey)
+    # HAProxy requires the certificate chain and private key in a single file
+    COMBINED_PEM="$HAPROXY_CERT_DIR/${CERT_NAME}.pem"
+    
+    # Combine certificates
+    cat "$cert_dir/fullchain.pem" "$cert_dir/privkey.pem" > "$COMBINED_PEM.tmp"
+    
+    # Check if certificate actually changed
+    if [ -f "$COMBINED_PEM" ] && cmp -s "$COMBINED_PEM" "$COMBINED_PEM.tmp"; then
+        log "Certificate $CERT_NAME unchanged, skipping"
+        rm "$COMBINED_PEM.tmp"
+        continue
+    fi
+    
+    # Move new certificate into place
+    mv "$COMBINED_PEM.tmp" "$COMBINED_PEM"
+    
+    # Set proper permissions
+    chown "$HAPROXY_USER:$HAPROXY_GROUP" "$COMBINED_PEM"
+    chmod 600 "$COMBINED_PEM"
+    
+    log "Created/Updated: $COMBINED_PEM"
+    CERTS_UPDATED=true
+done
+
+# Create/update default certificate symlink
+# Use the first wildcard cert or the first available cert as default
+DEFAULT_CERT="{{ haproxy_ssl_default_crt }}"
+WILDCARD_CERT="$HAPROXY_CERT_DIR/local.mk-labs.cloud.pem"
+
+if [ -f "$WILDCARD_CERT" ]; then
+    ln -sf "$WILDCARD_CERT" "$DEFAULT_CERT"
+    log "Updated default certificate symlink to wildcard cert"
+elif [ -n "$(ls -A "$HAPROXY_CERT_DIR" 2>/dev/null)" ]; then
+    FIRST_CERT=$(ls "$HAPROXY_CERT_DIR"/*.pem 2>/dev/null | head -n1)
+    ln -sf "$FIRST_CERT" "$DEFAULT_CERT"
+    log "Updated default certificate symlink to $FIRST_CERT"
+fi
+
+# Only reload HAProxy if certificates were actually updated
+if [ "$CERTS_UPDATED" = true ]; then
+    log "Certificates updated, validating HAProxy configuration"
+    
+    # Validate HAProxy configuration
+    if haproxy -c -f {{ haproxy_config_dir }}/haproxy.cfg >/dev/null 2>&1; then
+        log "HAProxy configuration valid, reloading service"
+        
+        if systemctl reload haproxy; then
+            log "HAProxy reloaded successfully"
+        else
+            log "ERROR: Failed to reload HAProxy"
+            exit 1
+        fi
+    else
+        log "ERROR: HAProxy configuration validation failed"
+        haproxy -c -f {{ haproxy_config_dir }}/haproxy.cfg 2>&1 | tee -a "$LOG_FILE"
+        exit 1
+    fi
+else
+    log "No certificates were updated, skipping HAProxy reload"
+fi
+
+log "Certificate deployment complete"
+exit 0

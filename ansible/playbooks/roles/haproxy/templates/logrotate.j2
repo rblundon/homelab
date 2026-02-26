@@ -1,0 +1,14 @@
+{# ansible/roles/haproxy/templates/logrotate.j2 #}
+{{ haproxy_log_dir }}/*.log {
+    daily
+    rotate 14
+    missingok
+    notifempty
+    compress
+    delaycompress
+    sharedscripts
+    postrotate
+        /bin/kill -HUP `cat /var/run/rsyslog.pid 2> /dev/null` 2> /dev/null || true
+        /bin/kill -HUP `cat /var/run/haproxy.pid 2> /dev/null` 2> /dev/null || true
+    endscript
+}

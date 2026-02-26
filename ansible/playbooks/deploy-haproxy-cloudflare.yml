@@ -1,0 +1,177 @@
+---
+# ansible/playbooks/deploy-haproxy-cloudflare.yml
+
+- name: Deploy HAProxy with Cloudflare DNS certificates
+  hosts: lightning-lane
+  become: true
+
+  vars:
+    # Certbot Cloudflare configuration
+    haproxy_certbot_enable: true
+    haproxy_certbot_challenge_method: "dns-cloudflare"
+    haproxy_certbot_email: "ryan@mk-labs.cloud"
+    haproxy_certbot_staging: false  # Set to true for testing
+    haproxy_certbot_cloudflare_api_token: "{{ vault_cloudflare_api_token }}"
+
+    # Request wildcard certificate
+    haproxy_certbot_domains:
+      - domain: "*.local.mk-labs.cloud"
+        include_base: true  # Also include local.mk-labs.cloud
+
+    # HAProxy Stats
+    haproxy_stats_password: "{{ vault_haproxy_stats_password }}"
+
+    # Frontend configuration
+    haproxy_frontends:
+      - name: https_front
+        bind: "*:443 ssl crt {{ haproxy_ssl_cert_dir }}/live crt {{ haproxy_ssl_default_crt }} alpn h2,http/1.1"
+        mode: http
+        options:
+          - "http-server-close"
+          - "forwardfor"
+        acls:
+          - "netbox hdr(host) -i fire-station.local.mk-labs.cloud"
+          - "wordpress hdr(host) -i be-our-guest.local.mk-labs.cloud"
+          - "plane hdr(host) -i people-mover.local.mk-labs.cloud"
+          - "minecraft hdr(host) -i arcade.local.mk-labs.cloud"
+        use_backends:
+          - "netbox_back if netbox"
+          - "wordpress_back if wordpress"
+          - "plane_back if plane"
+          - "minecraft_back if minecraft"
+
+    # Backend configuration
+    haproxy_backends:
+      - name: netbox_back
+        mode: http
+        balance: roundrobin
+        options:
+          - "httpchk GET /api/"
+        servers:
+          - name: fire-station
+            address: 10.1.71.102:8000
+            check: true
+
+      - name: wordpress_back
+        mode: http
+        balance: roundrobin
+        servers:
+          - name: be-our-guest
+            address: 10.1.71.101:80
+            check: true
+
+      - name: plane_back
+        mode: http
+        balance: roundrobin
+        servers:
+          - name: people-mover
+            address: 10.1.71.112:8080
+            check: true
+
+      - name: minecraft_back
+        mode: http
+        balance: roundrobin
+        servers:
+          - name: arcade
+            address: 10.1.71.111:25565
+            check: true
+
+    # TCP services
+    haproxy_tcp_services:
+      - name: postgres
+        frontend_port: 5432
+        backend_port: 5432
+        balance: leastconn
+        timeout_client: 1h
+        timeout_server: 1h
+        servers:
+          - name: netbox-db
+            address: 10.1.71.102
+            check: true
+
+      - name: ssh_jump
+        frontend_port: 2222
+        backend_port: 22
+        balance: source
+        servers:
+          - name: main-street-usa
+            address: 10.1.71.11
+            check: true
+          - name: tomorrowland
+            address: 10.1.71.12
+            check: true
+          - name: fantasyland
+            address: 10.1.71.13
+            check: true
+
+      - name: minecraft_java
+        frontend_port: 25565
+        backend_port: 25565
+        balance: roundrobin
+        servers:
+          - name: arcade
+            address: 10.1.71.111
+            check: true
+
+    # Firewall configuration
+    haproxy_firewall_allowed_ports:
+      - 80/tcp
+      - 443/tcp
+      - 2222/tcp
+      - 5432/tcp
+      - 8404/tcp
+      - 25565/tcp
+
+  pre_tasks:
+    - name: Ensure required groups exist
+      ansible.builtin.group:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - haproxy
+
+  roles:
+    - haproxy
+
+  post_tasks:
+    - name: Wait for HAProxy to be ready
+      ansible.builtin.wait_for:
+        host: "{{ ansible_default_ipv4.address }}"
+        port: 443
+        timeout: 60
+
+    - name: Display deployment summary
+      ansible.builtin.debug:
+        msg: |
+          ╔════════════════════════════════════════════════════════════╗
+          ║  HAProxy Deployment Complete - lightning-lane              ║
+          ╚════════════════════════════════════════════════════════════╝
+
+          Stats Interface: http://{{ ansible_default_ipv4.address }}:8404/stats
+          Username: {{ haproxy_stats_username }}
+
+          HTTPS Services:
+          {% for frontend in haproxy_frontends %}
+          {% if frontend.acls is defined %}
+          {% for acl in frontend.acls %}
+          - {{ acl.split()[1] | regex_replace('hdr\\(host\\)', '') | regex_replace('-i', '') | trim }}
+          {% endfor %}
+          {% endif %}
+          {% endfor %}
+
+          TCP Services:
+          {% for tcp in haproxy_tcp_services %}
+          - {{ tcp.name }}: {{ ansible_default_ipv4.address }}:{{ tcp.frontend_port }}
+          {% endfor %}
+
+          Certificates:
+          {% for domain in haproxy_certbot_domains %}
+          - {{ domain.domain }}{% if domain.include_base | default(false) %} + base domain{% endif %}
+
+          {% endfor %}
+
+          Next steps:
+          1. Verify certificate: certbot certificates
+          2. Test renewal: certbot renew --dry-run
+          3. Check HAProxy stats interface
+          4. Test HTTPS endpoints
