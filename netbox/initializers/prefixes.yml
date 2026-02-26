@@ -1,0 +1,8 @@
+# NetBox IP Prefix Definitions
+# Scope: Prefixes used by the VM provisioning pipeline
+
+prefixes:
+  - prefix: 10.1.71.0/24
+    status: active
+    vlan: Server Trusted
+    description: Server Trusted VLAN — infrastructure services, VM hosts, pipeline systems

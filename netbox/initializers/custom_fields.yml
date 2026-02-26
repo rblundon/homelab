@@ -1,0 +1,55 @@
+# NetBox Custom Fields for VM Provisioning Pipeline
+# Object type: Virtualization > Virtual Machine
+#
+# These fields must be created in NetBox before the pipeline can function.
+# Operators must populate these fields before setting VM status to Staged.
+#
+# To apply: NetBox Admin > Custom Fields > Import (or create manually)
+
+custom_fields:
+  - name: proxmox_template
+    label: Proxmox Template
+    type: selection
+    object_types:
+      - virtualization.virtualmachine
+    required: true
+    description: VM template to clone on Proxmox. Must match an available template on the target node.
+    choices:
+      - ubuntu-24.04-small
+      - ubuntu-24.04-medium
+      - ubuntu-24.04-large
+      - ubuntu-24.04-large-plus
+      - ubuntu-24.04-xlarge
+      - ubuntu-24.04-xlarge-plus
+
+  - name: proxmox_node
+    label: Proxmox Node
+    type: selection
+    object_types:
+      - virtualization.virtualmachine
+    required: true
+    description: >
+      Target node for final VM placement. VM is always cloned from templates
+      on fantasyland, then migrated to this node by Terraform automatically.
+    choices:
+      - fantasyland
+      - main-street-station
+      - tomorrowland
+
+  - name: proxmox_datastore
+    label: Proxmox Datastore
+    type: selection
+    object_types:
+      - virtualization.virtualmachine
+    required: true
+    description: Storage backend for the VM disk on the target Proxmox node.
+    choices:
+      - liberty-tree
+
+  - name: provisioning_notes
+    label: Provisioning Notes
+    type: text
+    object_types:
+      - virtualization.virtualmachine
+    required: false
+    description: Free-text field for operator notes during provisioning.

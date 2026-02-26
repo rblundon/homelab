@@ -1,0 +1,10 @@
+# NetBox VLAN Definitions
+# Scope: VLANs used by the VM provisioning pipeline
+#
+# Additional VLANs can be added as pipeline scope expands.
+
+vlans:
+  - name: Server Trusted
+    vid: 71
+    status: active
+    description: Infrastructure services and VM hosts (10.1.71.0/24)
