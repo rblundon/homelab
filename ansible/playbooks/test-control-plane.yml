@@ -1,8 +1,0 @@
----
-- name: Test Control Plane Initialization on Single Node
-  hosts: space-mountain
-  become: true
-  gather_facts: false
-  roles:
-    - role: fastpass-control-plane
-

@@ -1,3 +1,0 @@
----
-#freeipa_user: "admin"
-#freeipa_password: "{{ vault_freeipa_password }}"
