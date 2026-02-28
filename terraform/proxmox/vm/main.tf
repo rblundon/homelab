@@ -29,6 +29,7 @@ data "proxmox_virtual_environment_vms" "templates" {
 
 resource "proxmox_virtual_environment_vm" "vm" {
   name    = var.hostname
+  bios = "ovmf"
   vm_id   = local.vm_id
   node_name = var.target_node
 
@@ -64,7 +65,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
   network_device {
     bridge  = var.bridge
     model   = "virtio"
-    vlan_id = var.vlan_id
+#    vlan_id = var.vlan_id
   }
 
   # VM stays STOPPED after clone.
