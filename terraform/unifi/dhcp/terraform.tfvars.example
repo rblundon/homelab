@@ -1,0 +1,12 @@
+# Copy this file to terraform.tfvars and fill in the values.
+# terraform.tfvars is in .gitignore — never commit secrets.
+
+unifi_username = "admin"
+unifi_password = "your-password-here"
+unifi_api_url  = "https://10.1.0.1:443"
+
+# These values come from n8n via -var flags at runtime:
+# hostname    = "test-vm"
+# mac_address = "AA:BB:CC:DD:EE:FF"
+# ip_address  = "10.1.71.100"
+# network_id  = "your-server-trusted-network-id"
