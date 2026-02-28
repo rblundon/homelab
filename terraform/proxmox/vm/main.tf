@@ -1,12 +1,7 @@
-# ─── VM ID Derivation ────────────────────────────────────────────────────────
-# Convention carried from existing Ansible playbooks:
+# ─── VM ID Convention ────────────────────────────────────────────────────────
 # VM ID = {third_octet}{fourth_octet:03d}
 # Example: 10.1.71.35 → 71035
-
-locals {
-  ip_octets = split(".", var.ip_address)
-  vm_id     = tonumber("${local.ip_octets[2]}${format("%03d", tonumber(local.ip_octets[3]))}")
-}
+# Computed by n8n and passed as a variable to keep the logic in one place.
 
 # ─── Template Lookup ─────────────────────────────────────────────────────────
 # Find the template VM ID by name on the clone node
@@ -29,8 +24,7 @@ data "proxmox_virtual_environment_vms" "templates" {
 
 resource "proxmox_virtual_environment_vm" "vm" {
   name    = var.hostname
-  bios = "ovmf"
-  vm_id   = local.vm_id
+  vm_id   = var.vm_id
   node_name = var.target_node
 
   description = "Provisioned by mk-labs pipeline on ${timestamp()}"
@@ -65,7 +59,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
   network_device {
     bridge  = var.bridge
     model   = "virtio"
-#    vlan_id = var.vlan_id
+    vlan_id = var.vlan_id
   }
 
   # VM stays STOPPED after clone.

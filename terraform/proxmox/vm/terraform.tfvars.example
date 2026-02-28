@@ -1,13 +1,11 @@
-# Copy this file to terraform.tfvars and fill in the values.
-# terraform.tfvars is in .gitignore — never commit secrets.
-
-proxmox_api_url   = "https://fantasyland.mk-labs.net:8006"
-proxmox_api_token = "terraform@pve!terraform-token=your-token-secret-here"
-
-# These values come from n8n via -var flags at runtime:
+# All values come from n8n via -var flags at runtime.
+# Secrets are stored in n8n Global Constants — no terraform.tfvars file needed.
+#
+# vm_id         = 71200
 # hostname      = "test-vm"
-# ip_address    = "10.1.71.100"
+# ip_address    = "10.1.71.200"
 # target_node   = "fantasyland"
 # template_name = "ubuntu-24.04-small"
 # datastore     = "liberty-tree"
-# vlan_id       = 71
+# proxmox_api_url   = "https://fantasyland.local.mk-labs.cloud:8006"
+# proxmox_api_token = "terraform@pve!terraform-token=your-token-secret-here"

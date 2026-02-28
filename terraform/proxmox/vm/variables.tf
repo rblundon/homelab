@@ -2,7 +2,7 @@
 
 variable "proxmox_api_url" {
   type        = string
-  description = "Proxmox API endpoint URL (e.g., https://fantasyland.local.mk-labs.cloud:8006)"
+  description = "Proxmox API endpoint URL (e.g., https://fantasyland.mk-labs.net:8006)"
 }
 
 variable "proxmox_api_token" {
@@ -12,6 +12,11 @@ variable "proxmox_api_token" {
 }
 
 # ─── VM Identity ─────────────────────────────────────────────────────────────
+
+variable "vm_id" {
+  type        = number
+  description = "Proxmox VM ID. Computed by n8n from IP: {third_octet}{fourth_octet:03d} (e.g., 10.1.71.200 → 71200)."
+}
 
 variable "hostname" {
   type        = string
@@ -26,7 +31,7 @@ variable "ip_address" {
 variable "dns_servers" {
   type        = list(string)
   description = "DNS servers for the VM."
-  default     = ["10.1.71.1"]
+  default     = ["10.1.71.102", "10.1.71.1"]
 }
 
 variable "search_domain" {
