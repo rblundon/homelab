@@ -31,7 +31,7 @@ variable "ip_address" {
 variable "dns_servers" {
   type        = list(string)
   description = "DNS servers for the VM."
-  default     = ["10.1.71.102", "10.1.71.1"]
+  default     = ["10.1.71.1"]
 }
 
 variable "search_domain" {

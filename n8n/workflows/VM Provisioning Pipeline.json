@@ -1,0 +1,928 @@
+{
+  "name": "VM Provisioning Pipeline",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vm-provision",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -352,
+        -32
+      ],
+      "id": "342b8e0f-33d6-4420-9c4a-e3eef5790925",
+      "name": "Webhook",
+      "webhookId": "4816549b-11a5-499e-bbc1-5c3b10657cee"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c22e68a1-367f-4f87-aaa8-b90269d2f332",
+              "leftValue": "={{ $json.body.data.status.value }}",
+              "rightValue": "staged",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "bdf683fe-1834-4564-858f-ed9f31ddbd4f",
+              "leftValue": "={{ $json.body.data.name }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "5df482b3-7179-401c-b3f7-bd2c5f32c90e",
+              "leftValue": "={{ $json.body.data.custom_fields.proxmox_template }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "8e801a0c-eb8c-4033-8fa8-a4844e8f9994",
+              "leftValue": "={{ $json.body.data.custom_fields.proxmox_node }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "d041fcc7-9f4e-4993-902c-0ba8f94b9137",
+              "leftValue": "={{ $json.body.data.custom_fields.proxmox_datastore }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "c86ff20b-5c79-4ac0-a92f-0ff7d91da06b",
+              "leftValue": "={{ $json.body.data.primary_ip4.address }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "1fbee23a-8a58-4142-b804-cbe80823c242",
+              "leftValue": "={{ $json.body.snapshots.prechange.status }}",
+              "rightValue": "planned",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": false
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        64,
+        -32
+      ],
+      "id": "021e189b-13e3-450a-862a-4b231139fc33",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "command": "=terraform apply -auto-approve -state=states/{{ $json.hostname }}.tfstate -var=\"proxmox_api_url={{ $json.proxmox_api_url }}\" -var=\"vm_id={{ $json.vm_id }}\" -var=\"proxmox_api_token={{ $json.proxmox_api_token }}\" -var=\"hostname={{ $json.hostname }}\" -var=\"ip_address={{ $json.ip_address }}\" -var=\"target_node={{ $json.target_node }}\" -var=\"template_name={{ $json.template }}\" -var=\"datastore={{ $json.datastore }}\"",
+        "cwd": "/opt/git/homelab/terraform/proxmox/vm"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        608,
+        -128
+      ],
+      "id": "dd395443-821d-4483-941a-02cd487c6160",
+      "name": "Terraform apply (city-hall)",
+      "credentials": {
+        "sshPassword": {
+          "id": "ViaYm5bxjzsyX5eV",
+          "name": "SSH Password account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "adc0bfd6-625c-4691-a826-5b2bf5d07584",
+              "name": "hostname",
+              "value": "={{ $('Set Global Constants').item.json.body.data.name }}",
+              "type": "string"
+            },
+            {
+              "id": "e78bf003-c15c-4701-b71f-f68af25c761a",
+              "name": "ip_address",
+              "value": "={{ $('Set Global Constants').item.json.body.data.primary_ip4.address.split('/')[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "826b3779-05f7-49a6-b3ed-3ebd7b23df63",
+              "name": "template",
+              "value": "={{ $('Set Global Constants').item.json.body.data.custom_fields.proxmox_template }}",
+              "type": "string"
+            },
+            {
+              "id": "205a9bb4-a81f-4175-be6a-d3c479053ae1",
+              "name": "target_node",
+              "value": "={{ $('Set Global Constants').item.json.body.data.custom_fields.proxmox_node }}",
+              "type": "string"
+            },
+            {
+              "id": "d676e1bc-6513-4305-985a-49a5d73c3ae3",
+              "name": "datastore",
+              "value": "={{ $('Set Global Constants').item.json.body.data.custom_fields.proxmox_datastore }}",
+              "type": "string"
+            },
+            {
+              "id": "4912818a-f0d3-4a14-bea6-3750d472eafa",
+              "name": "vm_netbox_id",
+              "value": "={{ $('Set Global Constants').item.json.body.data.id }}",
+              "type": "string"
+            },
+            {
+              "id": "3beb07af-e994-4019-9906-27b392b6d411",
+              "name": "proxmox_api_url",
+              "value": "={{ $('Set Global Constants').item.json.constants.PROXMOX_API_URL }}",
+              "type": "string"
+            },
+            {
+              "id": "74c2d901-7c37-4db6-b5e6-3af74e1c5428",
+              "name": "proxmox_api_token",
+              "value": "={{ $('Set Global Constants').item.json.constants.PROXMOX_API_TOKEN }}",
+              "type": "string"
+            },
+            {
+              "id": "bd22532f-2a6e-4cda-aa4e-28e2d8a83234",
+              "name": "netbox_url",
+              "value": "={{ $('Set Global Constants').item.json.constants.NETBOX_URL }}",
+              "type": "string"
+            },
+            {
+              "id": "5d893c85-beff-4e1a-8860-2379febc4585",
+              "name": "netbox_api_token",
+              "value": "={{ $('Set Global Constants').item.json.constants.NETBOX_API_TOKEN }}",
+              "type": "string"
+            },
+            {
+              "id": "1c74a187-251e-4879-bac0-c937fbf5df76",
+              "name": "vm_id",
+              "value": "={{ $('Set Global Constants').item.json.body.data.primary_ip4.address.split('/')[0].split('.')[2] }}{{ $('Set Global Constants').item.json.body.data.primary_ip4.address.split('/')[0].split('.')[3].padStart(3, '0') }}",
+              "type": "string"
+            },
+            {
+              "id": "cc98ff37-c38a-4dc9-a5aa-9c54b4f37e74",
+              "name": "proxmox_auth",
+              "value": "={{ $('Set Global Constants').item.json.constants.PROXMOX_API_TOKEN }}",
+              "type": "string"
+            },
+            {
+              "id": "5e280799-3843-4a42-baa0-c445a117f9f2",
+              "name": "unifi_username",
+              "value": "={{ $('Set Global Constants').item.json.constants.UNIFI_USERNAME }}",
+              "type": "string"
+            },
+            {
+              "id": "b62c5769-1bfb-49c1-a8d6-220d7b8a72cb",
+              "name": "unifi_password",
+              "value": "={{ $('Set Global Constants').item.json.constants.UNIFI_PASSWORD }}",
+              "type": "string"
+            },
+            {
+              "id": "8d130718-78d5-4f94-aca9-b31586119adf",
+              "name": "unifi_api_url",
+              "value": "={{ $('Set Global Constants').item.json.constants.UNIFI_API_URL }}",
+              "type": "string"
+            },
+            {
+              "id": "29e6019b-f46f-4f4a-844f-a26c263920e7",
+              "name": "technitium_api_url",
+              "value": "={{ $('Set Global Constants').item.json.constants.TECHNITIUM_API_URL }}",
+              "type": "string"
+            },
+            {
+              "id": "7b37235d-c87a-4d09-9f64-43da67fe4085",
+              "name": "technitium_api_token",
+              "value": "={{ $('Set Global Constants').item.json.constants.TECHNITIUM_API_TOKEN }}",
+              "type": "string"
+            },
+            {
+              "id": "1edce40d-2725-4c25-9e7c-5e0aeb017252",
+              "name": "clone_node",
+              "value": "={{ $('Set Global Constants').item.json.constants.PROXMOX_CLONE_NODE }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        -128
+      ],
+      "id": "7f2b86a7-87b0-450f-b64c-60c55d417f42",
+      "name": "Extract values for Terraform"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Extract values for Terraform').item.json.netbox_url }}/api/virtualization/interfaces/?virtual_machine_id={{ $('Extract values for Terraform').item.json.vm_netbox_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1104,
+        -128
+      ],
+      "id": "641317ab-1434-4d86-b572-61c9fa96c204",
+      "name": "Get VM Interface",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "DFKNtqH43z4XgQ9p",
+          "name": "NetBox API Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Extract values for Terraform').item.json.proxmox_api_url }}/api2/json/nodes/{{ $('Extract values for Terraform').item.json.clone_node }}/qemu/{{ $('Extract values for Terraform').item.json.vm_id }}/config",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=PVEAPIToken={{ $('Extract values for Terraform').item.json.proxmox_api_token }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": false
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        784,
+        -128
+      ],
+      "id": "a211a9d0-7485-443a-a337-3789667544a7",
+      "name": "Get Proxmox Configuration"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7bdc6b23-b0a5-4ca2-b316-23a3791bd5ae",
+              "name": "mac_address",
+              "value": "={{ $json.data.net0.split('=')[1].split(',')[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "01d099d7-5efa-49ba-8d7a-953f6df0edb8",
+              "name": "vcpus",
+              "value": "={{ $json.data.cores * $json.data.sockets }}",
+              "type": "string"
+            },
+            {
+              "id": "3a96afeb-9495-4528-a346-ebca3606ab16",
+              "name": "memory",
+              "value": "={{ $json.data.memory }}",
+              "type": "string"
+            },
+            {
+              "id": "3da1de2d-0f58-4d7a-8817-a272e720bc5a",
+              "name": "disk",
+              "value": "={{ parseInt($json.data.scsi0.split('size=')[1]) * 1024 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        944,
+        -128
+      ],
+      "id": "8001eb86-de53-491f-9db1-c29f95364720",
+      "name": "Extract Proxmox Values"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d4b89d1d-84d8-4ae1-af28-19b84f1aa1c1",
+              "name": "interface_id",
+              "value": "={{ $json.results[0].id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1312,
+        -128
+      ],
+      "id": "a8db113a-a77d-4e5c-829a-0157acf0b839",
+      "name": "Extract Network Adapter ID"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Extract values for Terraform').item.json.netbox_url }}/api/dcim/mac-addresses/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"mac_address\": \"{{ $('Extract Proxmox Values').item.json.mac_address }}\",\n  \"assigned_object_type\": \"virtualization.vminterface\",\n  \"assigned_object_id\": {{ $json.interface_id }}\n}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1520,
+        -128
+      ],
+      "id": "77ced3e9-7a02-4398-9e89-56c08e7be751",
+      "name": "Add MAC Address to Netbox",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "DFKNtqH43z4XgQ9p",
+          "name": "NetBox API Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ $('Extract values for Terraform').item.json.netbox_url }}/api/virtualization/interfaces/{{ $('Extract Network Adapter ID').item.json.interface_id }}/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"primary_mac_address\": {{ $json.id }}\n}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1728,
+        -128
+      ],
+      "id": "63c9e795-c822-4102-8b14-70dfa0bba39c",
+      "name": "Set Primary MAC on Interface",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "DFKNtqH43z4XgQ9p",
+          "name": "NetBox API Token"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-globals.globalConstants",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        -32
+      ],
+      "id": "7f849dd9-f9b4-4327-a610-502520aaaf03",
+      "name": "Set Global Constants",
+      "credentials": {
+        "globalConstantsApi": {
+          "id": "nyfmo9wdawCLtr1j",
+          "name": "Global Constants account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "command": "=terraform apply -auto-approve -state=states/{{ $('Extract values for Terraform').item.json.hostname }}.tfstate -var=\"hostname={{ $('Extract values for Terraform').item.json.hostname }}\" -var=\"mac_address={{ $('Extract Proxmox Values').item.json.mac_address }}\" -var=\"ip_address={{ $('Extract values for Terraform').item.json.ip_address }}\" -var=\"unifi_username={{ $('Extract values for Terraform').item.json.unifi_username }}\" -var=\"unifi_password={{ $('Extract values for Terraform').item.json.unifi_password }}\" -var=\"unifi_api_url={{ $('Extract values for Terraform').item.json.unifi_api_url }}\"",
+        "cwd": "/opt/git/homelab/terraform/unifi/dhcp"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        2144,
+        -128
+      ],
+      "id": "ade7d603-21e4-4762-996a-bc9dbaa8056c",
+      "name": "Terraform: DHCP Apply",
+      "credentials": {
+        "sshPassword": {
+          "id": "ViaYm5bxjzsyX5eV",
+          "name": "SSH Password account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ $('Extract values for Terraform').item.json.netbox_url }}/api/virtualization/virtual-machines/{{ $('Extract values for Terraform').item.json.vm_netbox_id }}/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"vcpus\": {{ $('Extract Proxmox Values').item.json.vcpus }},\n  \"memory\": {{ $('Extract Proxmox Values').item.json.memory }},\n  \"disk\": {{ $('Extract Proxmox Values').item.json.disk }}\n}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1936,
+        -128
+      ],
+      "id": "8eaca4bd-3ce1-4d3c-b4aa-6e2e58213aa0",
+      "name": "Netbox: Update VM details",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "DFKNtqH43z4XgQ9p",
+          "name": "NetBox API Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://fire-station/api/virtualization/virtual-machines/{{ $json.body.data.id }}/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"status\": \"failed\"\n}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        272,
+        64
+      ],
+      "id": "e3fb405a-8a88-4b13-bfdf-0eccf829c109",
+      "name": "Netbox: Set VM Status to Failed",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "DFKNtqH43z4XgQ9p",
+          "name": "NetBox API Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ $('Set Global Constants').item.json.constants.NETBOX_URL }}/api/virtualization/virtual-machines/{{ $('Set Global Constants').item.json.body.data.id }}/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"status\": \"offline\"\n}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        272,
+        -128
+      ],
+      "id": "999c54b7-194e-4536-9d82-183d1236e5e9",
+      "name": "Netbox: Set VM Status to Offline",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "DFKNtqH43z4XgQ9p",
+          "name": "NetBox API Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://tiki-room:5678/webhook/dns-create-a-record",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"hostname\": \"{{ $('Extract values for Terraform').item.json.hostname }}\",\n  \"ip_address\": \"{{ $('Extract values for Terraform').item.json.ip_address }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2352,
+        -128
+      ],
+      "id": "0a2203c2-db61-4d31-9bea-5b5c578e1132",
+      "name": "DNS: Create A Record"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Extract values for Terraform').item.json.proxmox_api_url }}/api2/json/cluster/ha/resources",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "sid",
+              "value": "=vm:{{ $('Extract values for Terraform').item.json.vm_id }}"
+            },
+            {
+              "name": "state",
+              "value": "started"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2560,
+        -128
+      ],
+      "id": "84ddd9ee-1e7c-4fa6-a104-bd155c7524d6",
+      "name": "Proxmox: Add HA Resource",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mDp4jBf54QLDWnkJ",
+          "name": "Proxmox API Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ $('Extract values for Terraform').item.json.proxmox_api_url }}/api2/json/cluster/ha/rules/prefer_{{ $('Extract values for Terraform').item.json.target_node }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "resources",
+              "value": "={{ $json.data.resources }},vm:{{ $('Extract values for Terraform').item.json.vm_id }}"
+            },
+            {
+              "name": "type",
+              "value": "node-affinity"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2976,
+        -128
+      ],
+      "id": "77d4f181-4549-4938-bf86-05212f32b464",
+      "name": "Proxmox: Update HA Affinity Rule",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mDp4jBf54QLDWnkJ",
+          "name": "Proxmox API Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Extract values for Terraform').item.json.proxmox_api_url }}/api2/json/cluster/ha/rules/prefer_{{ $('Extract values for Terraform').item.json.target_node }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2768,
+        -128
+      ],
+      "id": "fdee15e5-3f96-4e8f-86d2-70c2c84765b8",
+      "name": "Proxmox: Get HA Affinity Rule",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mDp4jBf54QLDWnkJ",
+          "name": "Proxmox API Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ $('Extract values for Terraform').item.json.netbox_url }}/api/virtualization/virtual-machines/{{ $('Extract values for Terraform').item.json.vm_netbox_id }}/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "status",
+              "value": "active"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3184,
+        -128
+      ],
+      "id": "af608797-a706-4a46-97f2-451f5b1b64a6",
+      "name": "Netbox: Set VM Status to Active",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "DFKNtqH43z4XgQ9p",
+          "name": "NetBox API Token"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Set Global Constants",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Netbox: Set VM Status to Offline",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Netbox: Set VM Status to Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Terraform apply (city-hall)": {
+      "main": [
+        [
+          {
+            "node": "Get Proxmox Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract values for Terraform": {
+      "main": [
+        [
+          {
+            "node": "Terraform apply (city-hall)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get VM Interface": {
+      "main": [
+        [
+          {
+            "node": "Extract Network Adapter ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Proxmox Configuration": {
+      "main": [
+        [
+          {
+            "node": "Extract Proxmox Values",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Proxmox Values": {
+      "main": [
+        [
+          {
+            "node": "Get VM Interface",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Network Adapter ID": {
+      "main": [
+        [
+          {
+            "node": "Add MAC Address to Netbox",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add MAC Address to Netbox": {
+      "main": [
+        [
+          {
+            "node": "Set Primary MAC on Interface",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Primary MAC on Interface": {
+      "main": [
+        [
+          {
+            "node": "Netbox: Update VM details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Global Constants": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Netbox: Update VM details": {
+      "main": [
+        [
+          {
+            "node": "Terraform: DHCP Apply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Netbox: Set VM Status to Offline": {
+      "main": [
+        [
+          {
+            "node": "Extract values for Terraform",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Terraform: DHCP Apply": {
+      "main": [
+        [
+          {
+            "node": "DNS: Create A Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DNS: Create A Record": {
+      "main": [
+        [
+          {
+            "node": "Proxmox: Add HA Resource",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Proxmox: Add HA Resource": {
+      "main": [
+        [
+          {
+            "node": "Proxmox: Get HA Affinity Rule",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Proxmox: Get HA Affinity Rule": {
+      "main": [
+        [
+          {
+            "node": "Proxmox: Update HA Affinity Rule",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Proxmox: Update HA Affinity Rule": {
+      "main": [
+        [
+          {
+            "node": "Netbox: Set VM Status to Active",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "43896363-19d5-4e48-bd50-888f69afda17",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3e2845e5dbd96147e78dbe1b63da8b06cb24e839f294eaf5325123ee430d9b7d"
+  },
+  "id": "Pj67gDEomlwwuKt1",
+  "tags": []
+}

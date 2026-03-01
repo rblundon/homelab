@@ -1,0 +1,94 @@
+{
+  "name": "DNS: Create A Record",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "dns-create-a-record",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7484b9df-0238-4715-8b0f-f544c5b3b2d3",
+      "name": "Webhook",
+      "webhookId": "683f0875-c52e-45cf-ae73-2e329e979503"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Global Constants').item.json.constants.TECHNITIUM_API_URL }}/api/zones/records/add?token={{ $('Global Constants').item.json.constants.TECHNITIUM_API_TOKEN }}&domain={{ $('Webhook').item.json.body.hostname }}.local.mk-labs.cloud&zone=local.mk-labs.cloud&type=A&ipAddress={{ $('Webhook').item.json.body.ip_address }}&ptr=true&ttl=360",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        416,
+        0
+      ],
+      "id": "421d879a-8bf8-46df-b953-90c4a9a848ed",
+      "name": "Technitium: Create A Record"
+    },
+    {
+      "parameters": {
+        "putAllInOneKey": "={{ true }}"
+      },
+      "type": "n8n-nodes-globals.globalConstants",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "02069ae1-cb6d-4056-9fc3-1c0c5552edb6",
+      "name": "Global Constants",
+      "credentials": {
+        "globalConstantsApi": {
+          "id": "nyfmo9wdawCLtr1j",
+          "name": "Global Constants account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Global Constants",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Global Constants": {
+      "main": [
+        [
+          {
+            "node": "Technitium: Create A Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "e04125a1-b64d-4a8a-87cb-5d2facb6b796",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3e2845e5dbd96147e78dbe1b63da8b06cb24e839f294eaf5325123ee430d9b7d"
+  },
+  "id": "vx7f3MF4zGi0tE2I",
+  "tags": []
+}

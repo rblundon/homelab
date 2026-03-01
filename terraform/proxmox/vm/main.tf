@@ -59,7 +59,6 @@ resource "proxmox_virtual_environment_vm" "vm" {
   network_device {
     bridge  = var.bridge
     model   = "virtio"
-    vlan_id = var.vlan_id
   }
 
   # VM stays STOPPED after clone.
