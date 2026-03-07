@@ -14,7 +14,7 @@
         -32
       ],
       "id": "342b8e0f-33d6-4420-9c4a-e3eef5790925",
-      "name": "Webhook",
+      "name": "n8n: Webhook",
       "webhookId": "4816549b-11a5-499e-bbc1-5c3b10657cee"
     },
     {
@@ -110,7 +110,7 @@
         -32
       ],
       "id": "021e189b-13e3-450a-862a-4b231139fc33",
-      "name": "If"
+      "name": "n8n: Validate Webhook Data"
     },
     {
       "parameters": {
@@ -124,7 +124,7 @@
         -128
       ],
       "id": "dd395443-821d-4483-941a-02cd487c6160",
-      "name": "Terraform apply (city-hall)",
+      "name": "Terraform: Apply VM (city-hall)",
       "credentials": {
         "sshPassword": {
           "id": "ViaYm5bxjzsyX5eV",
@@ -139,109 +139,115 @@
             {
               "id": "adc0bfd6-625c-4691-a826-5b2bf5d07584",
               "name": "hostname",
-              "value": "={{ $('Set Global Constants').item.json.body.data.name }}",
+              "value": "={{ $('n8n: Set Global Constants').item.json.body.data.name }}",
               "type": "string"
             },
             {
               "id": "e78bf003-c15c-4701-b71f-f68af25c761a",
               "name": "ip_address",
-              "value": "={{ $('Set Global Constants').item.json.body.data.primary_ip4.address.split('/')[0] }}",
+              "value": "={{ $('n8n: Set Global Constants').item.json.body.data.primary_ip4.address.split('/')[0] }}",
               "type": "string"
             },
             {
               "id": "826b3779-05f7-49a6-b3ed-3ebd7b23df63",
               "name": "template",
-              "value": "={{ $('Set Global Constants').item.json.body.data.custom_fields.proxmox_template }}",
+              "value": "={{ $('n8n: Set Global Constants').item.json.body.data.custom_fields.proxmox_template }}",
               "type": "string"
             },
             {
               "id": "205a9bb4-a81f-4175-be6a-d3c479053ae1",
               "name": "target_node",
-              "value": "={{ $('Set Global Constants').item.json.body.data.custom_fields.proxmox_node }}",
+              "value": "={{ $('n8n: Set Global Constants').item.json.body.data.custom_fields.proxmox_node }}",
               "type": "string"
             },
             {
               "id": "d676e1bc-6513-4305-985a-49a5d73c3ae3",
               "name": "datastore",
-              "value": "={{ $('Set Global Constants').item.json.body.data.custom_fields.proxmox_datastore }}",
+              "value": "={{ $('n8n: Set Global Constants').item.json.body.data.custom_fields.proxmox_datastore }}",
               "type": "string"
             },
             {
               "id": "4912818a-f0d3-4a14-bea6-3750d472eafa",
               "name": "vm_netbox_id",
-              "value": "={{ $('Set Global Constants').item.json.body.data.id }}",
+              "value": "={{ $('n8n: Set Global Constants').item.json.body.data.id }}",
               "type": "string"
             },
             {
               "id": "3beb07af-e994-4019-9906-27b392b6d411",
               "name": "proxmox_api_url",
-              "value": "={{ $('Set Global Constants').item.json.constants.PROXMOX_API_URL }}",
+              "value": "={{ $('n8n: Set Global Constants').item.json.constants.PROXMOX_API_URL }}",
               "type": "string"
             },
             {
               "id": "74c2d901-7c37-4db6-b5e6-3af74e1c5428",
               "name": "proxmox_api_token",
-              "value": "={{ $('Set Global Constants').item.json.constants.PROXMOX_API_TOKEN }}",
+              "value": "={{ $('n8n: Set Global Constants').item.json.constants.PROXMOX_API_TOKEN }}",
               "type": "string"
             },
             {
               "id": "bd22532f-2a6e-4cda-aa4e-28e2d8a83234",
               "name": "netbox_url",
-              "value": "={{ $('Set Global Constants').item.json.constants.NETBOX_URL }}",
+              "value": "={{ $('n8n: Set Global Constants').item.json.constants.NETBOX_URL }}",
               "type": "string"
             },
             {
               "id": "5d893c85-beff-4e1a-8860-2379febc4585",
               "name": "netbox_api_token",
-              "value": "={{ $('Set Global Constants').item.json.constants.NETBOX_API_TOKEN }}",
+              "value": "={{ $('n8n: Set Global Constants').item.json.constants.NETBOX_API_TOKEN }}",
               "type": "string"
             },
             {
               "id": "1c74a187-251e-4879-bac0-c937fbf5df76",
               "name": "vm_id",
-              "value": "={{ $('Set Global Constants').item.json.body.data.primary_ip4.address.split('/')[0].split('.')[2] }}{{ $('Set Global Constants').item.json.body.data.primary_ip4.address.split('/')[0].split('.')[3].padStart(3, '0') }}",
+              "value": "={{ $('n8n: Set Global Constants').item.json.body.data.primary_ip4.address.split('/')[0].split('.')[2] }}{{ $('n8n: Set Global Constants').item.json.body.data.primary_ip4.address.split('/')[0].split('.')[3].padStart(3, '0') }}",
               "type": "string"
             },
             {
               "id": "cc98ff37-c38a-4dc9-a5aa-9c54b4f37e74",
               "name": "proxmox_auth",
-              "value": "={{ $('Set Global Constants').item.json.constants.PROXMOX_API_TOKEN }}",
+              "value": "={{ $('n8n: Set Global Constants').item.json.constants.PROXMOX_API_TOKEN }}",
               "type": "string"
             },
             {
               "id": "5e280799-3843-4a42-baa0-c445a117f9f2",
               "name": "unifi_username",
-              "value": "={{ $('Set Global Constants').item.json.constants.UNIFI_USERNAME }}",
+              "value": "={{ $('n8n: Set Global Constants').item.json.constants.UNIFI_USERNAME }}",
               "type": "string"
             },
             {
               "id": "b62c5769-1bfb-49c1-a8d6-220d7b8a72cb",
               "name": "unifi_password",
-              "value": "={{ $('Set Global Constants').item.json.constants.UNIFI_PASSWORD }}",
+              "value": "={{ $('n8n: Set Global Constants').item.json.constants.UNIFI_PASSWORD }}",
               "type": "string"
             },
             {
               "id": "8d130718-78d5-4f94-aca9-b31586119adf",
               "name": "unifi_api_url",
-              "value": "={{ $('Set Global Constants').item.json.constants.UNIFI_API_URL }}",
+              "value": "={{ $('n8n: Set Global Constants').item.json.constants.UNIFI_API_URL }}",
               "type": "string"
             },
             {
               "id": "29e6019b-f46f-4f4a-844f-a26c263920e7",
               "name": "technitium_api_url",
-              "value": "={{ $('Set Global Constants').item.json.constants.TECHNITIUM_API_URL }}",
+              "value": "={{ $('n8n: Set Global Constants').item.json.constants.TECHNITIUM_API_URL }}",
               "type": "string"
             },
             {
               "id": "7b37235d-c87a-4d09-9f64-43da67fe4085",
               "name": "technitium_api_token",
-              "value": "={{ $('Set Global Constants').item.json.constants.TECHNITIUM_API_TOKEN }}",
+              "value": "={{ $('n8n: Set Global Constants').item.json.constants.TECHNITIUM_API_TOKEN }}",
               "type": "string"
             },
             {
               "id": "1edce40d-2725-4c25-9e7c-5e0aeb017252",
               "name": "clone_node",
-              "value": "={{ $('Set Global Constants').item.json.constants.PROXMOX_CLONE_NODE }}",
+              "value": "={{ $('n8n: Set Global Constants').item.json.constants.PROXMOX_CLONE_NODE }}",
+              "type": "string"
+            },
+            {
+              "id": "a4f7e923-8b1c-4d5e-9f0a-6c2d3e4f5a6b",
+              "name": "dns_domain",
+              "value": "={{ $('n8n: Set Global Constants').item.json.constants.DNS_DOMAIN }}",
               "type": "string"
             }
           ]
@@ -256,11 +262,11 @@
         -128
       ],
       "id": "7f2b86a7-87b0-450f-b64c-60c55d417f42",
-      "name": "Extract values for Terraform"
+      "name": "n8n: Extract Terraform Variables"
     },
     {
       "parameters": {
-        "url": "={{ $('Extract values for Terraform').item.json.netbox_url }}/api/virtualization/interfaces/?virtual_machine_id={{ $('Extract values for Terraform').item.json.vm_netbox_id }}",
+        "url": "={{ $('n8n: Extract Terraform Variables').item.json.netbox_url }}/api/virtualization/interfaces/?virtual_machine_id={{ $('n8n: Extract Terraform Variables').item.json.vm_netbox_id }}",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "options": {
@@ -274,7 +280,7 @@
         -128
       ],
       "id": "641317ab-1434-4d86-b572-61c9fa96c204",
-      "name": "Get VM Interface",
+      "name": "Netbox: Get VM Interface",
       "credentials": {
         "httpHeaderAuth": {
           "id": "DFKNtqH43z4XgQ9p",
@@ -284,13 +290,13 @@
     },
     {
       "parameters": {
-        "url": "={{ $('Extract values for Terraform').item.json.proxmox_api_url }}/api2/json/nodes/{{ $('Extract values for Terraform').item.json.clone_node }}/qemu/{{ $('Extract values for Terraform').item.json.vm_id }}/config",
+        "url": "={{ $('n8n: Extract Terraform Variables').item.json.proxmox_api_url }}/api2/json/nodes/{{ $('n8n: Extract Terraform Variables').item.json.clone_node }}/qemu/{{ $('n8n: Extract Terraform Variables').item.json.vm_id }}/config",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=PVEAPIToken={{ $('Extract values for Terraform').item.json.proxmox_api_token }}"
+              "value": "=PVEAPIToken={{ $('n8n: Extract Terraform Variables').item.json.proxmox_api_token }}"
             }
           ]
         },
@@ -305,7 +311,7 @@
         -128
       ],
       "id": "a211a9d0-7485-443a-a337-3789667544a7",
-      "name": "Get Proxmox Configuration"
+      "name": "Proxmox: Get VM Configuration"
     },
     {
       "parameters": {
@@ -346,7 +352,7 @@
         -128
       ],
       "id": "8001eb86-de53-491f-9db1-c29f95364720",
-      "name": "Extract Proxmox Values"
+      "name": "n8n: Extract Proxmox Values"
     },
     {
       "parameters": {
@@ -370,17 +376,13 @@
         -128
       ],
       "id": "a8db113a-a77d-4e5c-829a-0157acf0b839",
-      "name": "Extract Network Adapter ID"
+      "name": "n8n: Extract Network Adapter ID"
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "={{ $('Extract values for Terraform').item.json.netbox_url }}/api/dcim/mac-addresses/",
+        "url": "={{ $('n8n: Extract Terraform Variables').item.json.netbox_url }}/api/dcim/mac-addresses/?mac_address={{ $('n8n: Extract Proxmox Values').item.json.mac_address }}",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"mac_address\": \"{{ $('Extract Proxmox Values').item.json.mac_address }}\",\n  \"assigned_object_type\": \"virtualization.vminterface\",\n  \"assigned_object_id\": {{ $json.interface_id }}\n}",
         "options": {
           "allowUnauthorizedCerts": true
         }
@@ -391,8 +393,92 @@
         1520,
         -128
       ],
+      "id": "1a2b3c4d-5e6f-7a8b-9c0d-e1f2a3b4c5d6",
+      "name": "Netbox: Check MAC Address",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "DFKNtqH43z4XgQ9p",
+          "name": "NetBox API Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "mac-exists-condition-01",
+              "leftValue": "={{ $json.count }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1728,
+        -128
+      ],
+      "id": "2b3c4d5e-6f7a-8b9c-0d1e-f2a3b4c5d6e7",
+      "name": "n8n: MAC Already Exists?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "extract-existing-mac-id-01",
+              "name": "id",
+              "value": "={{ $json.results[0].id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1936,
+        0
+      ],
+      "id": "3c4d5e6f-7a8b-9c0d-1e2f-a3b4c5d6e7f8",
+      "name": "n8n: Extract Existing MAC ID"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('n8n: Extract Terraform Variables').item.json.netbox_url }}/api/dcim/mac-addresses/",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"mac_address\": \"{{ $('n8n: Extract Proxmox Values').item.json.mac_address }}\",\n  \"assigned_object_type\": \"virtualization.vminterface\",\n  \"assigned_object_id\": {{ $('n8n: Extract Network Adapter ID').item.json.interface_id }}\n}",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1936,
+        -256
+      ],
       "id": "77ced3e9-7a02-4398-9e89-56c08e7be751",
-      "name": "Add MAC Address to Netbox",
+      "name": "Netbox: Add MAC Address",
       "credentials": {
         "httpHeaderAuth": {
           "id": "DFKNtqH43z4XgQ9p",
@@ -403,7 +489,7 @@
     {
       "parameters": {
         "method": "PATCH",
-        "url": "={{ $('Extract values for Terraform').item.json.netbox_url }}/api/virtualization/interfaces/{{ $('Extract Network Adapter ID').item.json.interface_id }}/",
+        "url": "={{ $('n8n: Extract Terraform Variables').item.json.netbox_url }}/api/virtualization/interfaces/{{ $('n8n: Extract Network Adapter ID').item.json.interface_id }}/",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
@@ -416,11 +502,11 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        1728,
+        2144,
         -128
       ],
       "id": "63c9e795-c822-4102-8b14-70dfa0bba39c",
-      "name": "Set Primary MAC on Interface",
+      "name": "Netbox: Set Primary MAC on Interface",
       "credentials": {
         "httpHeaderAuth": {
           "id": "DFKNtqH43z4XgQ9p",
@@ -437,7 +523,7 @@
         -32
       ],
       "id": "7f849dd9-f9b4-4327-a610-502520aaaf03",
-      "name": "Set Global Constants",
+      "name": "n8n: Set Global Constants",
       "credentials": {
         "globalConstantsApi": {
           "id": "nyfmo9wdawCLtr1j",
@@ -447,13 +533,13 @@
     },
     {
       "parameters": {
-        "command": "=terraform apply -auto-approve -state=states/{{ $('Extract values for Terraform').item.json.hostname }}.tfstate -var=\"hostname={{ $('Extract values for Terraform').item.json.hostname }}\" -var=\"mac_address={{ $('Extract Proxmox Values').item.json.mac_address }}\" -var=\"ip_address={{ $('Extract values for Terraform').item.json.ip_address }}\" -var=\"unifi_username={{ $('Extract values for Terraform').item.json.unifi_username }}\" -var=\"unifi_password={{ $('Extract values for Terraform').item.json.unifi_password }}\" -var=\"unifi_api_url={{ $('Extract values for Terraform').item.json.unifi_api_url }}\"",
+        "command": "=terraform apply -auto-approve -state=states/{{ $('n8n: Extract Terraform Variables').item.json.hostname }}.tfstate -var=\"hostname={{ $('n8n: Extract Terraform Variables').item.json.hostname }}\" -var=\"mac_address={{ $('n8n: Extract Proxmox Values').item.json.mac_address }}\" -var=\"ip_address={{ $('n8n: Extract Terraform Variables').item.json.ip_address }}\" -var=\"unifi_username={{ $('n8n: Extract Terraform Variables').item.json.unifi_username }}\" -var=\"unifi_password={{ $('n8n: Extract Terraform Variables').item.json.unifi_password }}\" -var=\"unifi_api_url={{ $('n8n: Extract Terraform Variables').item.json.unifi_api_url }}\"",
         "cwd": "/opt/git/homelab/terraform/unifi/dhcp"
       },
       "type": "n8n-nodes-base.ssh",
       "typeVersion": 1,
       "position": [
-        2144,
+        2560,
         -128
       ],
       "id": "ade7d603-21e4-4762-996a-bc9dbaa8056c",
@@ -468,12 +554,12 @@
     {
       "parameters": {
         "method": "PATCH",
-        "url": "={{ $('Extract values for Terraform').item.json.netbox_url }}/api/virtualization/virtual-machines/{{ $('Extract values for Terraform').item.json.vm_netbox_id }}/",
+        "url": "={{ $('n8n: Extract Terraform Variables').item.json.netbox_url }}/api/virtualization/virtual-machines/{{ $('n8n: Extract Terraform Variables').item.json.vm_netbox_id }}/",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"vcpus\": {{ $('Extract Proxmox Values').item.json.vcpus }},\n  \"memory\": {{ $('Extract Proxmox Values').item.json.memory }},\n  \"disk\": {{ $('Extract Proxmox Values').item.json.disk }}\n}",
+        "jsonBody": "={\n  \"vcpus\": {{ $('n8n: Extract Proxmox Values').item.json.vcpus }},\n  \"memory\": {{ $('n8n: Extract Proxmox Values').item.json.memory }},\n  \"disk\": {{ $('n8n: Extract Proxmox Values').item.json.disk }}\n}",
         "options": {
           "allowUnauthorizedCerts": true
         }
@@ -481,11 +567,11 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        1936,
+        2352,
         -128
       ],
       "id": "8eaca4bd-3ce1-4d3c-b4aa-6e2e58213aa0",
-      "name": "Netbox: Update VM details",
+      "name": "Netbox: Update VM Details",
       "credentials": {
         "httpHeaderAuth": {
           "id": "DFKNtqH43z4XgQ9p",
@@ -524,7 +610,7 @@
     {
       "parameters": {
         "method": "PATCH",
-        "url": "={{ $('Set Global Constants').item.json.constants.NETBOX_URL }}/api/virtualization/virtual-machines/{{ $('Set Global Constants').item.json.body.data.id }}/",
+        "url": "={{ $('n8n: Set Global Constants').item.json.constants.NETBOX_URL }}/api/virtualization/virtual-machines/{{ $('n8n: Set Global Constants').item.json.body.data.id }}/",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
@@ -551,26 +637,133 @@
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "http://tiki-room:5678/webhook/dns-create-a-record",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"hostname\": \"{{ $('Extract values for Terraform').item.json.hostname }}\",\n  \"ip_address\": \"{{ $('Extract values for Terraform').item.json.ip_address }}\"\n}",
+        "url": "={{ $('n8n: Extract Terraform Variables').item.json.technitium_api_url }}/api/zones/records/get?token={{ $('n8n: Extract Terraform Variables').item.json.technitium_api_token }}&domain={{ $('n8n: Extract Terraform Variables').item.json.hostname }}.{{ $('n8n: Extract Terraform Variables').item.json.dns_domain }}&type=A",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        2352,
+        2768,
         -128
       ],
-      "id": "0a2203c2-db61-4d31-9bea-5b5c578e1132",
-      "name": "DNS: Create A Record"
+      "id": "4d5e6f7a-8b9c-0d1e-2f3a-b4c5d6e7f8a9",
+      "name": "Technitium: Check A Record",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "dns-exists-condition-01",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "ok",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2976,
+        -128
+      ],
+      "id": "5e6f7a8b-9c0d-1e2f-3a4b-c5d6e7f8a9b0",
+      "name": "n8n: DNS Record Exists?"
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $('Extract values for Terraform').item.json.proxmox_api_url }}/api2/json/cluster/ha/resources",
+        "url": "http://tiki-room:5678/webhook/dns-create-a-record",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"hostname\": \"{{ $('n8n: Extract Terraform Variables').item.json.hostname }}\",\n  \"ip_address\": \"{{ $('n8n: Extract Terraform Variables').item.json.ip_address }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3184,
+        -256
+      ],
+      "id": "0a2203c2-db61-4d31-9bea-5b5c578e1132",
+      "name": "Technitium: Create A Record"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('n8n: Extract Terraform Variables').item.json.proxmox_api_url }}/api2/json/cluster/ha/resources/vm:{{ $('n8n: Extract Terraform Variables').item.json.vm_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3392,
+        -128
+      ],
+      "id": "6f7a8b9c-0d1e-2f3a-4b5c-d6e7f8a9b0c1",
+      "name": "Proxmox: Check HA Resource",
+      "continueOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mDp4jBf54QLDWnkJ",
+          "name": "Proxmox API Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ha-exists-condition-01",
+              "leftValue": "={{ $json.data }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3600,
+        -128
+      ],
+      "id": "7a8b9c0d-1e2f-3a4b-5c6d-e7f8a9b0c1d2",
+      "name": "n8n: HA Resource Exists?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('n8n: Extract Terraform Variables').item.json.proxmox_api_url }}/api2/json/cluster/ha/resources",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
@@ -579,7 +772,7 @@
           "parameters": [
             {
               "name": "sid",
-              "value": "=vm:{{ $('Extract values for Terraform').item.json.vm_id }}"
+              "value": "=vm:{{ $('n8n: Extract Terraform Variables').item.json.vm_id }}"
             },
             {
               "name": "state",
@@ -594,8 +787,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        2560,
-        -128
+        3808,
+        -256
       ],
       "id": "84ddd9ee-1e7c-4fa6-a104-bd155c7524d6",
       "name": "Proxmox: Add HA Resource",
@@ -608,8 +801,45 @@
     },
     {
       "parameters": {
+        "url": "={{ $('n8n: Extract Terraform Variables').item.json.proxmox_api_url }}/api2/json/cluster/ha/rules/prefer_{{ $('n8n: Extract Terraform Variables').item.json.target_node }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        4016,
+        -128
+      ],
+      "id": "fdee15e5-3f96-4e8f-86d2-70c2c84765b8",
+      "name": "Proxmox: Get HA Affinity Rule",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "mDp4jBf54QLDWnkJ",
+          "name": "Proxmox API Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const existing = $('Proxmox: Get HA Affinity Rule').item.json.data.resources || '';\nconst vmId = `vm:${$('n8n: Extract Terraform Variables').item.json.vm_id}`;\n\nconst parts = existing\n  .split(',')\n  .map(r => r.trim())\n  .filter(r => r.length > 0);\n\nif (!parts.includes(vmId)) {\n  parts.push(vmId);\n}\n\nreturn [{ json: { deduplicated_resources: parts.join(',') } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4224,
+        -128
+      ],
+      "id": "8b9c0d1e-2f3a-4b5c-6d7e-f8a9b0c1d2e3",
+      "name": "n8n: Deduplicate HA Resources"
+    },
+    {
+      "parameters": {
         "method": "PUT",
-        "url": "={{ $('Extract values for Terraform').item.json.proxmox_api_url }}/api2/json/cluster/ha/rules/prefer_{{ $('Extract values for Terraform').item.json.target_node }}",
+        "url": "={{ $('n8n: Extract Terraform Variables').item.json.proxmox_api_url }}/api2/json/cluster/ha/rules/prefer_{{ $('n8n: Extract Terraform Variables').item.json.target_node }}",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
@@ -618,7 +848,7 @@
           "parameters": [
             {
               "name": "resources",
-              "value": "={{ $json.data.resources }},vm:{{ $('Extract values for Terraform').item.json.vm_id }}"
+              "value": "={{ $json.deduplicated_resources }}"
             },
             {
               "name": "type",
@@ -633,7 +863,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        2976,
+        4432,
         -128
       ],
       "id": "77d4f181-4549-4938-bf86-05212f32b464",
@@ -647,32 +877,8 @@
     },
     {
       "parameters": {
-        "url": "={{ $('Extract values for Terraform').item.json.proxmox_api_url }}/api2/json/cluster/ha/rules/prefer_{{ $('Extract values for Terraform').item.json.target_node }}",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "options": {
-          "allowUnauthorizedCerts": true
-        }
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        2768,
-        -128
-      ],
-      "id": "fdee15e5-3f96-4e8f-86d2-70c2c84765b8",
-      "name": "Proxmox: Get HA Affinity Rule",
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "mDp4jBf54QLDWnkJ",
-          "name": "Proxmox API Token"
-        }
-      }
-    },
-    {
-      "parameters": {
         "method": "PATCH",
-        "url": "={{ $('Extract values for Terraform').item.json.netbox_url }}/api/virtualization/virtual-machines/{{ $('Extract values for Terraform').item.json.vm_netbox_id }}/",
+        "url": "={{ $('n8n: Extract Terraform Variables').item.json.netbox_url }}/api/virtualization/virtual-machines/{{ $('n8n: Extract Terraform Variables').item.json.vm_netbox_id }}/",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendBody": true,
@@ -691,7 +897,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        3184,
+        4640,
         -128
       ],
       "id": "af608797-a706-4a46-97f2-451f5b1b64a6",
@@ -706,18 +912,18 @@
   ],
   "pinData": {},
   "connections": {
-    "Webhook": {
+    "n8n: Webhook": {
       "main": [
         [
           {
-            "node": "Set Global Constants",
+            "node": "n8n: Set Global Constants",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "If": {
+    "n8n: Validate Webhook Data": {
       "main": [
         [
           {
@@ -735,106 +941,146 @@
         ]
       ]
     },
-    "Terraform apply (city-hall)": {
+    "Terraform: Apply VM (city-hall)": {
       "main": [
         [
           {
-            "node": "Get Proxmox Configuration",
+            "node": "Proxmox: Get VM Configuration",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Extract values for Terraform": {
+    "n8n: Extract Terraform Variables": {
       "main": [
         [
           {
-            "node": "Terraform apply (city-hall)",
+            "node": "Terraform: Apply VM (city-hall)",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Get VM Interface": {
+    "Netbox: Get VM Interface": {
       "main": [
         [
           {
-            "node": "Extract Network Adapter ID",
+            "node": "n8n: Extract Network Adapter ID",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Get Proxmox Configuration": {
+    "Proxmox: Get VM Configuration": {
       "main": [
         [
           {
-            "node": "Extract Proxmox Values",
+            "node": "n8n: Extract Proxmox Values",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Extract Proxmox Values": {
+    "n8n: Extract Proxmox Values": {
       "main": [
         [
           {
-            "node": "Get VM Interface",
+            "node": "Netbox: Get VM Interface",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Extract Network Adapter ID": {
+    "n8n: Extract Network Adapter ID": {
       "main": [
         [
           {
-            "node": "Add MAC Address to Netbox",
+            "node": "Netbox: Check MAC Address",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Add MAC Address to Netbox": {
+    "Netbox: Check MAC Address": {
       "main": [
         [
           {
-            "node": "Set Primary MAC on Interface",
+            "node": "n8n: MAC Already Exists?",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Set Primary MAC on Interface": {
+    "n8n: MAC Already Exists?": {
       "main": [
         [
           {
-            "node": "Netbox: Update VM details",
+            "node": "n8n: Extract Existing MAC ID",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Netbox: Add MAC Address",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Set Global Constants": {
+    "n8n: Extract Existing MAC ID": {
       "main": [
         [
           {
-            "node": "If",
+            "node": "Netbox: Set Primary MAC on Interface",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Netbox: Update VM details": {
+    "Netbox: Add MAC Address": {
+      "main": [
+        [
+          {
+            "node": "Netbox: Set Primary MAC on Interface",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Netbox: Set Primary MAC on Interface": {
+      "main": [
+        [
+          {
+            "node": "Netbox: Update VM Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n: Set Global Constants": {
+      "main": [
+        [
+          {
+            "node": "n8n: Validate Webhook Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Netbox: Update VM Details": {
       "main": [
         [
           {
@@ -849,7 +1095,7 @@
       "main": [
         [
           {
-            "node": "Extract values for Terraform",
+            "node": "n8n: Extract Terraform Variables",
             "type": "main",
             "index": 0
           }
@@ -860,15 +1106,73 @@
       "main": [
         [
           {
-            "node": "DNS: Create A Record",
+            "node": "Technitium: Check A Record",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "DNS: Create A Record": {
+    "Technitium: Check A Record": {
       "main": [
+        [
+          {
+            "node": "n8n: DNS Record Exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n: DNS Record Exists?": {
+      "main": [
+        [
+          {
+            "node": "Proxmox: Check HA Resource",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Technitium: Create A Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Technitium: Create A Record": {
+      "main": [
+        [
+          {
+            "node": "Proxmox: Check HA Resource",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Proxmox: Check HA Resource": {
+      "main": [
+        [
+          {
+            "node": "n8n: HA Resource Exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n: HA Resource Exists?": {
+      "main": [
+        [
+          {
+            "node": "Proxmox: Get HA Affinity Rule",
+            "type": "main",
+            "index": 0
+          }
+        ],
         [
           {
             "node": "Proxmox: Add HA Resource",
@@ -890,6 +1194,17 @@
       ]
     },
     "Proxmox: Get HA Affinity Rule": {
+      "main": [
+        [
+          {
+            "node": "n8n: Deduplicate HA Resources",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n: Deduplicate HA Resources": {
       "main": [
         [
           {
