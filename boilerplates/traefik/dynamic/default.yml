@@ -1,10 +1,7 @@
-# ------------------------------------------------------------------------------
-# Traefik Dynamic Configuration
-# Managed by Ansible — do not edit manually
-# ------------------------------------------------------------------------------
+# Security headers middleware and TLS options
+# Drop additional dynamic config files in this directory as needed
 
 http:
-{% if traefik_security_headers %}
   middlewares:
     security-headers:
       headers:
@@ -19,7 +16,6 @@ http:
           X-Robots-Tag: "noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex"
           server: ""
           X-Forwarded-Proto: "https"
-{% endif %}
 
 tls:
   options:

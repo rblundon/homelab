@@ -1,7 +1,9 @@
 # ------------------------------------------------------------------------------
 # FILE: roles/traefik/tasks/main.yml
-# DESCRIPTION: Deploys Traefik as a Docker Compose stack with Cloudflare
-#              DNS-01 certificate resolution for *.local.mk-labs.cloud
+# DESCRIPTION: Deploys Traefik from boilerplate-generated files in the repo.
+#              The compose.yaml and dynamic config live in boilerplates/traefik/
+#              and are copied to the host. Only the .env file is templated
+#              to inject secrets from Ansible vault.
 # ------------------------------------------------------------------------------
 
 - name: Create Traefik directory structure
@@ -13,49 +15,27 @@
     mode: '0775'
   loop:
     - "{{ traefik_base_dir }}"
-    - "{{ traefik_config_dir }}"
-    - "{{ traefik_config_dir }}/dynamic"
-    - "{{ traefik_certs_dir }}"
-    - "{{ traefik_logs_dir }}"
+    - "{{ traefik_base_dir }}/dynamic"
 
-- name: Create acme.json for certificate storage
-  file:
-    path: "{{ traefik_certs_dir }}/acme.json"
-    state: touch
-    owner: root
-    group: root
-    mode: '0600'
-    modification_time: preserve
-    access_time: preserve
-
-- name: Deploy Traefik static configuration
-  template:
-    src: traefik.yml.j2
-    dest: "{{ traefik_config_dir }}/traefik.yml"
+- name: Copy compose.yaml from boilerplate
+  copy:
+    src: "{{ playbook_dir }}/../../boilerplates/traefik/compose.yaml"
+    dest: "{{ traefik_base_dir }}/compose.yaml"
     owner: "{{ ansible_user }}"
     group: docker
     mode: '0644'
   notify: restart traefik
 
-- name: Deploy dynamic configuration
-  template:
-    src: dynamic.yml.j2
-    dest: "{{ traefik_config_dir }}/dynamic/default.yml"
+- name: Copy dynamic configuration from boilerplate
+  copy:
+    src: "{{ playbook_dir }}/../../boilerplates/traefik/dynamic/"
+    dest: "{{ traefik_base_dir }}/dynamic/"
     owner: "{{ ansible_user }}"
     group: docker
     mode: '0644'
   notify: restart traefik
 
-- name: Deploy Docker Compose file
-  template:
-    src: compose.yml.j2
-    dest: "{{ traefik_base_dir }}/compose.yml"
-    owner: "{{ ansible_user }}"
-    group: docker
-    mode: '0644'
-  notify: restart traefik
-
-- name: Deploy environment file
+- name: Deploy .env with secrets from vault
   template:
     src: env.j2
     dest: "{{ traefik_base_dir }}/.env"
@@ -66,7 +46,7 @@
 
 - name: Create Traefik Docker network
   docker_network:
-    name: "{{ traefik_network }}"
+    name: proxy
     state: present
 
 - name: Start Traefik

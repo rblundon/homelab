@@ -3,39 +3,8 @@
 # FILE: roles/traefik/defaults/main.yml
 # ------------------------------------------------------------------------------
 
-# Traefik version (matches boilerplate)
-traefik_version: "v3.6.8"
-
-# Directory structure on the host
+# Directory on the host where Traefik files are deployed
 traefik_base_dir: /opt/docker/traefik
-traefik_config_dir: "{{ traefik_base_dir }}/config"
-traefik_certs_dir: "{{ traefik_base_dir }}/certs"
-traefik_logs_dir: "{{ traefik_base_dir }}/logs"
 
-# Network
-traefik_network: proxy
-traefik_http_port: 80
-traefik_https_port: 443
-traefik_dashboard_port: 8080
-traefik_dashboard_enabled: true
-
-# TLS / ACME
-traefik_tls_enabled: true
-traefik_tls_certresolver: cloudflare
-traefik_tls_acme_email: ""  # Set in vault
-traefik_tls_redirect: true
-
-# Domain
-traefik_domain: "local.mk-labs.cloud"
-
-# Cloudflare API token — set in vault
+# Cloudflare API token — MUST be set in vault
 traefik_cloudflare_api_token: ""
-
-# Security headers middleware
-traefik_security_headers: true
-
-# Access log
-traefik_accesslog_enabled: false
-
-# Prometheus metrics
-traefik_prometheus_enabled: false

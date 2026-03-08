@@ -1,0 +1,67 @@
+---
+services:
+  traefik:
+    image: docker.io/library/traefik:v3.6.8
+    container_name: traefik
+    security_opt:
+      - no-new-privileges:true
+    command:
+      - "--global.checkNewVersion=false"
+      - "--global.sendAnonymousUsage=false"
+      - "--log.level=info"
+      - "--ping=true"
+      - "--ping.entryPoint=ping"
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+      # Entrypoints
+      - "--entrypoints.ping.address=:8082"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.encodedCharacters.allowEncodedSlash=true"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http.encodedCharacters.allowEncodedSlash=true"
+      - "--entrypoints.websecure.http.tls.certResolver=cloudflare"
+      - "--entrypoints.websecure.http.tls.domains[0].main=local.mk-labs.cloud"
+      - "--entrypoints.websecure.http.tls.domains[0].sans=*.local.mk-labs.cloud"
+      # ACME / Cloudflare DNS-01
+      - "--certificatesresolvers.cloudflare.acme.email=ryan.blundon@protonmail.com"
+      - "--certificatesresolvers.cloudflare.acme.storage=/var/traefik/certs/acme.json"
+      - "--certificatesresolvers.cloudflare.acme.caServer=https://acme-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.cloudflare.acme.dnsChallenge.provider=cloudflare"
+      - "--certificatesresolvers.cloudflare.acme.dnsChallenge.resolvers=1.1.1.1:53,8.8.8.8:53"
+      # Providers
+      - "--providers.docker=true"
+      - "--providers.docker.exposedByDefault=false"
+      - "--providers.docker.network=proxy"
+      - "--providers.file.directory=/etc/traefik/dynamic"
+      - "--providers.file.watch=true"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik_certs:/var/traefik/certs/:rw
+      - ./dynamic:/etc/traefik/dynamic:ro
+    environment:
+      - TZ=America/Chicago
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:8082/ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - proxy
+    restart: unless-stopped
+
+networks:
+  proxy:
+    driver: bridge
+    name: proxy
+
+volumes:
+  traefik_certs:
+    driver: local
