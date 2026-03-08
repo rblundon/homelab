@@ -91,3 +91,27 @@ variable "bridge" {
   description = "Proxmox network bridge for the VM."
   default     = "vmbr0"
 }
+
+variable "started" {
+  type        = bool
+  description = "Whether to start the VM after creation. Pipeline sets false (n8n handles start); manual bootstrap sets true."
+  default     = false
+}
+
+variable "use_dhcp" {
+  type        = bool
+  description = "Use DHCP (pipeline mode) or static IP (bootstrap mode)."
+  default     = true
+}
+
+variable "subnet_mask" {
+  type        = number
+  description = "Subnet mask in CIDR notation (e.g., 24). Only used when use_dhcp = false."
+  default     = 24
+}
+
+variable "gateway" {
+  type        = string
+  description = "Default gateway. Only used when use_dhcp = false."
+  default     = "10.1.71.1"
+}

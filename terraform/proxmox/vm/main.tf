@@ -64,7 +64,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
   # VM stays STOPPED after clone.
   # n8n handles: DHCP reservation → HA affinity rule → VM start
   # This ensures DHCP is in place before first boot.
-  started = false
+  started = var.started
 
   # QEMU guest agent is installed in template (via Packer).
   # Note: Proxmox 9 requires VM.GuestAgent.Audit privilege on the API token.
