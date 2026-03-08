@@ -41,19 +41,20 @@ resource "proxmox_virtual_environment_vm" "vm" {
   # Cloud-init configuration
   # Uses DHCP — Unifi DHCP reservation is created before VM starts
   initialization {
-    ip_config {
-      ipv4 {
-        address = "dhcp"
-      }
+  ip_config {
+    ipv4 {
+      address = var.use_dhcp ? "dhcp" : "${var.ip_address}/${var.subnet_mask}"
+      gateway = var.use_dhcp ? null : var.gateway
     }
-
-    dns {
-      servers = var.dns_servers
-      domain  = var.search_domain
-    }
-
-    datastore_id = var.datastore
   }
+
+  dns {
+    servers = var.dns_servers
+    domain  = var.search_domain
+  }
+
+  datastore_id = var.datastore
+}
 
   # Network interface
   network_device {
