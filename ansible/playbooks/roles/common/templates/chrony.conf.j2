@@ -1,0 +1,5 @@
+# Managed by Ansible — do not edit manually
+server {{ common_ntp_server }} iburst
+driftfile /var/lib/chrony/chrony.drift
+makestep 1.0 3
+rtcsync

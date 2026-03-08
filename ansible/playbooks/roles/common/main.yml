@@ -5,7 +5,7 @@
 
 common_timezone: America/Chicago
 
-common_ntp_server: 10.1.71.33  # sundial
+common_ntp_server: sundial.local.mk-labs.cloud
 
 common_packages:
   - curl

@@ -2,7 +2,7 @@
 # FILE: roles/common/handlers/main.yml
 # ------------------------------------------------------------------------------
 
-- name: restart timesyncd
+- name: restart chrony
   systemd:
-    name: systemd-timesyncd
+    name: chrony
     state: restarted

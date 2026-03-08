@@ -23,16 +23,21 @@
     name: "{{ common_packages }}"
     state: present
 
-- name: Configure NTP to use sundial
-  template:
-    src: timesyncd.conf.j2
-    dest: /etc/systemd/timesyncd.conf
-    mode: '0644'
-  notify: restart timesyncd
+- name: Install chrony
+  apt:
+    name: chrony
+    state: present
 
-- name: Ensure systemd-timesyncd is enabled and running
+- name: Configure chrony to use sundial
+  template:
+    src: chrony.conf.j2
+    dest: /etc/chrony/chrony.conf
+    mode: '0644'
+  notify: restart chrony
+
+- name: Ensure chrony is enabled and running
   systemd:
-    name: systemd-timesyncd
+    name: chrony
     state: started
     enabled: yes
 
