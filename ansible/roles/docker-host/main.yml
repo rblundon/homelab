@@ -1,0 +1,88 @@
+# ------------------------------------------------------------------------------
+# FILE: roles/docker-host/tasks/main.yml
+# DESCRIPTION: Prepares an Ubuntu VM to run Docker Compose workloads.
+#              Installs Docker CE, configures the daemon, and ensures
+#              the ansible user (wed) can manage containers.
+# ------------------------------------------------------------------------------
+
+- name: Install prerequisite packages
+  apt:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+    state: present
+    update_cache: yes
+
+- name: Create keyrings directory
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Add Docker GPG key
+  get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    mode: '0644'
+
+- name: Add Docker repository
+  apt_repository:
+    repo: >-
+      deb [arch={{ ansible_architecture | replace('x86_64', 'amd64') }}
+      signed-by=/etc/apt/keyrings/docker.asc]
+      https://download.docker.com/linux/ubuntu
+      {{ ansible_distribution_release }} stable
+    state: present
+    filename: docker
+
+- name: Install Docker CE and Compose plugin
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-compose-plugin
+    state: present
+    update_cache: yes
+
+- name: Ensure Docker service is started and enabled
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Add ansible user to docker group
+  user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: yes
+
+- name: Configure Docker daemon
+  copy:
+    dest: /etc/docker/daemon.json
+    content: |
+      {
+        "log-driver": "json-file",
+        "log-opts": {
+          "max-size": "10m",
+          "max-file": "3"
+        },
+        "default-address-pools": [
+          {
+            "base": "172.17.0.0/16",
+            "size": 24
+          }
+        ]
+      }
+    mode: '0644'
+  notify: restart docker
+
+- name: Create Docker Compose project directory
+  file:
+    path: /opt/docker
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: docker
+    mode: '0775'

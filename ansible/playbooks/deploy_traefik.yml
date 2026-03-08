@@ -1,0 +1,19 @@
+---
+# ------------------------------------------------------------------------------
+# FILE: playbooks/deploy_traefik.yml
+# DESCRIPTION: Deploys Traefik reverse proxy on lightning-lane.
+#              Installs Docker and configures Traefik with Cloudflare DNS-01
+#              certificate resolution for *.local.mk-labs.cloud
+#
+# USAGE:
+#   ansible-playbook -i inventory.yml playbooks/deploy_traefik.yml
+# ------------------------------------------------------------------------------
+
+- name: Deploy Traefik reverse proxy
+  hosts: traefik_server
+  become: true
+
+  roles:
+    - common
+    - docker-host
+    - traefik

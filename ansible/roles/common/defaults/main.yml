@@ -1,0 +1,22 @@
+---
+# ------------------------------------------------------------------------------
+# FILE: roles/common/defaults/main.yml
+# ------------------------------------------------------------------------------
+
+common_timezone: America/Chicago
+
+common_ntp_server: 10.1.71.33  # sundial
+
+common_packages:
+  - curl
+  - wget
+  - vim
+  - htop
+  - git
+  - jq
+  - unzip
+  - ca-certificates
+  - gnupg
+  - lsb-release
+  - net-tools
+  - dnsutils

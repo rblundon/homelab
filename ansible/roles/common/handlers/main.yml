@@ -1,0 +1,8 @@
+# ------------------------------------------------------------------------------
+# FILE: roles/common/handlers/main.yml
+# ------------------------------------------------------------------------------
+
+- name: restart timesyncd
+  systemd:
+    name: systemd-timesyncd
+    state: restarted
