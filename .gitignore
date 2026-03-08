@@ -27,7 +27,7 @@ Temporary Items
 .terraform/
 *.tfstate
 *.tfstate.backup
-*.tfvars
+# *.tfvars
 !*.tfvars.example
 !*.pkrvars.hcl
 crash.log
