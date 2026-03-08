@@ -79,6 +79,33 @@ variable "template_name" {
   }
 }
 
+# ─── Bootstrap Options ───────────────────────────────────────────────────────
+# These override pipeline defaults for manual provisioning (pre-NetBox/n8n).
+
+variable "started" {
+  type        = bool
+  description = "Start VM after creation. Pipeline: false (n8n starts it). Bootstrap: true."
+  default     = false
+}
+
+variable "use_dhcp" {
+  type        = bool
+  description = "Use DHCP (pipeline) or static IP (bootstrap)."
+  default     = true
+}
+
+variable "subnet_mask" {
+  type        = number
+  description = "Subnet mask in CIDR notation. Only used when use_dhcp = false."
+  default     = 24
+}
+
+variable "gateway" {
+  type        = string
+  description = "Default gateway. Only used when use_dhcp = false."
+  default     = "10.1.71.1"
+}
+
 # ─── Network ─────────────────────────────────────────────────────────────────
 
 variable "vlan_id" {

@@ -23,7 +23,14 @@ module "vm" {
   clone_node    = var.clone_node
   template_name = var.template_name
   datastore     = var.datastore
+  vlan_id       = var.vlan_id
   bridge        = var.bridge
   dns_servers   = var.dns_servers
   search_domain = var.search_domain
+
+  # Bootstrap overrides
+  started     = var.started
+  use_dhcp    = var.use_dhcp
+  subnet_mask = var.subnet_mask
+  gateway     = var.gateway
 }
