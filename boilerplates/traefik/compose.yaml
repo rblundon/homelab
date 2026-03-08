@@ -59,8 +59,7 @@ services:
 
 networks:
   proxy:
-    driver: bridge
-    name: proxy
+    external: true
 
 volumes:
   traefik_certs:
