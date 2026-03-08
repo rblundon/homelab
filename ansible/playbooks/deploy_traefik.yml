@@ -10,7 +10,7 @@
 # ------------------------------------------------------------------------------
 
 - name: Deploy Traefik reverse proxy
-  hosts: traefik_server
+  hosts: load_balancers
   become: true
 
   roles:
