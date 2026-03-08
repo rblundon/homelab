@@ -15,3 +15,5 @@ vm_id         = 71035
 ip_address    = "10.1.71.35"
 target_node   = "main-street-usa"
 template_name = "ubuntu-24.04-small"
+use_dhcp      = false
+started       = true
