@@ -301,6 +301,131 @@ Application workloads with no circular dependency on the cluster. Managed declar
 
 **Retired approach:** Proxmox VE Community Helper Scripts are no longer used for production deployments in favor of fully codified IaC.
 
+#### **5\.1 Provisioning a New VM (Bootstrap Mode)**
+
+This procedure is for provisioning Tier 1 VMs before the automated pipeline (NetBox → n8n → Terraform) is available. All commands are run from `city-hall`.
+
+**Prerequisites:** Ansible CLI, Terraform CLI, Boilerplates CLI, GitHub CLI (`gh`)
+
+**Step 1: Create the Terraform tfvars file**
+
+Create a new file at `terraform/proxmox/hosts/tfvars/<hostname>.tfvars`:
+
+```hcl
+hostname      = "<hostname>"
+vm_id         = <third_octet * 1000 + fourth_octet>
+ip_address    = "<ip_address>"
+target_node   = "<proxmox_node>"
+template_name = "ubuntu-24.04-<size>"
+
+# Bootstrap mode
+started  = true
+use_dhcp = false
+```
+
+**Step 2: Apply Terraform**
+
+```bash
+cd terraform/proxmox/hosts
+terraform apply \
+  -var-file="tfvars/<hostname>.tfvars" \
+  -state="states/<hostname>.tfstate" \
+  -var="proxmox_api_url=https://main-street-usa.local.mk-labs.cloud:8006" \
+  -var="proxmox_api_token=terraform@pve!automation=<token>"
+```
+
+**Step 3: Create DNS record**
+
+On `monorail` (Technitium), create an A record:
+- `<hostname>.local.mk-labs.cloud` → `<ip_address>`
+
+If the service has a separate service name (e.g., `authentik.local.mk-labs.cloud`), create an additional A record or CNAME pointing to `lightning-lane` (`10.1.71.35`), **not** the VM itself. All services behind Traefik must resolve to Traefik's IP.
+
+**Step 4: Create Ansible host_vars**
+
+Create `ansible/host_vars/<hostname>/vars`:
+
+```yaml
+---
+ip_address: <ip_address>
+app_role: <role>
+app_name: <application>
+app_deployment: docker_compose
+```
+
+**Step 5: Add to Ansible inventory**
+
+Add the host to `ansible/inventory.yml` under the appropriate group:
+
+```yaml
+<group_name>:
+  hosts:
+    <hostname>:
+      ansible_host: <ip_address>
+      ansible_become: true
+```
+
+**Step 6: Add secrets to vault**
+
+```bash
+ansible-vault edit ansible/group_vars/all/vault
+```
+
+Add any application-specific secrets (API tokens, database passwords, etc.).
+
+**Step 7: Run the Ansible playbook**
+
+```bash
+cd ansible
+ansible-playbook -i inventory.yml playbooks/deploy_<application>.yml
+```
+
+This runs three roles in sequence: `common` (base OS) → `docker-host` (Docker CE) → `<application>` (Compose stack).
+
+#### **5\.2 Adding a Service to Traefik**
+
+To route a new service through `lightning-lane` (Traefik), add a dynamic configuration file and update DNS.
+
+**Step 1: Create a dynamic config file**
+
+Create a new YAML file at `boilerplates/traefik/dynamic/<service>.yml`:
+
+```yaml
+http:
+  routers:
+    <service>:
+      rule: "Host(`<service>.local.mk-labs.cloud`)"
+      entryPoints:
+        - websecure
+      service: <service>
+      tls:
+        certResolver: cloudflare
+      middlewares:
+        - security-headers
+
+  services:
+    <service>:
+      loadBalancer:
+        servers:
+          - url: "http://<backend_ip>:<port>"
+```
+
+To protect the service with Authentik SSO, add `authentik-forwardauth` to the middlewares list.
+
+**Step 2: Create DNS record**
+
+On `monorail`, create an A record pointing to **lightning-lane** (`10.1.71.35`):
+- `<service>.local.mk-labs.cloud` → `10.1.71.35`
+
+**Step 3: Deploy the configuration**
+
+```bash
+cd ansible
+ansible-playbook -i inventory.yml playbooks/update_traefik_routes.yml
+```
+
+Traefik watches the dynamic configuration directory and picks up changes automatically — no restart required.
+
 ### **6\.0 Kubernetes Architecture**
 
 The primary Kubernetes cluster will be named `fastpass`. The name is derived from the park's system for orchestrating access to resources, which is a direct metaphor for Kubernetes' function.
