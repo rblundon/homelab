@@ -5,19 +5,31 @@ proxmox:
     tomorrowland:
     fantasyland:
 
-ntp_servers:
-  hosts:
-    sundial:
-    
-dns_server:
-  hosts:
-    monorail:
-
 magic_kingdom:
   hosts:
     main-street-usa:
     tomorrowland:
     fantasyland:
+
+dns_server:
+  hosts:
+    monorail:
+
+ntp_servers:
+  hosts:
+    sundial:
+    
+load_balancers:
+  hosts:
+    lightning_lane:
+      ansible_host: 10.1.71.35
+      ansible_become: true
+
+authentik_server:
+  hosts:
+    turnstile:
+      ansible_host: 10.1.71.40
+      ansible_become: true
 
 prometheus_server:
   hosts:
@@ -27,11 +39,6 @@ prometheus_nodes:
   hosts:
     cinderella-castle:
 
-load_balancers:
-  hosts:
-    lightning_lane:
-      ansible_host: 10.1.71.35
-      ansible_become: true
 # node_explorer:
 #   hosts:
 #     cinderella-castle:
@@ -76,51 +83,3 @@ backup_servers:
 terraform_server:
   hosts:
     infra01:
-
-# hub_cluster:
-#   hosts:
-#     ocp-hub:
-
-# internal_cluster:
-#   hosts:
-#     int-master01:
-#     int-master02:
-#     int-master03:
-# #    int-worker01:
-#     int-worker02:
-
-# talos_cluster:
-#   hosts:
-#     splash:
-
-# fastpass_control_plane:
-#   hosts:
-#     space-mountain:
-#     big-thunder-mountain:
-#     splash-mountain:
-
-# fastpass_workers:
-#   hosts:
-#     haunted-mansion: # backstage
-#     peter-pans-flight: # backstage
-
-# fastpass:
-#   children:
-#     fastpass_control_plane:
-#     fastpass_workers:
-
-# sql_servers:
-#   hosts:
-#     sql01:
-
-# docker_servers:
-#   hosts:
-#     docker01:
-
-# observer:
-#   hosts:
-#     prometheus:
-
-# target:
-#   hosts:
-#     prometheus:
