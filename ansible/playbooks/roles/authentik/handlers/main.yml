@@ -1,0 +1,8 @@
+# ------------------------------------------------------------------------------
+# FILE: roles/authentik/handlers/main.yml
+# ------------------------------------------------------------------------------
+
+- name: restart authentik
+  community.docker.docker_compose_v2:
+    project_src: "{{ authentik_base_dir }}"
+    state: restarted

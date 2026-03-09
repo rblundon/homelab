@@ -1,0 +1,37 @@
+# ------------------------------------------------------------------------------
+# FILE: roles/authentik/tasks/main.yml
+# DESCRIPTION: Deploys Authentik from boilerplate-generated files in the repo.
+#              The compose.yaml lives in boilerplates/authentik/.
+#              The .env file is templated to inject secrets from Ansible vault.
+# ------------------------------------------------------------------------------
+
+- name: Create Authentik directory structure
+  file:
+    path: "{{ authentik_base_dir }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: docker
+    mode: '0775'
+
+- name: Copy compose.yaml from boilerplate
+  copy:
+    src: "{{ playbook_dir }}/../../boilerplates/authentik/compose.yaml"
+    dest: "{{ authentik_base_dir }}/compose.yaml"
+    owner: "{{ ansible_user }}"
+    group: docker
+    mode: '0644'
+  notify: restart authentik
+
+- name: Deploy .env with secrets from vault
+  template:
+    src: env.j2
+    dest: "{{ authentik_base_dir }}/.env"
+    owner: "{{ ansible_user }}"
+    group: docker
+    mode: '0600'
+  notify: restart authentik
+
+- name: Start Authentik
+  community.docker.docker_compose_v2:
+    project_src: "{{ authentik_base_dir }}"
+    state: present

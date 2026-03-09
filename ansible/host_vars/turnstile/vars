@@ -1,0 +1,12 @@
+---
+# file: host_vars/turnstile/vars
+# turnstile — Authentik Identity Provider / SSO
+# VM provisioned by Terraform (pre-pipeline bootstrap)
+
+# ─── Network ─────────────────────────────────────────────────────────────────
+ip_address: 10.1.71.40
+
+# ─── Application ─────────────────────────────────────────────────────────────
+app_role: identity_provider
+app_name: authentik
+app_deployment: docker_compose

@@ -1,0 +1,22 @@
+---
+# ------------------------------------------------------------------------------
+# FILE: playbooks/update_traefik_routes.yml
+# DESCRIPTION: Syncs Traefik dynamic configuration files to lightning-lane.
+#              No restart needed — Traefik watches the directory for changes.
+#
+# USAGE:
+#   ansible-playbook -i inventory.yml playbooks/update_traefik_routes.yml
+# ------------------------------------------------------------------------------
+
+- name: Update Traefik dynamic configuration
+  hosts: load_balancers
+  become: true
+
+  tasks:
+    - name: Sync dynamic configuration from boilerplate
+      copy:
+        src: "{{ playbook_dir }}/../../boilerplates/traefik/dynamic/"
+        dest: /opt/docker/traefik/dynamic/
+        owner: wed
+        group: docker
+        mode: '0644'

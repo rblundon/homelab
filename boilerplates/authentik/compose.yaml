@@ -2,6 +2,7 @@
 services:
   authentik:
     image: ghcr.io/goauthentik/server:2025.12.4
+    container_name: authentik-server
     restart: unless-stopped
     command: server
     environment:
@@ -11,6 +12,7 @@ services:
       - AUTHENTIK_POSTGRESQL__USER=authentik
       - AUTHENTIK_POSTGRESQL__NAME=authentik
       - AUTHENTIK_POSTGRESQL__PASSWORD=${DATABASE_PASSWORD}
+      - AUTHENTIK_REDIS__HOST=authentik_redis
     networks:
       - authentik_backend
     ports:
@@ -20,10 +22,14 @@ services:
       - authentik_data:/data
       - authentik_templates:/templates
     depends_on:
-      - authentik_postgres
+      authentik_postgres:
+        condition: service_healthy
+      authentik_redis:
+        condition: service_healthy
 
   authentik_worker:
     image: ghcr.io/goauthentik/server:2025.12.4
+    container_name: authentik-worker
     restart: unless-stopped
     command: worker
     environment:
@@ -33,6 +39,7 @@ services:
       - AUTHENTIK_POSTGRESQL__USER=authentik
       - AUTHENTIK_POSTGRESQL__NAME=authentik
       - AUTHENTIK_POSTGRESQL__PASSWORD=${DATABASE_PASSWORD}
+      - AUTHENTIK_REDIS__HOST=authentik_redis
       - AUTHENTIK_BOOTSTRAP_PASSWORD=${AUTHENTIK_ADMIN_PASSWORD}
     user: root
     networks:
@@ -43,10 +50,14 @@ services:
       - authentik_certs:/certs
       - authentik_templates:/templates
     depends_on:
-      - authentik_postgres
+      authentik_postgres:
+        condition: service_healthy
+      authentik_redis:
+        condition: service_healthy
 
   authentik_postgres:
     image: docker.io/library/postgres:17.8
+    container_name: authentik-postgres
     restart: unless-stopped
     environment:
       - POSTGRES_USER=authentik
@@ -62,6 +73,22 @@ services:
       - authentik_backend
     volumes:
       - authentik_postgres:/var/lib/postgresql/data
+
+  authentik_redis:
+    image: docker.io/library/redis:7-alpine
+    container_name: authentik-redis
+    restart: unless-stopped
+    command: --save 60 1 --loglevel warning
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - authentik_backend
+    volumes:
+      - authentik_redis:/data
 
 networks:
   authentik_backend:

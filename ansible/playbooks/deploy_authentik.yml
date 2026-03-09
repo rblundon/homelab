@@ -1,0 +1,18 @@
+---
+# ------------------------------------------------------------------------------
+# FILE: playbooks/deploy_authentik.yml
+# DESCRIPTION: Deploys Authentik identity provider on turnstile.
+#              Installs Docker and configures Authentik with PostgreSQL and Redis.
+#
+# USAGE:
+#   ansible-playbook -i inventory.yml playbooks/deploy_authentik.yml
+# ------------------------------------------------------------------------------
+
+- name: Deploy Authentik identity provider
+  hosts: authentik_server
+  become: true
+
+  roles:
+    - common
+    - docker-host
+    - authentik

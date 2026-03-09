@@ -1,0 +1,11 @@
+---
+# ------------------------------------------------------------------------------
+# FILE: roles/authentik/defaults/main.yml
+# ------------------------------------------------------------------------------
+
+authentik_base_dir: /opt/docker/authentik
+
+# All secrets MUST be set in vault
+authentik_secret_key: ""
+authentik_admin_password: ""
+authentik_database_password: ""
