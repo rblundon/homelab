@@ -1,0 +1,62 @@
+---
+# ansible/roles/proxmox/tasks/oidc.yml
+#
+# Configures Proxmox to authenticate against Authentik via OpenID Connect.
+# This only needs to run on ONE node in the cluster since realm config
+# is stored in /etc/pve/domains.cfg (cluster-wide via pmxcfs).
+
+- name: Check if OIDC realm already exists
+  ansible.builtin.command:
+    cmd: pveum realm list --output-format json
+  register: proxmox_realms
+  changed_when: false
+
+- name: Parse existing realms
+  ansible.builtin.set_fact:
+    proxmox_realm_exists: >-
+      {{ proxmox_realms.stdout | from_json | selectattr('realm', 'equalto', proxmox_oidc_realm_name) | list | length > 0 }}
+
+- name: Add OIDC realm for Authentik
+  ansible.builtin.command:
+    cmd: >-
+      pveum realm add {{ proxmox_oidc_realm_name }}
+      --type openid
+      --issuer-url {{ proxmox_oidc_issuer_url }}
+      --client-id {{ proxmox_oidc_client_id }}
+      --client-key {{ proxmox_oidc_client_key }}
+      --username-claim {{ proxmox_oidc_username_claim }}
+      --scopes {{ proxmox_oidc_scopes }}
+      --autocreate {{ proxmox_oidc_autocreate | ternary('1', '0') }}
+      --comment "{{ proxmox_oidc_comment }}"
+      {% if proxmox_oidc_default_realm %}--default 1{% endif %}
+  when: not proxmox_realm_exists
+  no_log: true
+
+- name: Update OIDC realm for Authentik
+  ansible.builtin.command:
+    cmd: >-
+      pveum realm modify {{ proxmox_oidc_realm_name }}
+      --issuer-url {{ proxmox_oidc_issuer_url }}
+      --client-id {{ proxmox_oidc_client_id }}
+      --client-key {{ proxmox_oidc_client_key }}
+      --username-claim {{ proxmox_oidc_username_claim }}
+      --scopes {{ proxmox_oidc_scopes }}
+      --autocreate {{ proxmox_oidc_autocreate | ternary('1', '0') }}
+      --comment "{{ proxmox_oidc_comment }}"
+      {% if proxmox_oidc_default_realm %}--default 1{% endif %}
+  when: proxmox_realm_exists
+  no_log: true
+
+# --- ACL Configuration ---
+
+- name: Configure ACL entries for OIDC users
+  ansible.builtin.command:
+    cmd: >-
+      pveum acl modify {{ item.path }}
+      {% if item.user is defined %}--users {{ item.user }}{% endif %}
+      {% if item.group is defined %}--groups {{ item.group }}{% endif %}
+      --roles {{ item.role }}
+  loop: "{{ proxmox_oidc_acl_entries }}"
+  loop_control:
+    label: "{{ item.user | default(item.group) }} -> {{ item.role }} on {{ item.path }}"
+  when: proxmox_oidc_acl_entries | length > 0

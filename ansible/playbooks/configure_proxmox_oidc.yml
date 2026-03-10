@@ -1,0 +1,20 @@
+---
+# ansible/playbooks/configure_proxmox_oidc.yml
+#
+# Configures Proxmox OIDC authentication with Authentik.
+# Only targets one node since realm config is cluster-wide.
+#
+# Usage:
+#   cd ansible
+#   ansible-playbook -i inventory.yml playbooks/configure_proxmox_oidc.yml
+#
+# To also set up ACL entries for your user:
+#   ansible-playbook -i inventory.yml playbooks/configure_proxmox_oidc.yml \
+#     -e '{"proxmox_oidc_acl_entries": [{"path": "/", "user": "rblundon@authentik", "role": "Administrator"}]}'
+
+- name: Configure Proxmox Authentik OIDC
+  hosts: main-street-usa
+  become: true
+  roles:
+    - role: proxmox
+      tags: [proxmox-oidc]

@@ -1,0 +1,12 @@
+---
+# ansible/roles/proxmox/tasks/main.yml
+#
+# Main entry point for the proxmox role.
+# Add existing tasks above the OIDC include as needed.
+
+- name: Configure Authentik OIDC authentication
+  ansible.builtin.include_tasks: oidc.yml
+  tags:
+    - proxmox-oidc
+    - oidc
+    - authentik

@@ -1,0 +1,19 @@
+---
+# ansible/group_vars/proxmox/oidc.yml
+#
+# Proxmox OIDC configuration for Authentik integration.
+# Client credentials come from vault.yml.
+
+proxmox_oidc_realm_name: "authentik"
+proxmox_oidc_issuer_url: "https://authentik.local.mk-labs.cloud/application/o/proxmox/"
+proxmox_oidc_username_claim: "username"
+proxmox_oidc_scopes: "openid email profile"
+proxmox_oidc_autocreate: true
+proxmox_oidc_default_realm: false
+proxmox_oidc_comment: "Authentik SSO"
+
+# ACL entries - grant your Authentik user admin access
+proxmox_oidc_acl_entries:
+  - path: "/"
+    user: "rblundon@authentik"
+    role: "Administrator"

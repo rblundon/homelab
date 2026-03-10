@@ -1,0 +1,24 @@
+---
+# Proxmox Authentik OIDC Configuration
+proxmox_oidc_realm_name: "authentik"
+proxmox_oidc_issuer_url: "https://authentik.local.mk-labs.cloud/application/o/proxmox/"
+proxmox_oidc_username_claim: "username"
+proxmox_oidc_scopes: "openid email profile"
+proxmox_oidc_autocreate: true
+proxmox_oidc_default_realm: false
+proxmox_oidc_comment: "Authentik SSO"
+
+# Client credentials - override via vault
+proxmox_oidc_client_id: "{{ vault_proxmox_oidc_client_id }}"
+proxmox_oidc_client_key: "{{ vault_proxmox_oidc_client_key }}"
+
+# ACL mappings for Authentik users
+# Format: list of dicts with path, user or group, and role
+proxmox_oidc_acl_entries: []
+# Example:
+#   - path: "/"
+#     user: "rblundon@authentik"
+#     role: "Administrator"
+#   - path: "/"
+#     group: "admins-authentik"
+#     role: "Administrator"
