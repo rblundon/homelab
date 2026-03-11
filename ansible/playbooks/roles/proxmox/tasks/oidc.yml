@@ -30,7 +30,7 @@
       --comment "{{ proxmox_oidc_comment }}"
       {% if proxmox_oidc_default_realm %}--default 1{% endif %}
   when: not proxmox_realm_exists
-  no_log: true
+  no_log: false # true
 
 - name: Update OIDC realm for Authentik
   ansible.builtin.command:
@@ -45,7 +45,7 @@
       --comment "{{ proxmox_oidc_comment }}"
       {% if proxmox_oidc_default_realm %}--default 1{% endif %}
   when: proxmox_realm_exists
-  no_log: true
+  no_log: false # true
 
 # --- ACL Configuration ---
 
