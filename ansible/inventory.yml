@@ -3,7 +3,8 @@ proxmox:
   hosts:
     main-street-usa:
       ansible_host: 10.1.71.11
-      ansible_user: root
+      ansible_user: wed
+      ansible_become: true
     tomorrowland:
     fantasyland:
 
