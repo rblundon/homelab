@@ -29,7 +29,7 @@
     --comment '{{ proxmox_oidc_comment }}'
     {% if proxmox_oidc_default_realm %}--default 1{% endif %}
   when: not proxmox_realm_exists
-  no_log: false # true
+  no_log: true
 
 - name: Update OIDC realm for Authentik
   ansible.builtin.shell: >-
@@ -37,13 +37,12 @@
     --issuer-url '{{ proxmox_oidc_issuer_url }}'
     --client-id '{{ proxmox_oidc_client_id }}'
     --client-key '{{ proxmox_oidc_client_key }}'
-    --username-claim '{{ proxmox_oidc_username_claim }}'
     --scopes '{{ proxmox_oidc_scopes }}'
     --autocreate {{ proxmox_oidc_autocreate | ternary('1', '0') }}
     --comment '{{ proxmox_oidc_comment }}'
     {% if proxmox_oidc_default_realm %}--default 1{% endif %}
   when: proxmox_realm_exists
-  no_log: false # true
+  no_log: true
 
 # --- ACL Configuration ---
 
