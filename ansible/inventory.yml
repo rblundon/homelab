@@ -30,7 +30,7 @@ load_balancers:
 
 authentik_server:
   hosts:
-    turnstile:
+    guest-relations:
       ansible_host: 10.1.71.40
       ansible_become: true
 

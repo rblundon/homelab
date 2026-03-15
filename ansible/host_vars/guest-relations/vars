@@ -1,6 +1,6 @@
 ---
-# file: host_vars/turnstile/vars
-# turnstile — Authentik Identity Provider / SSO
+# file: host_vars/guest-relations/vars
+# guest-relations — Guest Relations
 # VM provisioned by Terraform (pre-pipeline bootstrap)
 
 # ─── Network ─────────────────────────────────────────────────────────────────

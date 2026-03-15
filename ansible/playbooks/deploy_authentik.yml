@@ -1,7 +1,7 @@
 ---
 # ------------------------------------------------------------------------------
 # FILE: playbooks/deploy_authentik.yml
-# DESCRIPTION: Deploys Authentik identity provider on turnstile.
+# DESCRIPTION: Deploys Authentik identity provider on guest-relations.
 #              Installs Docker and configures Authentik with PostgreSQL and Redis.
 #
 # USAGE:

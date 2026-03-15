@@ -133,7 +133,7 @@
 Services previously hosted here have been migrated:
 
 - Authoritative DNS → `monorail` (Technitium LXC)
-- Identity Management → `turnstile` (Authentik VM)
+- Identity Management → `guest-relations` (Authentik VM)
 - Automation (Ansible) → `imagineering` (Semaphore VM)
 - Infrastructure as Code (Terraform) → `city-hall` (VM)
 - iPXE (Matchbox) → TBD
@@ -215,7 +215,7 @@ This table serves as the single source of truth for all statically assigned host
 | `imagineering` | `10.1.71.37` | Automation Server (Ansible) | Semaphore | — | VM | 
 | `city-hall` | `10.1.71.38` | Infrastructure as Code | Terraform / Boilerplates CLI | — | VM | 
 | `timekeeper` | `10.1.71.39` | Backup & Recovery | Proxmox Backup Server | — | VM | 
-| `turnstile` | `10.1.71.40` | Identity Provider / SSO | Authentik | — | VM (Docker Compose / Boilerplates) | 
+| `guest-relations` | `10.1.71.40` | Identity Provider / SSO | Authentik | — | VM (Docker Compose / Boilerplates) | 
 | `cinderella-castle` | `10.1.71.41` | Monitoring & Observability | Prometheus / Grafana | — | VM | 
 
 #### Container Orchestration (`10.1.71.64/26`)
@@ -260,7 +260,7 @@ The core physical hardware will be named after the foundational "lands" and infr
 |---|---|---|
 | **Authoritative DNS** | `monorail` | The primary, official transportation system, authoritative for all park routes. | 
 | **Automation Server** | `imagineering` | The engineering division that designs and builds everything in the park. | 
-| **Identity Provider / SSO** | `turnstile` | The authentication gate — you can't enter the Magic Kingdom without passing through it. | 
+| **Identity Provider / SSO** | `guest-relations` | The authentication gate — you can't enter the Magic Kingdom without passing through it. | 
 | **Reverse Proxy / Load Balancer** | `lightning-lane` | The fast-track system that routes guests efficiently to their destination. | 
 | **Workflow Orchestration** | `tiki-room` | The enchanted show where everything is automated and orchestrated in harmony. | 
 | **Infrastructure as Code** | `city-hall` | The administrative headquarters where all park operations are planned and managed. | 
@@ -493,5 +493,5 @@ These hostnames have been assigned to active services and are documented here fo
 | Service Category | Assigned Name | Assigned To | 
 |---|---|---|
 | **NAS** | `emporium` | Synology 1621+ (`10.1.71.9`) | 
-| **Identity Provider / SSO** | `turnstile` | Authentik (`10.1.71.40`) | 
+| **Identity Provider / SSO** | `guest-relations` | Authentik (`10.1.71.40`) | 
 
