@@ -28,6 +28,12 @@ load_balancers:
       ansible_host: 10.1.71.35
       ansible_become: true
 
+step_ca_server:
+  hosts:
+    turnstile:
+      ansible_host: 10.1.71.34
+      ansible_become: true
+
 authentik_server:
   hosts:
     guest-relations:
