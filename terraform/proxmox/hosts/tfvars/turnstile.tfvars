@@ -22,3 +22,7 @@ datastore     = "liberty-tree"
 bridge        = "vmbr0"
 dns_servers   = ["10.1.71.1"]
 search_domain = "local.mk-labs.cloud"
+
+# Bootstrap mode — no n8n/NetBox pipeline available yet
+started  = true
+use_dhcp = false
