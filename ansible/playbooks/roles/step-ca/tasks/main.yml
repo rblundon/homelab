@@ -36,6 +36,23 @@
   no_log: true
   notify: restart step-ca
 
+- name: Create step-ca secrets directory
+  ansible.builtin.file:
+    path: "{{ stepca_data_dir }}/secrets"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: "0700"
+
+- name: Write CA password file
+  ansible.builtin.copy:
+    content: "{{ stepca_ca_password }}"
+    dest: "{{ stepca_data_dir }}/secrets/password"
+    owner: "1000"
+    group: "1000"
+    mode: "0600"
+  no_log: true
+
 - name: Check if step-ca is already initialized
   ansible.builtin.stat:
     path: "{{ stepca_data_dir }}/config/ca.json"
@@ -68,15 +85,6 @@
       ansible.builtin.debug:
         msg: "{{ stepca_init.container.Output }}"
       when: stepca_init is changed
-
-- name: Write CA password file
-  ansible.builtin.copy:
-    content: "{{ stepca_ca_password }}"
-    dest: "{{ stepca_data_dir }}/secrets/password"
-    owner: "1000"
-    group: "1000"
-    mode: "0600"
-  no_log: true
 
 - name: Start step-ca
   community.docker.docker_compose_v2:
