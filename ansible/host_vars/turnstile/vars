@@ -1,0 +1,25 @@
+---
+# file: host_vars/turnstile/vars
+# turnstile — Smallstep step-ca SSH Certificate Authority
+# VM provisioned by Terraform (pre-pipeline bootstrap)
+
+# ─── Network ─────────────────────────────────────────────────────────────────
+ip_address: 10.1.71.34
+
+# ─── Application ─────────────────────────────────────────────────────────────
+app_role: ssh_certificate_authority
+app_name: step-ca
+app_deployment: docker_compose
+
+# ─── step-ca Configuration ───────────────────────────────────────────────────
+stepca_hostname: turnstile.local.mk-labs.cloud
+stepca_dns_names: "turnstile.local.mk-labs.cloud,10.1.71.34"
+stepca_ssh_enabled: true
+stepca_listen_port: 9000
+
+# ─── OIDC Provisioner (Authentik) ────────────────────────────────────────────
+# Client ID and secret stored in vault
+stepca_oidc_provisioner_name: authentik
+stepca_oidc_configuration_endpoint: "https://authentik.local.mk-labs.cloud/application/o/step-ca/.well-known/openid-configuration"
+stepca_oidc_listen_address: ":10000"
+stepca_oidc_domain: "local.mk-labs.cloud"

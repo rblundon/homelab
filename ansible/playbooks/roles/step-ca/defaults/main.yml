@@ -1,0 +1,20 @@
+---
+# file: roles/step-ca/defaults/main.yml
+
+# Docker image
+stepca_image: "smallstep/step-ca"
+stepca_image_tag: "latest"
+stepca_container_name: "step-ca"
+
+# Paths
+stepca_base_dir: "/opt/docker/step-ca"
+stepca_data_dir: "{{ stepca_base_dir }}/data"
+
+# CA configuration
+stepca_ca_name: "mk-labs CA"
+stepca_listen_port: 9000
+stepca_ssh_enabled: true
+stepca_remote_management: true
+
+# Network
+stepca_docker_network: "proxy"

@@ -1,0 +1,22 @@
+http:
+  routers:
+    step-ca:
+      rule: "Host(`turnstile.local.mk-labs.cloud`)"
+      entryPoints:
+        - websecure
+      service: step-ca
+      tls:
+        certResolver: cloudflare
+        options: step-ca-mtls
+
+  services:
+    step-ca:
+      loadBalancer:
+        servers:
+          - url: "https://10.1.71.34:9000"
+
+tls:
+  options:
+    step-ca-mtls:
+      clientAuth:
+        clientAuthType: RequestClientCert

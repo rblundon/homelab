@@ -1,0 +1,29 @@
+---
+# ------------------------------------------------------------------------------
+# FILE: playbooks/deploy_step_ca.yml
+# DESCRIPTION: Deploys Smallstep step-ca SSH Certificate Authority on turnstile.
+#              Installs Docker and configures step-ca with SSH certificate support.
+#
+# PREREQUISITES:
+#   - VM provisioned via Terraform
+#   - DNS record for turnstile.local.mk-labs.cloud on monorail
+#   - Authentik OIDC application created (for post-init provisioner setup)
+#
+# USAGE:
+#   ansible-playbook -i inventory.yml playbooks/deploy_step_ca.yml
+#
+# POST-DEPLOY:
+#   1. Note the CA fingerprint from the init output
+#   2. Add the OIDC provisioner (see docs/guides/step-ca-setup.md)
+#   3. Deploy Traefik route via update_traefik_routes.yml
+#   4. Bootstrap client workstations with: step ca bootstrap
+# ------------------------------------------------------------------------------
+
+- name: Deploy step-ca SSH Certificate Authority
+  hosts: step_ca_server
+  become: true
+
+  roles:
+    - common
+    - docker-host
+    - step-ca

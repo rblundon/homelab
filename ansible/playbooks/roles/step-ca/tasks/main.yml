@@ -1,0 +1,84 @@
+---
+# file: roles/step-ca/tasks/main.yml
+
+- name: Create step-ca directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - "{{ stepca_base_dir }}"
+    - "{{ stepca_data_dir }}"
+
+- name: Create Docker network for step-ca
+  community.docker.docker_network:
+    name: "{{ stepca_docker_network }}"
+    state: present
+
+- name: Deploy step-ca compose file
+  ansible.builtin.template:
+    src: compose.yaml.j2
+    dest: "{{ stepca_base_dir }}/compose.yaml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart step-ca
+
+- name: Deploy step-ca environment file
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ stepca_base_dir }}/.env"
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+  notify: restart step-ca
+
+- name: Check if step-ca is already initialized
+  ansible.builtin.stat:
+    path: "{{ stepca_data_dir }}/config/ca.json"
+  register: stepca_config
+
+- name: Initialize step-ca (first run only)
+  when: not stepca_config.stat.exists
+  block:
+    - name: Run step-ca initialization
+      community.docker.docker_container:
+        name: "{{ stepca_container_name }}-init"
+        image: "{{ stepca_image }}:{{ stepca_image_tag }}"
+        command: >-
+          step ca init
+          --name "{{ stepca_ca_name }}"
+          --dns "{{ stepca_dns_names }}"
+          --address ":{{ stepca_listen_port }}"
+          --provisioner "admin"
+          --password-file /home/step/secrets/password
+          --ssh
+          --remote-management
+        volumes:
+          - "{{ stepca_data_dir }}:/home/step"
+        state: started
+        detach: false
+        cleanup: true
+      register: stepca_init
+
+    - name: Display CA fingerprint
+      ansible.builtin.debug:
+        msg: "{{ stepca_init.container.Output }}"
+      when: stepca_init is changed
+
+- name: Write CA password file
+  ansible.builtin.copy:
+    content: "{{ stepca_ca_password }}"
+    dest: "{{ stepca_data_dir }}/secrets/password"
+    owner: "1000"
+    group: "1000"
+    mode: "0600"
+  no_log: true
+
+- name: Start step-ca
+  community.docker.docker_compose_v2:
+    project_src: "{{ stepca_base_dir }}"
+    state: present
