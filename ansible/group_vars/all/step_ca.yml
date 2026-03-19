@@ -1,0 +1,4 @@
+---
+step_ca_url: "https://turnstile.local.mk-labs.cloud:9000"
+step_ca_fingerprint: "f63c44e76381e359978bd2dca07c928d04ad44b575f0364fa66b5725c7e7891b"
+step_ca_provisioner_name: "admin"

@@ -1,0 +1,136 @@
+# ------------------------------------------------------------------------------
+# FILE: roles/common/tasks/step_ca_client.yml
+# DESCRIPTION: Enroll host as a step-ca SSH client. Installs the step CLI,
+#              bootstraps trust with the CA, configures sshd to accept
+#              CA-signed user certificates, signs a host certificate, and
+#              sets up automated renewal via systemd timer.
+# ------------------------------------------------------------------------------
+
+- name: Install step CLI
+  apt:
+    deb: "https://dl.smallstep.com/cli/docs-ca-install/latest/step-cli_amd64.deb"
+    state: present
+
+- name: Bootstrap step-ca trust
+  command: >
+    step ca bootstrap
+    --ca-url {{ step_ca_url }}
+    --fingerprint {{ step_ca_fingerprint }}
+    --install
+  args:
+    creates: /root/.step/certs/root_ca.crt
+
+- name: Get SSH user CA public key
+  command: step ssh config --roots
+  register: ssh_user_ca_key
+  changed_when: false
+
+- name: Write SSH user CA public key
+  copy:
+    content: "{{ ssh_user_ca_key.stdout }}"
+    dest: /etc/ssh/ssh_user_key.pub
+    mode: '0644'
+  notify: restart sshd
+
+- name: Configure sshd to trust CA-signed user certificates
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    line: "TrustedUserCAKeys /etc/ssh/ssh_user_key.pub"
+    regexp: "^#?TrustedUserCAKeys"
+    state: present
+  notify: restart sshd
+
+# --- Host certificate signing ---
+
+- name: Write provisioner password to temp file on controller
+  copy:
+    content: "{{ stepca_ca_password }}"
+    dest: /tmp/step_provisioner_pw
+    mode: '0600'
+  delegate_to: localhost
+  run_once: true
+  no_log: true
+
+- name: Generate one-time host token
+  command: >
+    step ca token {{ inventory_hostname }}.local.mk-labs.cloud
+    --ssh --host
+    --provisioner {{ step_ca_provisioner_name }}
+    --password-file /tmp/step_provisioner_pw
+  delegate_to: localhost
+  register: host_token
+  changed_when: false
+
+- name: Sign host certificate
+  command: >
+    step ssh certificate {{ inventory_hostname }}.local.mk-labs.cloud
+    /etc/ssh/ssh_host_ecdsa_key.pub
+    --host --sign
+    --token {{ host_token.stdout }}
+    --no-password --insecure
+  args:
+    creates: /etc/ssh/ssh_host_ecdsa_key-cert.pub
+  notify: restart sshd
+
+- name: Configure sshd to present host certificate
+  blockinfile:
+    path: /etc/ssh/sshd_config
+    marker: "# {mark} STEP-CA HOST CERTIFICATE"
+    block: |
+      HostCertificate /etc/ssh/ssh_host_ecdsa_key-cert.pub
+      HostKey /etc/ssh/ssh_host_ecdsa_key
+  notify: restart sshd
+
+- name: Clean up provisioner password from controller
+  file:
+    path: /tmp/step_provisioner_pw
+    state: absent
+  delegate_to: localhost
+  run_once: true
+  no_log: true
+
+# --- Automated renewal via systemd ---
+
+- name: Create host cert renewal script
+  copy:
+    content: |
+      #!/bin/bash
+      step ssh renew --force /etc/ssh/ssh_host_ecdsa_key-cert.pub /etc/ssh/ssh_host_ecdsa_key
+      systemctl restart sshd
+    dest: /usr/local/bin/step-renew-host-cert.sh
+    mode: '0755'
+
+- name: Create systemd timer for host cert renewal
+  copy:
+    content: |
+      [Unit]
+      Description=Renew step-ca SSH host certificate
+
+      [Timer]
+      OnCalendar=weekly
+      Persistent=true
+      RandomizedDelaySec=3600
+
+      [Install]
+      WantedBy=timers.target
+    dest: /etc/systemd/system/step-renew-host-cert.timer
+    mode: '0644'
+
+- name: Create systemd service for host cert renewal
+  copy:
+    content: |
+      [Unit]
+      Description=Renew step-ca SSH host certificate
+
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/local/bin/step-renew-host-cert.sh
+    dest: /etc/systemd/system/step-renew-host-cert.service
+    mode: '0644'
+
+- name: Enable and start renewal timer
+  systemd:
+    name: step-renew-host-cert.timer
+    state: started
+    enabled: yes
+    daemon_reload: yes

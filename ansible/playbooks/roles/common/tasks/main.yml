@@ -48,3 +48,7 @@
     create: yes
     mode: '0440'
     validate: 'visudo -cf %s'
+
+# --- Step-CA SSH certificate enrollment ---
+- name: Enroll host in step-ca SSH CA
+  include_tasks: step_ca_client.yml
