@@ -1,7 +1,6 @@
 # ------------------------------------------------------------------------------
 # FILE: roles/common/handlers/main.yml
 # ------------------------------------------------------------------------------
-
 - name: restart chrony
   systemd:
     name: chrony
@@ -9,5 +8,5 @@
 
 - name: restart sshd
   systemd:
-    name: sshd
+    name: "{{ 'ssh' if ansible_os_family == 'Debian' else 'sshd' }}"
     state: restarted
