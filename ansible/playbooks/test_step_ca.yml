@@ -2,5 +2,10 @@
 - name: Test step-ca SSH enrollment
   hosts: guest-relations
   become: true
+  handlers:
+    - name: restart sshd
+      systemd:
+        name: sshd
+        state: restarted
   tasks:
     - include_tasks: roles/common/tasks/step_ca_client.yml
