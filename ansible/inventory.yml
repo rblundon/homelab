@@ -65,6 +65,10 @@ papermc_server:
   hosts:
     arcade:
 
+dev_servers:
+  hosts:
+    scrim:
+
 semaphore_server:
   hosts:
     imagineering:
@@ -80,6 +84,14 @@ n8n_server:
 backup_servers:
   hosts:
     timekeeper:
+
+talos_control:
+  hosts:
+    city-hall:
+      ansible_become: true
+  vars:
+    talosctl_version: "v1.12.4"
+    talos_cluster_name: "fastpass"
 
 # ipaserver:
 #   hosts:

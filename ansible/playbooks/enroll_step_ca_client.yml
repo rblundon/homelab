@@ -1,0 +1,7 @@
+---
+- name: Enroll host as step-ca SSH client
+  hosts: "{{ target | default('all') }}"
+  become: true
+  tasks:
+    - name: Include step-ca client enrollment
+      ansible.builtin.include_tasks: roles/common/tasks/step_ca_client.yml

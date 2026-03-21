@@ -12,7 +12,11 @@ services:
       - AUTHENTIK_POSTGRESQL__USER=authentik
       - AUTHENTIK_POSTGRESQL__NAME=authentik
       - AUTHENTIK_POSTGRESQL__PASSWORD=${DATABASE_PASSWORD}
-      - AUTHENTIK_REDIS__HOST=authentik_redis
+      # OIDC client credentials — consumed by blueprints via ${VAR} substitution
+      - PROXMOX_OIDC_CLIENT_ID=${PROXMOX_OIDC_CLIENT_ID}
+      - PROXMOX_OIDC_CLIENT_SECRET=${PROXMOX_OIDC_CLIENT_SECRET}
+      - STEPCA_OIDC_CLIENT_ID=${STEPCA_OIDC_CLIENT_ID}
+      - STEPCA_OIDC_CLIENT_SECRET=${STEPCA_OIDC_CLIENT_SECRET}
     networks:
       - authentik_backend
     ports:
@@ -21,10 +25,9 @@ services:
     volumes:
       - authentik_data:/data
       - authentik_templates:/templates
+      - ./blueprints:/blueprints/custom:ro
     depends_on:
       authentik_postgres:
-        condition: service_healthy
-      authentik_redis:
         condition: service_healthy
 
   authentik_worker:
@@ -39,8 +42,12 @@ services:
       - AUTHENTIK_POSTGRESQL__USER=authentik
       - AUTHENTIK_POSTGRESQL__NAME=authentik
       - AUTHENTIK_POSTGRESQL__PASSWORD=${DATABASE_PASSWORD}
-      - AUTHENTIK_REDIS__HOST=authentik_redis
       - AUTHENTIK_BOOTSTRAP_PASSWORD=${AUTHENTIK_ADMIN_PASSWORD}
+      # OIDC client credentials — consumed by blueprints via ${VAR} substitution
+      - PROXMOX_OIDC_CLIENT_ID=${PROXMOX_OIDC_CLIENT_ID}
+      - PROXMOX_OIDC_CLIENT_SECRET=${PROXMOX_OIDC_CLIENT_SECRET}
+      - STEPCA_OIDC_CLIENT_ID=${STEPCA_OIDC_CLIENT_ID}
+      - STEPCA_OIDC_CLIENT_SECRET=${STEPCA_OIDC_CLIENT_SECRET}
     user: root
     networks:
       - authentik_backend
@@ -49,10 +56,9 @@ services:
       - authentik_data:/data
       - authentik_certs:/certs
       - authentik_templates:/templates
+      - ./blueprints:/blueprints/custom:ro
     depends_on:
       authentik_postgres:
-        condition: service_healthy
-      authentik_redis:
         condition: service_healthy
 
   authentik_postgres:
@@ -74,30 +80,12 @@ services:
     volumes:
       - authentik_postgres:/var/lib/postgresql/data
 
-  authentik_redis:
-    image: docker.io/library/redis:7-alpine
-    container_name: authentik-redis
-    restart: unless-stopped
-    command: --save 60 1 --loglevel warning
-    healthcheck:
-      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
-      start_period: 10s
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - authentik_backend
-    volumes:
-      - authentik_redis:/data
-
 networks:
   authentik_backend:
     driver: bridge
 
 volumes:
   authentik_postgres:
-    driver: local
-  authentik_redis:
     driver: local
   authentik_data:
     driver: local

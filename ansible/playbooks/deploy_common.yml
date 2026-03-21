@@ -1,0 +1,6 @@
+---
+- name: Apply common role
+  hosts: "{{ target | default('all') }}"
+  become: true
+  roles:
+    - common

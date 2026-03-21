@@ -95,3 +95,29 @@
   community.docker.docker_compose_v2:
     project_src: "{{ stepca_base_dir }}"
     state: present
+
+- name: Template OIDC provisioner patch script
+  ansible.builtin.template:
+    src: patch_oidc_provisioner.py.j2
+    dest: "{{ stepca_base_dir }}/patch_oidc_provisioner.py"
+    owner: root
+    group: root
+    mode: "0700"
+  no_log: true
+
+- name: Patch OIDC provisioner in ca.json
+  ansible.builtin.command:
+    cmd: python3 {{ stepca_base_dir }}/patch_oidc_provisioner.py
+  register: oidc_patch_result
+  changed_when: "'CHANGED' in oidc_patch_result.stdout"
+
+- name: Restart step-ca if OIDC provisioner changed
+  community.docker.docker_compose_v2:
+    project_src: "{{ stepca_base_dir }}"
+    state: restarted
+  when: oidc_patch_result is changed
+
+- name: Clean up patch script
+  ansible.builtin.file:
+    path: "{{ stepca_base_dir }}/patch_oidc_provisioner.py"
+    state: absent

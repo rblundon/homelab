@@ -1,0 +1,15 @@
+---
+# ------------------------------------------------------------------------------
+# FILE: playbooks/install_talosctl.yml
+# DESCRIPTION: Install talosctl on city-hall for managing the fastpass cluster.
+# USAGE:
+#   cd ansible
+#   ansible-playbook -i inventory.yml playbooks/install_talosctl.yml
+# ------------------------------------------------------------------------------
+
+- name: Install talosctl
+  hosts: talos_control
+  become: true
+
+  roles:
+    - talosctl

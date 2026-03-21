@@ -22,4 +22,6 @@ stepca_listen_port: 9000
 stepca_oidc_provisioner_name: authentik
 stepca_oidc_configuration_endpoint: "https://authentik.local.mk-labs.cloud/application/o/step-ca/.well-known/openid-configuration"
 stepca_oidc_listen_address: ":10000"
-stepca_oidc_domain: "local.mk-labs.cloud"
+stepca_oidc_domains:
+  - "local.mk-labs.cloud"
+  - "protonmail.com"

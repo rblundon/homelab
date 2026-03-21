@@ -1,20 +1,25 @@
-# ------------------------------------------------------------------------------
+---
+# ──────────────────────────────────────────────────────────────────────────────
 # FILE: roles/authentik/tasks/main.yml
 # DESCRIPTION: Deploys Authentik from boilerplate-generated files in the repo.
 #              The compose.yaml lives in boilerplates/authentik/.
 #              The .env file is templated to inject secrets from Ansible vault.
-# ------------------------------------------------------------------------------
+#              Custom blueprints are synced from boilerplates/authentik/blueprints/.
+# ──────────────────────────────────────────────────────────────────────────────
 
 - name: Create Authentik directory structure
-  file:
-    path: "{{ authentik_base_dir }}"
+  ansible.builtin.file:
+    path: "{{ item }}"
     state: directory
     owner: "{{ ansible_user }}"
     group: docker
     mode: '0775'
+  loop:
+    - "{{ authentik_base_dir }}"
+    - "{{ authentik_base_dir }}/blueprints"
 
 - name: Copy compose.yaml from boilerplate
-  copy:
+  ansible.builtin.copy:
     src: "{{ playbook_dir }}/../../boilerplates/authentik/compose.yaml"
     dest: "{{ authentik_base_dir }}/compose.yaml"
     owner: "{{ ansible_user }}"
@@ -22,8 +27,17 @@
     mode: '0644'
   notify: restart authentik
 
+- name: Sync custom blueprints
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../boilerplates/authentik/blueprints/"
+    dest: "{{ authentik_base_dir }}/blueprints/"
+    owner: "{{ ansible_user }}"
+    group: docker
+    mode: '0644'
+  notify: restart authentik
+
 - name: Deploy .env with secrets from vault
-  template:
+  ansible.builtin.template:
     src: env.j2
     dest: "{{ authentik_base_dir }}/.env"
     owner: "{{ ansible_user }}"

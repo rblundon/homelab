@@ -1,0 +1,57 @@
+#!/usr/bin/env python3
+# Managed by Ansible — do not edit manually
+# Patches the OIDC provisioner in step-ca's ca.json with values from Ansible vars
+import json
+import sys
+
+ca_json_path = "{{ stepca_data_dir }}/config/ca.json"
+provisioner_name = "{{ stepca_oidc_provisioner_name }}"
+desired_domains = {{ stepca_oidc_domains | to_json }}
+desired_client_id = "{{ stepca_oidc_client_id }}"
+desired_client_secret = "{{ stepca_oidc_client_secret }}"
+desired_config_endpoint = "{{ stepca_oidc_configuration_endpoint }}"
+desired_listen_address = "{{ stepca_oidc_listen_address }}"
+
+with open(ca_json_path) as f:
+    cfg = json.load(f)
+
+changed = False
+found = False
+
+for p in cfg["authority"]["provisioners"]:
+    if p.get("name") == provisioner_name and p.get("type") == "OIDC":
+        found = True
+        updates = {
+            "domains": desired_domains,
+            "clientID": desired_client_id,
+            "clientSecret": desired_client_secret,
+            "configurationEndpoint": desired_config_endpoint,
+            "listenAddress": desired_listen_address,
+        }
+        for key, value in updates.items():
+            if p.get(key) != value:
+                p[key] = value
+                changed = True
+        break
+
+if not found:
+    # Add the OIDC provisioner if it doesn't exist
+    cfg["authority"]["provisioners"].append({
+        "type": "OIDC",
+        "name": provisioner_name,
+        "clientID": desired_client_id,
+        "clientSecret": desired_client_secret,
+        "configurationEndpoint": desired_config_endpoint,
+        "domains": desired_domains,
+        "listenAddress": desired_listen_address,
+        "claims": {"enableSSHCA": True},
+        "options": {"x509": {}, "ssh": {}},
+    })
+    changed = True
+
+if changed:
+    with open(ca_json_path, "w") as f:
+        json.dump(cfg, f, indent=8)
+    print("CHANGED")
+else:
+    print("OK")

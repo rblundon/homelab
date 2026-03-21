@@ -10,7 +10,7 @@
     name: "{{ inventory_hostname | replace('_', '-') }}"
 
 - name: Set timezone
-  timezone:
+  community.general.timezone:
     name: "{{ common_timezone }}"
 
 - name: Update apt cache
@@ -52,3 +52,30 @@
 # --- Step-CA SSH certificate enrollment ---
 - name: Enroll host in step-ca SSH CA
   include_tasks: step_ca_client.yml
+
+- name: Create authorized principals directory
+  ansible.builtin.file:
+    path: /etc/ssh/auth_principals
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Create authorized principals files
+  ansible.builtin.copy:
+    content: "{{ item.principals | join('\n') }}\n"
+    dest: "/etc/ssh/auth_principals/{{ item.local_user }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ step_ca_principal_mappings }}"
+  notify: restart sshd
+
+- name: Configure sshd AuthorizedPrincipalsFile
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    line: "AuthorizedPrincipalsFile /etc/ssh/auth_principals/%u"
+    regexp: "^#?AuthorizedPrincipalsFile"
+    state: present
+  notify: restart sshd
+   

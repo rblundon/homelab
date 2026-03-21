@@ -1,0 +1,17 @@
+---
+# ------------------------------------------------------------------------------
+# FILE: roles/talosctl/meta/main.yml
+# ------------------------------------------------------------------------------
+
+galaxy_info:
+  author: rblundon
+  description: Install talosctl CLI for managing TalosOS clusters
+  license: MIT
+  min_ansible_version: "2.14"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - noble
+
+dependencies:
+  - role: common

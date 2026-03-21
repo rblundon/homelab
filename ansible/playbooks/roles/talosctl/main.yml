@@ -1,0 +1,51 @@
+---
+# ------------------------------------------------------------------------------
+# FILE: roles/talosctl/tasks/main.yml
+# DESCRIPTION: Install talosctl binary from GitHub releases.
+#              Downloads a pinned version, installs to /usr/local/bin,
+#              and verifies the installation.
+# ------------------------------------------------------------------------------
+
+- name: Check if talosctl is already installed
+  stat:
+    path: "{{ talosctl_install_dir }}/talosctl"
+  register: talosctl_binary
+
+- name: Get installed talosctl version
+  command: "{{ talosctl_install_dir }}/talosctl version --client --short"
+  register: talosctl_installed_version
+  changed_when: false
+  failed_when: false
+  when: talosctl_binary.stat.exists
+
+- name: Install talosctl
+  when: >
+    not talosctl_binary.stat.exists or
+    talosctl_version not in (talosctl_installed_version.stdout | default(''))
+  block:
+    - name: Download talosctl {{ talosctl_version }}
+      get_url:
+        url: "https://github.com/siderolabs/talos/releases/download/{{ talosctl_version }}/talosctl-linux-{{ talosctl_arch }}"
+        dest: "/tmp/talosctl"
+        mode: "0755"
+
+    - name: Install talosctl to {{ talosctl_install_dir }}
+      copy:
+        src: "/tmp/talosctl"
+        dest: "{{ talosctl_install_dir }}/talosctl"
+        mode: "0755"
+        remote_src: true
+
+    - name: Clean up downloaded binary
+      file:
+        path: "/tmp/talosctl"
+        state: absent
+
+- name: Verify talosctl installation
+  command: "{{ talosctl_install_dir }}/talosctl version --client --short"
+  register: talosctl_verify
+  changed_when: false
+
+- name: Display installed talosctl version
+  debug:
+    msg: "talosctl installed: {{ talosctl_verify.stdout }}"

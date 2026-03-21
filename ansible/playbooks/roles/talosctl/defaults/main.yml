@@ -1,0 +1,15 @@
+---
+# ------------------------------------------------------------------------------
+# FILE: roles/talosctl/defaults/main.yml
+# DESCRIPTION: Default variables for talosctl installation.
+# ------------------------------------------------------------------------------
+
+# Pin to a specific version for reproducibility.
+# Update this when upgrading the fastpass cluster.
+talosctl_version: "v1.12.4"
+
+# Architecture of the target host (amd64 or arm64)
+talosctl_arch: "amd64"
+
+# Where to install the binary
+talosctl_install_dir: "/usr/local/bin"

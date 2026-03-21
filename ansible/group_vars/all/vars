@@ -18,3 +18,15 @@ terraform_server: "infra01"
 
 # Traefik variables
 traefik_server: "lightning-lane"
+
+step_ca_principal_mappings:
+  - local_user: wed
+    principals:
+      - ryan.blundon@protonmail.com
+      - ryan.blundon
+      - ryanblundon
+  - local_user: rblundon
+    principals:
+      - ryan.blundon@protonmail.com
+      - ryan.blundon
+      - ryanblundon
