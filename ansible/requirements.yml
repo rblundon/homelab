@@ -17,3 +17,5 @@ collections:
 
   - name: community.proxmox
     version: 1.4.0
+
+  - name: effectivelywild.technitium_dns

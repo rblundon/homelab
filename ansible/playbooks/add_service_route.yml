@@ -1,0 +1,90 @@
+---
+# ------------------------------------------------------------------------------
+# FILE: playbooks/add_service_route.yml
+# DESCRIPTION: Ensures all services in the Traefik dynamic config directory
+#              are routed and have DNS CNAME records on monorail.
+#
+#              1. Syncs boilerplates/traefik/dynamic/ to lightning-lane
+#              2. Scans the directory for service configs
+#              3. Creates CNAME records for each service -> lightning-lane
+#
+# PREREQUISITES:
+#   - Service dynamic config YAML committed to boilerplates/traefik/dynamic/
+#   - vault_technitium_api_key defined in group_vars/all/vault
+#
+# USAGE:
+#   ansible-playbook -i inventory.yml playbooks/add_service_route.yml
+#
+# ADDING A NEW SERVICE:
+#   1. Create boilerplates/traefik/dynamic/<service>.yml
+#   2. Commit and push
+#   3. Run this playbook
+#
+# EXCLUDING FILES:
+#   Files that are not service routes (e.g., default.yml for middleware
+#   definitions) should be added to the exclude_configs list below.
+# ------------------------------------------------------------------------------
+
+- name: Sync Traefik routes and ensure DNS records
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    base_domain: "local.mk-labs.cloud"
+    dns_server: "monorail"
+    traefik_host: "10.1.71.35"
+    traefik_user: "wed"
+    traefik_dynamic_path: "/opt/docker/traefik/dynamic/"
+    dynamic_config_dir: "{{ playbook_dir }}/../../boilerplates/traefik/dynamic"
+
+    # Files in the dynamic directory that are NOT service routes
+    # (middleware definitions, TLS options, etc.)
+    exclude_configs:
+      - default.yml
+
+  tasks:
+    # ── Step 1: Sync dynamic config to lightning-lane ──
+    - name: Sync Traefik dynamic configuration to lightning-lane
+      ansible.builtin.shell: >
+        rsync -av --delete
+        {{ dynamic_config_dir }}/
+        {{ traefik_user }}@{{ traefik_host }}:{{ traefik_dynamic_path }}
+      register: sync_result
+      changed_when: "'sending incremental file list' in sync_result.stdout"
+
+    # ── Step 2: Discover service configs ──
+    - name: Find all dynamic config files
+      ansible.builtin.find:
+        paths: "{{ dynamic_config_dir }}"
+        patterns: "*.yml"
+      register: config_files
+
+    - name: Build service list from config filenames
+      ansible.builtin.set_fact:
+        service_names: >-
+          {{ config_files.files
+             | map(attribute='path')
+             | map('basename')
+             | reject('in', exclude_configs)
+             | map('regex_replace', '\.yml$', '')
+             | list }}
+
+    - name: Display services to route
+      ansible.builtin.debug:
+        msg: "Services found: {{ service_names }}"
+
+    # ── Step 3: Create DNS CNAME records ──
+    - name: Create DNS CNAME record for each service
+      effectivelywild.technitium_dns.technitium_dns_add_record:
+        api_url: "http://{{ dns_server }}.{{ base_domain }}"
+        api_token: "{{ vault_technitium_api_key }}"
+        zone: "{{ base_domain }}"
+        name: "{{ item }}.{{ base_domain }}"
+        type: "CNAME"
+        cname: "lightning-lane.{{ base_domain }}"
+        ttl: 360
+        validate_certs: false
+      loop: "{{ service_names }}"
+      loop_control:
+        label: "{{ item }}.{{ base_domain }}"

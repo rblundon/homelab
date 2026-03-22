@@ -14,10 +14,10 @@ http:
     authentik:
       loadBalancer:
         servers:
-          - url: "http://10.1.71.40:8000"
+          - url: "http://guest-relations.local.mk-labs.cloud:8000"
 
   ## Authentik Forward Auth Middleware
-  ## Add 'authentik' to a router's middlewares list to protect it with SSO
+  ## Add 'authentik-forwardauth' to a router's middlewares list to protect it with SSO
   ## Example:
   ##   my-service:
   ##     rule: "Host(`my-service.local.mk-labs.cloud`)"
@@ -27,7 +27,7 @@ http:
   middlewares:
     authentik-forwardauth:
       forwardAuth:
-        address: "http://10.1.71.40:8000/outpost.goauthentik.io/auth/nginx"
+        address: "http://guest-relations.local.mk-labs.cloud:8000/outpost.goauthentik.io/auth/nginx"
         trustForwardHeader: true
         authResponseHeaders:
           - X-authentik-username

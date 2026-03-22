@@ -1,0 +1,17 @@
+http:
+  routers:
+    n8n:
+      rule: "Host(`n8n.local.mk-labs.cloud`)"
+      entryPoints:
+        - websecure
+      service: n8n
+      tls:
+        certResolver: cloudflare
+      middlewares:
+        - security-headers
+
+  services:
+    n8n:
+      loadBalancer:
+        servers:
+          - url: "http://tiki-room.local.mk-labs.cloud:5678"
