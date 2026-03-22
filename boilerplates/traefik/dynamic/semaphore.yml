@@ -1,0 +1,17 @@
+http:
+  routers:
+    semaphore:
+      rule: "Host(`semaphore.local.mk-labs.cloud`)"
+      entryPoints:
+        - websecure
+      service: semaphore
+      tls:
+        certResolver: cloudflare
+      middlewares:
+        - security-headers
+
+  services:
+    semaphore:
+      loadBalancer:
+        servers:
+          - url: "http://imagineering.local.mk-labs.cloud:3000"

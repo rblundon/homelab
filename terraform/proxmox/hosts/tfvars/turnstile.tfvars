@@ -6,11 +6,7 @@
 #   cd terraform/proxmox/hosts
 #   terraform apply \
 #     -var-file="tfvars/turnstile.tfvars" \
-#     -state="states/turnstile.tfstate" \
-#     -var="proxmox_api_url=https://main-street-usa.local.mk-labs.cloud:8006" \
-#     -var="proxmox_api_token=terraform@pve!terraform-token=<token>"
-# turnstile — Smallstep step-ca SSH Certificate Authority
-# Provisioned manually (pre-pipeline bootstrap)
+#     -state="states/turnstile.tfstate"
 
 hostname      = "turnstile"
 vm_id         = 71034

@@ -1,0 +1,23 @@
+---
+# ------------------------------------------------------------------------------
+# FILE: playbooks/day1_deploy_semaphore.yml
+# DESCRIPTION: Deploys Semaphore on imagineering
+#              Runs: common → docker-host → semaphore
+#
+# USAGE:
+#   ansible-playbook -i inventory.yml playbooks/day1_deploy_semaphore.yml
+#
+# SECRETS REQUIRED IN VAULT (group_vars/all/vault):
+#   vault_semaphore_database_password
+#   vault_semaphore_admin_password
+#   vault_semaphore_access_key_encryption
+# ------------------------------------------------------------------------------
+
+- name: Deploy Semaphore
+  hosts: semaphore_server
+  become: true
+
+  roles:
+    - common
+    - docker-host
+    - semaphore

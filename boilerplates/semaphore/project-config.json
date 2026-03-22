@@ -1,0 +1,107 @@
+{
+  "environments": [
+    {
+      "env": "{}",
+      "json": "{}",
+      "name": "Production"
+    }
+  ],
+  "integration_aliases": [],
+  "integrations": [],
+  "inventories": [
+    {
+      "become_key": "wed-ssh-key",
+      "inventory": "ansible/inventory.yml",
+      "name": "foundation",
+      "ssh_key": "wed-ssh-key",
+      "type": "file"
+    }
+  ],
+  "keys": [
+    {
+      "name": "git-public",
+      "owner": "",
+      "type": "none"
+    },
+    {
+      "name": "wed-ssh-key",
+      "owner": "",
+      "type": "ssh"
+    },
+    {
+      "name": "ansible-vault-password",
+      "owner": "",
+      "type": "login_password"
+    }
+  ],
+  "meta": {
+    "alert": false,
+    "max_parallel_tasks": 0,
+    "name": "mk-labs",
+    "type": ""
+  },
+  "repositories": [
+    {
+      "git_branch": "main",
+      "git_url": "https://github.com/rblundon/homelab.git",
+      "name": "homelab",
+      "ssh_key": "git-public"
+    }
+  ],
+  "roles": [],
+  "schedules": [],
+  "secret_storages": [],
+  "templates": [
+    {
+      "allow_override_args_in_task": true,
+      "autorun": false,
+      "description": "Post-provisioning OS baseline: common role, DNS registration, NetBox status update",
+      "environment": "Production",
+      "inventory": "foundation",
+      "name": "day0-baseline",
+      "playbook": "ansible/playbooks/day0_baseline.yml",
+      "repository": "homelab",
+      "suppress_success_alerts": false,
+      "survey_vars": [],
+      "type": "task",
+      "vault_key": "ansible-vault-password"
+    },
+    {
+      "allow_override_args_in_task": true,
+      "autorun": false,
+      "description": "Deploy Semaphore on imagineering",
+      "environment": "Production",
+      "inventory": "foundation",
+      "name": "day1-deploy-semaphore",
+      "playbook": "ansible/playbooks/day1_deploy_semaphore.yml",
+      "repository": "homelab",
+      "suppress_success_alerts": false,
+      "survey_vars": [],
+      "type": "task",
+      "vault_key": "ansible-vault-password"
+    },
+    {
+      "allow_override_args_in_task": false,
+      "autorun": false,
+      "description": "Sync Traefik dynamic configs and create DNS CNAMEs for all services",
+      "environment": "Production",
+      "inventory": "foundation",
+      "name": "add-service-route",
+      "playbook": "ansible/playbooks/add_service_route.yml",
+      "repository": "homelab",
+      "suppress_success_alerts": false,
+      "survey_vars": [],
+      "type": "task",
+      "vault_key": "ansible-vault-password"
+    }
+  ],
+  "views": [
+    {
+      "hidden": false,
+      "position": 0,
+      "sort_reverse": false,
+      "title": "All",
+      "type": "all"
+    }
+  ]
+}

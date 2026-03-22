@@ -6,9 +6,7 @@
 #   cd terraform/proxmox/hosts
 #   terraform apply \
 #     -var-file="tfvars/lightning-lane.tfvars" \
-#     -state="states/lightning-lane.tfstate" \
-#     -var="proxmox_api_url=https://main-street-usa.local.mk-labs.cloud:8006" \
-#     -var="proxmox_api_token=terraform@pve!automation=<token>"
+#     -state="states/lightning-lane.tfstate"
 
 hostname      = "lightning-lane"
 vm_id         = 71035

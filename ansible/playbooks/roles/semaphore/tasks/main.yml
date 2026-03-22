@@ -1,0 +1,212 @@
+---
+# file: roles/semaphore/tasks/main.yml
+
+- name: Create Semaphore directory
+  ansible.builtin.file:
+    path: "{{ semaphore_compose_dir }}"
+    state: directory
+    owner: wed
+    group: docker
+    mode: '0755'
+
+- name: Copy Compose file from boilerplate
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../boilerplates/semaphore/compose.yaml"
+    dest: "{{ semaphore_compose_dir }}/compose.yaml"
+    owner: wed
+    group: docker
+    mode: '0644'
+
+- name: Deploy Semaphore .env file
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ semaphore_compose_dir }}/.env"
+    owner: wed
+    group: docker
+    mode: '0600'
+
+- name: Start Semaphore containers
+  community.docker.docker_compose_v2:
+    project_src: "{{ semaphore_compose_dir }}"
+    state: present
+  register: semaphore_compose
+
+- name: Wait for Semaphore to be ready
+  ansible.builtin.uri:
+    url: "http://localhost:3000/api/ping"
+    method: GET
+    status_code: 200
+  register: semaphore_health
+  retries: 24
+  delay: 5
+  until: semaphore_health.status == 200
+
+# ── Post-deploy: Restore project config via API ──
+
+- name: Authenticate to Semaphore API
+  ansible.builtin.uri:
+    url: "http://localhost:3000/api/auth/login"
+    method: POST
+    body_format: json
+    body:
+      auth: "admin"
+      password: "{{ vault_semaphore_admin_password }}"
+    status_code: 204
+    return_content: false
+  register: semaphore_auth
+  no_log: true
+
+- name: Set auth cookie fact
+  ansible.builtin.set_fact:
+    semaphore_cookie: "{{ semaphore_auth.cookies_string }}"
+  no_log: true
+
+- name: Check if mk-labs project already exists
+  ansible.builtin.uri:
+    url: "http://localhost:3000/api/projects"
+    method: GET
+    headers:
+      Cookie: "{{ semaphore_cookie }}"
+    return_content: true
+  register: semaphore_projects
+
+- name: Set project exists flag
+  ansible.builtin.set_fact:
+    project_exists: "{{ semaphore_projects.json | selectattr('name', 'equalto', 'mk-labs') | list | length > 0 }}"
+
+- name: Read project config from boilerplate
+  ansible.builtin.slurp:
+    src: "{{ playbook_dir }}/../../boilerplates/semaphore/project-config.json"
+  delegate_to: localhost
+  become: false
+  register: project_config_raw
+  when: not project_exists
+
+- name: Restore project via API
+  ansible.builtin.uri:
+    url: "http://localhost:3000/api/projects/restore"
+    method: POST
+    headers:
+      Cookie: "{{ semaphore_cookie }}"
+      Content-Type: "application/json"
+    body: "{{ project_config_raw.content | b64decode | string }}"
+    body_format: raw
+    status_code: [200, 201]
+    return_content: true
+  register: restore_result
+  when: not project_exists
+
+- name: Display restore result
+  ansible.builtin.debug:
+    msg: "Project '{{ restore_result.json.name | default('mk-labs') }}' restored successfully (ID: {{ restore_result.json.id | default('unknown') }})"
+  when: not project_exists and restore_result is defined
+
+- name: Skip restore — project already exists
+  ansible.builtin.debug:
+    msg: "Project 'mk-labs' already exists, skipping restore"
+  when: project_exists
+
+# ── Push secrets: DELETE empty shells, POST with actual values ──
+
+- name: Get project ID
+  ansible.builtin.set_fact:
+    semaphore_project_id: >-
+      {{ (semaphore_projects.json | selectattr('name', 'equalto', 'mk-labs') | first).id
+         if project_exists else restore_result.json.id }}
+
+- name: Get existing keys
+  ansible.builtin.uri:
+    url: "http://localhost:3000/api/project/{{ semaphore_project_id }}/keys"
+    method: GET
+    headers:
+      Cookie: "{{ semaphore_cookie }}"
+    return_content: true
+  register: semaphore_keys
+
+- name: Find wed-ssh-key ID (if exists)
+  ansible.builtin.set_fact:
+    wed_ssh_key_id: "{{ (semaphore_keys.json | selectattr('name', 'equalto', 'wed-ssh-key') | first).id | default(omit) }}"
+  ignore_errors: true
+
+- name: Find ansible-vault-password ID (if exists)
+  ansible.builtin.set_fact:
+    vault_password_key_id: "{{ (semaphore_keys.json | selectattr('name', 'equalto', 'ansible-vault-password') | first).id | default(omit) }}"
+  ignore_errors: true
+
+- name: Check if wed-ssh-key is empty
+  ansible.builtin.set_fact:
+    wed_ssh_key_empty: "{{ (semaphore_keys.json | selectattr('name', 'equalto', 'wed-ssh-key') | first).empty | default(true) }}"
+  ignore_errors: true
+
+- name: Check if ansible-vault-password is empty
+  ansible.builtin.set_fact:
+    vault_password_empty: "{{ (semaphore_keys.json | selectattr('name', 'equalto', 'ansible-vault-password') | first).empty | default(true) }}"
+  ignore_errors: true
+
+# -- wed-ssh-key: delete empty shell if needed, then create with value --
+
+- name: Delete empty wed-ssh-key shell
+  ansible.builtin.uri:
+    url: "http://localhost:3000/api/project/{{ semaphore_project_id }}/keys/{{ wed_ssh_key_id }}"
+    method: DELETE
+    headers:
+      Cookie: "{{ semaphore_cookie }}"
+    status_code: [200, 204]
+  when: wed_ssh_key_id is defined and wed_ssh_key_empty | bool
+
+- name: Build wed-ssh-key payload
+  ansible.builtin.set_fact:
+    wed_key_payload: >-
+      {{ {"name": "wed-ssh-key",
+          "type": "ssh",
+          "project_id": semaphore_project_id | int,
+          "ssh": {"login": "", "passphrase": "", "private_key": vault_wed_ssh_private_key}} | to_json }}
+  no_log: true
+  when: wed_ssh_key_empty | bool
+
+- name: Create wed-ssh-key with private key
+  ansible.builtin.uri:
+    url: "http://localhost:3000/api/project/{{ semaphore_project_id }}/keys"
+    method: POST
+    headers:
+      Cookie: "{{ semaphore_cookie }}"
+      Content-Type: "application/json"
+    body: "{{ wed_key_payload }}"
+    body_format: raw
+    status_code: [200, 201]
+  no_log: true
+  when: wed_ssh_key_empty | bool
+
+# -- ansible-vault-password: delete empty shell if needed, then create with value --
+
+- name: Delete empty ansible-vault-password shell
+  ansible.builtin.uri:
+    url: "http://localhost:3000/api/project/{{ semaphore_project_id }}/keys/{{ vault_password_key_id }}"
+    method: DELETE
+    headers:
+      Cookie: "{{ semaphore_cookie }}"
+    status_code: [200, 204]
+  when: vault_password_key_id is defined and vault_password_empty | bool
+
+- name: Build ansible-vault-password payload
+  ansible.builtin.set_fact:
+    vault_key_payload: >-
+      {{ {"name": "ansible-vault-password",
+          "type": "login_password",
+          "project_id": semaphore_project_id | int,
+          "login_password": {"login": "", "password": vault_ansible_vault_password}} | to_json }}
+  no_log: true
+  when: vault_password_empty | bool
+
+- name: Create ansible-vault-password with value
+  ansible.builtin.uri:
+    url: "http://localhost:3000/api/project/{{ semaphore_project_id }}/keys"
+    method: POST
+    headers:
+      Cookie: "{{ semaphore_cookie }}"
+      Content-Type: "application/json"
+    body: "{{ vault_key_payload }}"
+    body_format: raw
+    status_code: [200, 201]
+  no_log: true
+  when: vault_password_empty | bool

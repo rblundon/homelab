@@ -1,0 +1,44 @@
+services:
+  semaphore:
+    image: docker.io/semaphoreui/semaphore:v2.17.2
+    restart: unless-stopped
+    environment:
+      - SEMAPHORE_DB_DIALECT=mysql
+      - SEMAPHORE_DB_HOST=semaphore_db
+      - SEMAPHORE_DB=semaphore
+      - SEMAPHORE_DB_USER=semaphore
+      - SEMAPHORE_DB_PASS=${DATABASE_PASSWORD}
+      - SEMAPHORE_ADMIN=admin
+      - SEMAPHORE_ADMIN_NAME=Administrator
+      - SEMAPHORE_ADMIN_EMAIL=ryan.blundon@protonmail.com
+      - SEMAPHORE_ADMIN_PASSWORD=${SEMAPHORE_ADMIN_PASSWORD}
+      - SEMAPHORE_PLAYBOOK_PATH=/tmp/semaphore/
+      - SEMAPHORE_ACCESS_KEY_ENCRYPTION=${SEMAPHORE_ACCESS_KEY_ENCRYPTION}
+      - ANSIBLE_HOST_KEY_CHECKING=False
+    networks:
+      - semaphore_backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - semaphore_db
+
+  semaphore_db:
+    image: docker.io/library/mysql:8.1
+    restart: unless-stopped
+    environment:
+      - MYSQL_USER=semaphore
+      - MYSQL_PASSWORD=${DATABASE_PASSWORD}
+      - MYSQL_DATABASE=semaphore
+      - MYSQL_ROOT_PASSWORD=${DATABASE_PASSWORD}
+    networks:
+      - semaphore_backend
+    volumes:
+      - semaphore_db:/var/lib/mysql
+
+volumes:
+  semaphore_db:
+    driver: local
+
+networks:
+  semaphore_backend:
+    driver: bridge

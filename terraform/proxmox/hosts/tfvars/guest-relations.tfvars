@@ -6,9 +6,7 @@
 #   cd terraform/proxmox/hosts
 #   terraform apply \
 #     -var-file="tfvars/guest-relations.tfvars" \
-#     -state="states/guest-relations.tfstate" \
-#     -var="proxmox_api_url=https://main-street-usa.local.mk-labs.cloud:8006" \
-#     -var="proxmox_api_token=terraform@pve!terraform-token=<token>"
+#     -state="states/guest-relations.tfstate"
 
 hostname      = "guest-relations"
 vm_id         = 71040

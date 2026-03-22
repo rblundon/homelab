@@ -25,20 +25,27 @@ ntp_servers:
 load_balancers:
   hosts:
     lightning_lane:
-      ansible_host: 10.1.71.35
       ansible_become: true
 
 step_ca_server:
   hosts:
     turnstile:
-      ansible_host: 10.1.71.34
       ansible_become: true
 
 authentik_server:
   hosts:
     guest-relations:
-      ansible_host: 10.1.71.40
       ansible_become: true
+
+semaphore_server:
+  hosts:
+    imagineering:
+      ansible_host: 10.1.71.37
+      ansible_become: true
+
+n8n_server:
+  hosts:
+    tiki-room:
 
 prometheus_server:
   hosts:
@@ -68,14 +75,6 @@ papermc_server:
 dev_servers:
   hosts:
     scrim:
-
-semaphore_server:
-  hosts:
-    imagineering:
-
-n8n_server:
-  hosts:
-    tiki-room:
 
 # dhcp_server:
 #   hosts:
