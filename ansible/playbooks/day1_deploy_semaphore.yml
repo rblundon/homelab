@@ -18,6 +18,5 @@
   become: true
 
   roles:
-    - common
     - docker-host
     - semaphore
