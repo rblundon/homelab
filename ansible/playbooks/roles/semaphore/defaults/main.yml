@@ -2,3 +2,4 @@
 # file: roles/semaphore/defaults/main.yml
 
 semaphore_compose_dir: /opt/docker/semaphore
+semaphore_ssh_key_file: "~/.ssh/ansible"

@@ -47,6 +47,9 @@ packer_cache/
 *.pem
 *.key
 
+# Environment files with secrets
+boilerplates/**/.env
+
 # Local paths
 ~/
 

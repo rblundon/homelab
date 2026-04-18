@@ -1,0 +1,102 @@
+---
+# Nextcloud — the-grid
+# Boilerplate: nextcloud 32.0.6-apache
+# Generated for mk-labs / local.mk-labs.cloud
+#
+# Traefik routing handled via static dynamic config on lightning-lane
+# External URL: https://the-grid.mk-labs.cloud (Cloudflare Tunnel)
+# Internal URL: https://the-grid.local.mk-labs.cloud (Traefik)
+#
+# Storage split:
+#   nextcloud_data  — local volume (app code, config, apps)
+#   nextcloud_files — NFS mount from emporium (user files only)
+
+services:
+
+  nextcloud-db:
+    image: docker.io/library/mariadb:11
+    container_name: nextcloud-db
+    restart: unless-stopped
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    volumes:
+      - nextcloud_db:/var/lib/mysql
+    environment:
+      - TZ=America/Chicago
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    networks:
+      - nextcloud-internal
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  nextcloud-redis:
+    image: docker.io/library/redis:7-alpine
+    container_name: nextcloud-redis
+    restart: unless-stopped
+    networks:
+      - nextcloud-internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  nextcloud:
+    image: docker.io/library/nextcloud:32.0.6-apache
+    container_name: nextcloud
+    restart: unless-stopped
+    depends_on:
+      nextcloud-db:
+        condition: service_healthy
+      nextcloud-redis:
+        condition: service_healthy
+    ports:
+      - "80:80"
+    volumes:
+      - nextcloud_data:/var/www/html
+      - nextcloud_files:/var/www/html/data
+    environment:
+      - TZ=America/Chicago
+      # Database
+      - MYSQL_HOST=nextcloud-db
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      # Redis
+      - REDIS_HOST=nextcloud-redis
+      # Nextcloud admin
+      - NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
+      - NEXTCLOUD_ADMIN_PASSWORD=${NEXTCLOUD_ADMIN_PASSWORD}
+      # Trusted domains — internal and external
+      - NEXTCLOUD_TRUSTED_DOMAINS=nextcloud.local.mk-labs.cloud the-grid.local.mk-labs.cloud the-grid.mk-labs.cloud
+      # Apache
+      - APACHE_SERVER_NAME=the-grid.local.mk-labs.cloud
+      # Reverse proxy — lightning-lane IP only
+      - TRUSTED_PROXIES=10.1.71.35
+      - OVERWRITEPROTOCOL=https
+      - OVERWRITECLIURL=https://the-grid.mk-labs.cloud
+    networks:
+      - nextcloud-internal
+
+networks:
+  nextcloud-internal:
+    driver: bridge
+    name: nextcloud-internal
+
+volumes:
+  nextcloud_data:
+    driver: local
+  nextcloud_db:
+    driver: local
+  nextcloud_files:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: "addr=10.1.71.9,rw,nfsvers=4,hard,intr,noatime"
+      device: ":/volume1/the-grid"

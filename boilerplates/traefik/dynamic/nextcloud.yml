@@ -1,0 +1,24 @@
+http:
+  routers:
+    nextcloud:
+      rule: "Host(`nextcloud.local.mk-labs.cloud`) || Host(`the-grid.local.mk-labs.cloud`)"
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: cloudflare
+      middlewares:
+        - nextcloud-caldav
+      service: nextcloud
+
+  middlewares:
+    nextcloud-caldav:
+      redirectRegex:
+        permanent: true
+        regex: "https://(.*)/.well-known/(card|cal)dav"
+        replacement: "https://${1}/remote.php/dav/"
+
+  services:
+    nextcloud:
+      loadBalancer:
+        servers:
+          - url: "http://the-grid.local.mk-labs.cloud:80"

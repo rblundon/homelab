@@ -1,0 +1,91 @@
+---
+# ------------------------------------------------------------------------------
+# FILE: playbooks/day1_deploy_nextcloud.yml
+# DESCRIPTION: Deploys Nextcloud on the-grid
+#              Runs: docker-host → nextcloud
+#
+# USAGE:
+#   ansible-playbook -i inventory.yml playbooks/day1_deploy_nextcloud.yml
+#   ansible-playbook -i inventory.yml playbooks/day1_deploy_nextcloud.yml --limit the-grid
+#
+# SECRETS REQUIRED IN VAULT (group_vars/all/vault):
+#   vault_nextcloud_db_root_password
+#   vault_nextcloud_db_password
+#   vault_nextcloud_admin_user
+#   vault_nextcloud_admin_password
+# ------------------------------------------------------------------------------
+
+- name: Deploy Nextcloud on the-grid
+  hosts: the-grid
+  become: true
+
+  vars:
+    # NFS prerequisite
+    nfs_packages:
+      - nfs-common
+
+    # Compose stack location
+    nextcloud_base_dir: /opt/docker/nextcloud
+
+    # Secrets from vault
+    nextcloud_db_root_password: "{{ vault_nextcloud_db_root_password }}"
+    nextcloud_db_password:      "{{ vault_nextcloud_db_password }}"
+    nextcloud_admin_user:       "{{ vault_nextcloud_admin_user }}"
+    nextcloud_admin_password:   "{{ vault_nextcloud_admin_password }}"
+
+  pre_tasks:
+    - name: Install NFS client
+      ansible.builtin.apt:
+        name: "{{ nfs_packages }}"
+        state: present
+        update_cache: true
+
+  roles:
+    - role: docker-host
+
+  tasks:
+    - name: Create Nextcloud directory
+      ansible.builtin.file:
+        path: "{{ nextcloud_base_dir }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: docker
+        mode: "0775"
+
+    - name: Deploy Compose file
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../../boilerplates/nextcloud/compose.yml"
+        dest: "{{ nextcloud_base_dir }}/compose.yml"
+        owner: "{{ ansible_user }}"
+        group: docker
+        mode: "0644"
+
+    - name: Deploy .env from vault
+      ansible.builtin.copy:
+        content: |
+          # Managed by Ansible — do not edit manually
+          MYSQL_ROOT_PASSWORD={{ nextcloud_db_root_password }}
+          MYSQL_PASSWORD={{ nextcloud_db_password }}
+          NEXTCLOUD_ADMIN_USER={{ nextcloud_admin_user }}
+          NEXTCLOUD_ADMIN_PASSWORD={{ nextcloud_admin_password }}
+        dest: "{{ nextcloud_base_dir }}/.env"
+        owner: "{{ ansible_user }}"
+        group: docker
+        mode: "0600"
+
+    - name: Start Nextcloud stack
+      community.docker.docker_compose_v2:
+        project_src: "{{ nextcloud_base_dir }}"
+        state: present
+
+    - name: Wait for Nextcloud to become ready
+      ansible.builtin.uri:
+        url: "http://the-grid.local.mk-labs.cloud/status.php"
+        status_code: 200
+        return_content: true
+      register: nextcloud_status
+      until: >
+        nextcloud_status.status == 200 and
+        (nextcloud_status.content | from_json).installed == true
+      retries: 20
+      delay: 15

@@ -17,8 +17,12 @@ services:
       - ANSIBLE_HOST_KEY_CHECKING=False
     networks:
       - semaphore_backend
+    dns_search:
+      - local.mk-labs.cloud
     ports:
       - "3000:3000"
+    volumes:
+      - ./ansible_key:/home/semaphore/.ssh/id_ed25519:ro
     depends_on:
       - semaphore_db
 

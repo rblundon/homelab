@@ -24,7 +24,7 @@ ntp_servers:
     
 load_balancers:
   hosts:
-    lightning_lane:
+    lightning-lane:
       ansible_become: true
 
 step_ca_server:
@@ -35,6 +35,11 @@ step_ca_server:
 authentik_server:
   hosts:
     guest-relations:
+      ansible_become: true
+
+nextcloud_server:
+  hosts:
+    the-grid:
       ansible_become: true
 
 semaphore_server:
@@ -91,10 +96,6 @@ talos_control:
   vars:
     talosctl_version: "v1.12.4"
     talos_cluster_name: "fastpass"
-
-# ipaserver:
-#   hosts:
-#     infra01.int.mk-labs.cloud:
 
 # matchbox_server:
 #   hosts:

@@ -25,6 +25,14 @@
     group: docker
     mode: '0600'
 
+- name: Copy SSH key for Ansible authentication
+  ansible.builtin.copy:
+    src: "{{ semaphore_ssh_key_file }}"
+    dest: "{{ semaphore_compose_dir }}/ansible_key"
+    owner: "1001"
+    group: "1001"
+    mode: '0600'
+
 - name: Start Semaphore containers
   community.docker.docker_compose_v2:
     project_src: "{{ semaphore_compose_dir }}"
