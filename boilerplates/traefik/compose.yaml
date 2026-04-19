@@ -24,6 +24,8 @@ services:
       - "--entrypoints.websecure.http.tls.certResolver=cloudflare"
       - "--entrypoints.websecure.http.tls.domains[0].main=local.mk-labs.cloud"
       - "--entrypoints.websecure.http.tls.domains[0].sans=*.local.mk-labs.cloud"
+      - "--entrypoints.websecure.http.tls.domains[1].main=mk-labs.cloud"
+      - "--entrypoints.websecure.http.tls.domains[1].sans=*.mk-labs.cloud"
       # ACME / Cloudflare DNS-01
       - "--certificatesresolvers.cloudflare.acme.email=ryan.blundon@protonmail.com"
       - "--certificatesresolvers.cloudflare.acme.storage=/var/traefik/certs/acme.json"

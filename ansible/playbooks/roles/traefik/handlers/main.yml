@@ -5,4 +5,5 @@
 - name: restart traefik
   community.docker.docker_compose_v2:
     project_src: "{{ traefik_base_dir }}"
-    state: restarted
+    state: present
+    recreate: always

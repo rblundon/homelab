@@ -79,6 +79,7 @@ services:
       - APACHE_SERVER_NAME=the-grid.local.mk-labs.cloud
       # Reverse proxy — lightning-lane IP only
       - TRUSTED_PROXIES=10.1.71.35
+      - SKIP_DOMAIN_VALIDATION=true
       - OVERWRITEPROTOCOL=https
       - OVERWRITECLIURL=https://the-grid.mk-labs.cloud
     networks:

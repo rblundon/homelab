@@ -1,7 +1,7 @@
 http:
   routers:
     nextcloud:
-      rule: "Host(`nextcloud.local.mk-labs.cloud`) || Host(`the-grid.local.mk-labs.cloud`)"
+      rule: "Host(`nextcloud.local.mk-labs.cloud`) || Host(`the-grid.local.mk-labs.cloud`) || Host(`the-grid.mk-labs.cloud`)"
       entryPoints:
         - websecure
       tls:
@@ -21,4 +21,4 @@ http:
     nextcloud:
       loadBalancer:
         servers:
-          - url: "http://the-grid.local.mk-labs.cloud:80"
+          - url: "http://10.1.71.128:80"
