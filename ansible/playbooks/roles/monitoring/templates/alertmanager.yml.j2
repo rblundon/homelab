@@ -1,0 +1,13 @@
+# ------------------------------------------------------------------------------
+# FILE: roles/monitoring/templates/alertmanager.yml.j2
+# DESCRIPTION: Alertmanager configuration — routing deferred (P.XX)
+# ------------------------------------------------------------------------------
+
+route:
+  receiver: blackhole
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+
+receivers:
+  - name: blackhole

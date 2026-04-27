@@ -52,13 +52,12 @@ n8n_server:
   hosts:
     tiki-room:
 
-prometheus_server:
+monitoring_server:
   hosts:
     cinderella-castle:
-
-prometheus_nodes:
-  hosts:
-    cinderella-castle:
+      ansible_host: 10.1.71.31
+      ansible_user: wed
+      ansible_become: true
 
 # node_explorer:
 #   hosts:

@@ -1,0 +1,50 @@
+# ------------------------------------------------------------------------------
+# FILE: roles/monitoring/templates/prometheus.yml.j2
+# DESCRIPTION: Prometheus scrape configuration
+# ------------------------------------------------------------------------------
+
+global:
+  scrape_interval: {{ prometheus_scrape_interval }}
+  evaluation_interval: {{ prometheus_scrape_interval }}
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+rule_files: []
+
+scrape_configs:
+
+  # Prometheus self-monitoring
+  - job_name: prometheus
+    static_configs:
+      - targets:
+          - localhost:9090
+
+  # cinderella-castle node exporter (this host)
+  - job_name: node-cinderella-castle
+    static_configs:
+      - targets:
+          - cinderella-castle:9100
+        labels:
+          hostname: cinderella-castle
+
+  # Proxmox nodes
+  - job_name: proxmox-nodes
+    static_configs:
+      - targets:
+          - 10.1.71.11:9100
+          - 10.1.71.12:9100
+          - 10.1.71.13:9100
+        labels:
+          job: proxmox
+
+  # Traefik metrics
+  - job_name: traefik
+    static_configs:
+      - targets:
+          - 10.1.71.35:8080
+        labels:
+          hostname: lightning-lane

@@ -1,0 +1,152 @@
+---
+# ------------------------------------------------------------------------------
+# FILE: roles/monitoring/tasks/main.yml
+# ------------------------------------------------------------------------------
+
+# ── Data disk (LVM) ───────────────────────────────────────────────────────────
+
+- name: Install LVM2
+  ansible.builtin.apt:
+    name: lvm2
+    state: present
+    update_cache: true
+
+- name: Check if PV already exists on /dev/sdb
+  ansible.builtin.command: pvs /dev/sdb
+  register: pvs_result
+  changed_when: false
+  failed_when: false
+
+- name: Check if disk has a partition table signature
+  ansible.builtin.command: wipefs /dev/sdb
+  register: wipefs_check
+  changed_when: false
+  failed_when: false
+  when: pvs_result.rc != 0
+
+- name: Wipe GPT protective partition signature from /dev/sdb
+  ansible.builtin.command: wipefs -a /dev/sdb
+  when:
+    - pvs_result.rc != 0
+    - wipefs_check.stdout | length > 0
+
+- name: Create LVM volume group on /dev/sdb
+  community.general.lvg:
+    vg: prometheus-vg
+    pvs: /dev/sdb
+    state: present
+  when: pvs_result.rc != 0
+
+- name: Check if logical volume already exists
+  ansible.builtin.command: lvs /dev/prometheus-vg/prometheus-lv
+  register: lvs_result
+  changed_when: false
+  failed_when: false
+
+- name: Create logical volume for Prometheus TSDB
+  community.general.lvol:
+    vg: prometheus-vg
+    lv: prometheus-lv
+    size: 100%FREE
+    state: present
+    shrink: false
+  when: lvs_result.rc != 0
+
+- name: Format logical volume as ext4
+  community.general.filesystem:
+    fstype: ext4
+    dev: /dev/prometheus-vg/prometheus-lv
+
+- name: Create Prometheus data directory mount point
+  ansible.builtin.file:
+    path: "{{ prometheus_data_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Mount Prometheus logical volume
+  ansible.posix.mount:
+    path: "{{ prometheus_data_dir }}"
+    src: /dev/prometheus-vg/prometheus-lv
+    fstype: ext4
+    opts: defaults
+    state: mounted
+
+- name: Set ownership of Prometheus data directory
+  ansible.builtin.file:
+    path: "{{ prometheus_data_dir }}"
+    state: directory
+    owner: "65534"   # nobody — Prometheus container runs as this UID
+    group: "65534"
+    mode: "0755"
+
+# ── Directory layout ───────────────────────────────────────────────────────────
+
+- name: Create monitoring directory structure
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: docker
+    mode: "0775"
+  loop:
+    - "{{ monitoring_base_dir }}"
+    - "{{ monitoring_base_dir }}/prometheus"
+    - "{{ monitoring_base_dir }}/grafana"
+    - "{{ monitoring_base_dir }}/alertmanager"
+
+# ── Config files ───────────────────────────────────────────────────────────────
+
+- name: Deploy Prometheus configuration
+  ansible.builtin.template:
+    src: prometheus.yaml.j2
+    dest: "{{ monitoring_base_dir }}/prometheus/prometheus.yaml"
+    owner: "{{ ansible_user }}"
+    group: docker
+    mode: "0644"
+  notify: restart monitoring
+
+- name: Deploy Alertmanager configuration
+  ansible.builtin.template:
+    src: alertmanager.yml.j2
+    dest: "{{ monitoring_base_dir }}/alertmanager/alertmanager.yml"
+    owner: "{{ ansible_user }}"
+    group: docker
+    mode: "0644"
+  notify: restart monitoring
+
+- name: Deploy Grafana provisioning datasource
+  ansible.builtin.template:
+    src: grafana-datasource.yml.j2
+    dest: "{{ monitoring_base_dir }}/grafana/datasource.yml"
+    owner: "{{ ansible_user }}"
+    group: docker
+    mode: "0644"
+  notify: restart monitoring
+
+# ── Compose stack ──────────────────────────────────────────────────────────────
+
+- name: Deploy monitoring compose file from boilerplate
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../boilerplates/monitoring/compose.yaml"
+    dest: "{{ monitoring_base_dir }}/compose.yaml"
+    owner: "{{ ansible_user }}"
+    group: docker
+    mode: "0644"
+  notify: restart monitoring
+
+- name: Deploy .env with secrets from vault
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ monitoring_base_dir }}/.env"
+    owner: "{{ ansible_user }}"
+    group: docker
+    mode: "0600"
+  notify: restart monitoring
+
+- name: Start monitoring stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ monitoring_base_dir }}"
+    state: present
+

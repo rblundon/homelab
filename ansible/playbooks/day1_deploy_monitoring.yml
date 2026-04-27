@@ -1,0 +1,26 @@
+---
+# ------------------------------------------------------------------------------
+# FILE: playbooks/day1_deploy_monitoring.yml
+# DESCRIPTION: Deploys Prometheus + Grafana + Node Exporter + Alertmanager
+#              on cinderella-castle (10.1.71.31)
+#              Runs: common → docker-host → monitoring
+#
+# USAGE:
+#   ansible-playbook -i inventory.yml playbooks/day1_deploy_monitoring.yml
+#   ansible-playbook -i inventory.yml playbooks/day1_deploy_monitoring.yml --limit cinderella_castle
+#
+# SECRETS REQUIRED IN VAULT (group_vars/all/vault):
+#   vault_grafana_admin_password
+# ------------------------------------------------------------------------------
+
+- name: Deploy monitoring stack on cinderella-castle
+  hosts: cinderella-castle
+  become: true
+
+  vars:
+    grafana_admin_password: "{{ vault_grafana_admin_password }}"
+
+  roles:
+    - role: common
+    - role: docker-host
+    - role: monitoring

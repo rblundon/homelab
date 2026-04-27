@@ -1,0 +1,38 @@
+---
+# ------------------------------------------------------------------------------
+# FILE: roles/monitoring/defaults/main.yml
+# ------------------------------------------------------------------------------
+
+# Directory layout on cinderella-castle
+monitoring_base_dir: /opt/docker/monitoring
+
+# Data disk — LVM on /dev/sdb, mounted at this path for Prometheus TSDB
+prometheus_data_dir: /var/lib/prometheus
+prometheus_vg: prometheus-vg
+prometheus_lv: prometheus-lv
+
+# Prometheus retention
+prometheus_retention_time: 15d
+prometheus_retention_size: 58GB     # 64GB disk, leaving headroom
+
+# Scrape interval
+prometheus_scrape_interval: 30s
+
+# Grafana
+grafana_port: 3000
+grafana_admin_user: admin
+
+# Service DNS (via Traefik)
+grafana_hostname: grafana.local.mk-labs.cloud
+
+# Trusted proxy (lightning-lane)
+trusted_proxy_ip: 10.1.71.35
+
+# Prometheus port (internal, not exposed via Traefik)
+prometheus_port: 9090
+
+# Alertmanager port (internal)
+alertmanager_port: 9093
+
+# Node exporter port
+node_exporter_port: 9100
