@@ -1,0 +1,23 @@
+---
+# ------------------------------------------------------------------------------
+# FILE: ansible/playbooks/day1_deploy_gitea.yml
+# DESCRIPTION: Deploys Gitea + PostgreSQL on mad-tea-party (10.1.71.129)
+#              Role chain: common → docker-host → gitea
+#
+# USAGE:
+#   ansible-playbook -i ansible/inventory.yml ansible/playbooks/day1_deploy_gitea.yml
+#
+# SECRETS REQUIRED IN VAULT (group_vars/all/vault):
+#   vault_gitea_db_password
+# ------------------------------------------------------------------------------
+
+- name: Deploy Gitea on mad-tea-party
+  hosts: gitea_servers
+  become: true
+
+  vars:
+    gitea_db_password: "{{ vault_gitea_db_password }}"
+
+  roles:
+    - role: docker-host
+    - role: gitea

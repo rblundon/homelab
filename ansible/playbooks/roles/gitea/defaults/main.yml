@@ -1,0 +1,31 @@
+---
+# ------------------------------------------------------------------------------
+# FILE: ansible/playbooks/roles/gitea/defaults/main.yml
+# ------------------------------------------------------------------------------
+
+# Directory layout on mad-tea-party
+gitea_compose_dir: /opt/gitea
+
+# Gitea application settings
+gitea_domain: git.mk-labs.cloud
+gitea_root_url: "https://{{ gitea_domain }}"
+gitea_http_port: 3000
+gitea_ssh_port: 2221
+
+# Trusted proxy (lightning-lane)
+gitea_trusted_proxies: 10.1.71.35
+
+# Timezone
+gitea_timezone: America/Chicago
+
+# Database
+gitea_db_name: gitea
+gitea_db_user: gitea
+
+# Traefik dynamic config destination on lightning-lane
+traefik_dynamic_config_dir: /opt/traefik/dynamic
+
+# DNS
+gitea_cname_name: git
+gitea_cname_domain: mk-labs.cloud
+gitea_cname_target: mad-tea-party.local.mk-labs.cloud

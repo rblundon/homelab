@@ -1,0 +1,10 @@
+---
+# ------------------------------------------------------------------------------
+# FILE: ansible/playbooks/roles/gitea/handlers/main.yml
+# ------------------------------------------------------------------------------
+
+- name: restart gitea
+  community.docker.docker_compose_v2:
+    project_src: "{{ gitea_compose_dir }}"
+    state: present
+    recreate: always

@@ -1,0 +1,63 @@
+---
+# ------------------------------------------------------------------------------
+# FILE: ansible/playbooks/roles/gitea/tasks/main.yml
+# ------------------------------------------------------------------------------
+
+# ── Directories ────────────────────────────────────────────────────────────────
+
+- name: Create Gitea compose directory
+  ansible.builtin.file:
+    path: "{{ gitea_compose_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+# ── Compose & env ──────────────────────────────────────────────────────────────
+
+- name: Deploy Gitea compose file from boilerplate
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../boilerplates/gitea/compose.yaml"
+    dest: "{{ gitea_compose_dir }}/compose.yaml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart gitea
+
+- name: Deploy .env file with secrets from vault
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ gitea_compose_dir }}/.env"
+    owner: root
+    group: root
+    mode: "0600"
+  notify: restart gitea
+
+# ── Compose stack ──────────────────────────────────────────────────────────────
+
+- name: Start Gitea stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ gitea_compose_dir }}"
+    state: present
+    recreate: always
+
+# ── Traefik route ──────────────────────────────────────────────────────────────
+
+# - name: Deploy Traefik dynamic config for Gitea
+#   ansible.builtin.copy:
+#     src: "{{ playbook_dir }}/../../boilerplates/traefik/dynamic/gitea.yml"
+#     dest: "{{ traefik_dynamic_config_dir }}/gitea.yml"
+#     owner: root
+#     group: root
+#     mode: "0644"
+#   delegate_to: localhost
+
+# ── DNS ────────────────────────────────────────────────────────────────────────
+
+# - name: Create DNS CNAME for Gitea
+#   ansible.builtin.include_role:
+#     name: add_service_route
+#   vars:
+#     service_name: "{{ gitea_cname_name }}"
+#     service_domain: "{{ gitea_cname_domain }}"
+#     target_host: "{{ gitea_cname_target }}"

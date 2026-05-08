@@ -37,6 +37,12 @@ authentik_server:
     guest-relations:
       ansible_become: true
 
+gitea_servers:
+  hosts:
+    mad-tea-party:
+      ansible_user: wed
+      ansible_become: true
+
 nextcloud_server:
   hosts:
     the-grid:

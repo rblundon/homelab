@@ -1,0 +1,17 @@
+http:
+  routers:
+    gitea:
+      rule: "Host(`gitea.mk-labs.cloud`)"
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: cloudflare
+        domains:
+          - main: "gitea.mk-labs.cloud"
+      service: gitea
+
+  services:
+    gitea:
+      loadBalancer:
+        servers:
+          - url: "http://10.1.71.129:3000"
